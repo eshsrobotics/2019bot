@@ -24,27 +24,24 @@ public class Robot extends IterativeRobot {
 	private DifferentialDrive m_myRobot;
 	private Joystick m_leftStick;
 	private Joystick m_rightStick;
-	private TalonSRX rightFront;
-	private TalonSRX rightBack;
-	private TalonSRX leftFront;
-	private TalonSRX leftBack;
-	private Spark s1;
-	private Spark s2;
+	private WPI_TalonSRX rightFront;
+	private WPI_TalonSRX rightBack;
+	private WPI_TalonSRX leftFront;
+	private WPI_TalonSRX leftBack;
 	private SpeedControllerGroup left;
 	private SpeedControllerGroup right;
-	private SpeedControllerGroup test;
 	@Override
 	public void robotInit() {
 		//Streams usb camera video feed straight to Dashboard.
 		CameraServer.getInstance().startAutomaticCapture();
 		
 		//Initialize drive.
-		rightFront = new TalonSRX(0);
-		rightBack = new TalonSRX(1);
-		leftFront = new TalonSRX(5);
-		leftBack = new TalonSRX(6);
-		//left = new SpeedControllerGroup(leftFront, leftBack);
-		//right = new SpeedControllerGroup(rightFront, rightBack);
+		rightFront = new WPI_TalonSRX(0);
+		rightBack = new WPI_TalonSRX(1);
+		leftFront = new WPI_TalonSRX(5);
+		leftBack = new WPI_TalonSRX(6);
+		left = new SpeedControllerGroup(leftFront, leftBack);
+		right = new SpeedControllerGroup(rightFront, rightBack);
 		m_myRobot = new DifferentialDrive(left, right);
 		m_leftStick = new Joystick(0);
 		m_rightStick = new Joystick(1);
