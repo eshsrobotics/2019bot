@@ -1,4 +1,10 @@
+# Build output folders.
 /dist/
 /bin/
+/build/
+
+# Mac OS X artifacts.
 .DS_Store
-.classpath
+
+# Emacs backup files.
+*~
