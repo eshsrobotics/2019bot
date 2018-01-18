@@ -8,6 +8,7 @@
 package org.usfirst.frc.team1759.robot;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
@@ -30,6 +31,8 @@ public class Robot extends IterativeRobot {
 	private WPI_TalonSRX leftBack;
 	private SpeedControllerGroup left;
 	private SpeedControllerGroup right;
+	private DoubleSolenoid launcher;
+	
 	@Override
 	public void robotInit() {
 		//Streams usb camera video feed straight to Dashboard.
@@ -45,10 +48,16 @@ public class Robot extends IterativeRobot {
 		m_myRobot = new DifferentialDrive(left, right);
 		m_leftStick = new Joystick(0);
 		m_rightStick = new Joystick(1);
+		launcher = new DoubleSolenoid(0, 1);
 	}
 
 	@Override
 	public void teleopPeriodic() {
 		m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
+		if(m_rightStick.getTrigger() == true) {
+			launcher.set(Forward);
+		} else {
+			launcher.set(Reverse);
+		}
 	}
 }
