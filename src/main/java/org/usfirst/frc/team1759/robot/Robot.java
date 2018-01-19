@@ -54,10 +54,11 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
+		// Potentially damaging to robot if the solenoid is not properly controlled (dry firing is bad)
 		if(m_rightStick.getTrigger() == true) {
-			launcher.set(Forward);
+			//launcher.set(DoubleSolenoid.Value.kForward);
 		} else {
-			launcher.set(Reverse);
+			//launcher.set(DoubleSolenoid.Value.kReverse);
 		}
 	}
 }
