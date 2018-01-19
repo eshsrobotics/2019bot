@@ -1,5 +1,11 @@
 /dist/
 /bin/
-/build/
 .DS_Store
 .classpath
+
+# Gradle
+.gradle
+/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
