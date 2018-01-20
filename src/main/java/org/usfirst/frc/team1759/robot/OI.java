@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.NetworkButton;
 
+// @Author Spencer Moore. Used to set buttons and distinguish between Keyboards and Joytsticks controls
+
 public class OI {
 
 	public boolean joysticksAttached;
