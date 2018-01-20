@@ -56,9 +56,11 @@ public class Robot extends IterativeRobot {
 		m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
 		// Potentially damaging to robot if the solenoid is not properly controlled (dry firing is bad)
 		if(m_rightStick.getTrigger() == true) {
-			//launcher.set(DoubleSolenoid.Value.kForward);
+			launcher.set(DoubleSolenoid.Value.kForward);
+		} else if (m_leftStick.getTrigger() == true) {
+			launcher.set(DoubleSolenoid.Value.kReverse);
 		} else {
-			//launcher.set(DoubleSolenoid.Value.kReverse);
+			launcher.set(DoubleSolenoid.Value.kOff);
 		}
 	}
 }
