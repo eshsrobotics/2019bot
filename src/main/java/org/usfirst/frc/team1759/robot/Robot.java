@@ -8,13 +8,12 @@
 package org.usfirst.frc.team1759.robot;
 
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
 //import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-//import edu.wpi.first.wpilibj.Talon;
 import com.ctre.phoenix.motorcontrol.can.*;
 
 /**
@@ -31,7 +30,7 @@ public class Robot extends IterativeRobot {
 	private WPI_TalonSRX leftBack;
 	private SpeedControllerGroup left;
 	private SpeedControllerGroup right;
-	private DoubleSolenoid launcher;
+	private Solenoid launcher;
 	
 	@Override
 	public void robotInit() {
@@ -48,19 +47,16 @@ public class Robot extends IterativeRobot {
 		m_myRobot = new DifferentialDrive(left, right);
 		m_leftStick = new Joystick(0);
 		m_rightStick = new Joystick(1);
-		launcher = new DoubleSolenoid(0, 1);
+		launcher = new Solenoid(0);
 	}
 
 	@Override
 	public void teleopPeriodic() {
 		m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
-		// Potentially damaging to robot if the solenoid is not properly controlled (dry firing is bad)
-		if(m_rightStick.getTrigger() == true) {
-			launcher.set(DoubleSolenoid.Value.kForward);
-		} else if (m_leftStick.getTrigger() == true) {
-			launcher.set(DoubleSolenoid.Value.kReverse);
+		if (m_leftStick.getTrigger() == true) {
+			launcher.set(true);
 		} else {
-			launcher.set(DoubleSolenoid.Value.kOff);
+			launcher.set(false);
 		}
 	}
 }
