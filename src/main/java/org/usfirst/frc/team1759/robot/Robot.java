@@ -8,12 +8,13 @@
 package org.usfirst.frc.team1759.robot;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Spark;
+//import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.Talon;
+//import edu.wpi.first.wpilibj.Talon;
 import com.ctre.phoenix.motorcontrol.can.*;
 
 /**
@@ -30,6 +31,8 @@ public class Robot extends IterativeRobot {
 	private WPI_TalonSRX leftBack;
 	private SpeedControllerGroup left;
 	private SpeedControllerGroup right;
+	private DoubleSolenoid launcher;
+	
 	@Override
 	public void robotInit() {
 		//Streams usb camera video feed straight to Dashboard.
@@ -45,10 +48,17 @@ public class Robot extends IterativeRobot {
 		m_myRobot = new DifferentialDrive(left, right);
 		m_leftStick = new Joystick(0);
 		m_rightStick = new Joystick(1);
+		launcher = new DoubleSolenoid(0, 1);
 	}
 
 	@Override
 	public void teleopPeriodic() {
 		m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
+		// Potentially damaging to robot if the solenoid is not properly controlled (dry firing is bad)
+		if(m_rightStick.getTrigger() == true) {
+			//launcher.set(DoubleSolenoid.Value.kForward);
+		} else {
+			//launcher.set(DoubleSolenoid.Value.kReverse);
+		}
 	}
 }
