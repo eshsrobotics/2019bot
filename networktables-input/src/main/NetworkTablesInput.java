@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -25,6 +26,7 @@ public class NetworkTablesInput extends Application {
     VBox main = new VBox();
     main.getChildren().add(new Text("Application loaded"));
     Scene scene = new Scene(main, 1920, 1080);
+    
     scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
       @Override
       public void handle(KeyEvent event) {
@@ -37,6 +39,20 @@ public class NetworkTablesInput extends Application {
         inputHandler.handle(getText(event), false);
       }
     });
+    scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent event) {
+        inputHandler.handle("mouse", true);
+      }
+    });
+    scene.setOnMouseReleased(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent event) {
+        inputHandler.handle("mouse", false);
+      }
+    });
+    
+    
     stage.setTitle("NetworkTables Input");
     stage.setScene(scene);
     stage.setMaximized(true);
