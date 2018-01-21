@@ -59,9 +59,6 @@ public class OI {
 			left = new NetworkButton(inputTable, "a");
 			right = new NetworkButton(inputTable, "d");
 			sneak = new NetworkButton(inputTable, "Shift");
-
-
-			
 		}
 	}
 
