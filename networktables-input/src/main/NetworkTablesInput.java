@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -30,25 +31,25 @@ public class NetworkTablesInput extends Application {
     scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
       @Override
       public void handle(KeyEvent event) {
-        inputHandler.handle(getText(event), true);
+        inputHandler.handle(getKeyText(event), true);
       }
     });
     scene.setOnKeyReleased(new EventHandler<KeyEvent>() {
       @Override
       public void handle(KeyEvent event) {
-        inputHandler.handle(getText(event), false);
+        inputHandler.handle(getKeyText(event), false);
       }
     });
     scene.setOnMousePressed(new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent event) {
-        inputHandler.handle("mouse", true);
+        inputHandler.handle(getMouseText(event), true);
       }
     });
     scene.setOnMouseReleased(new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent event) {
-        inputHandler.handle("mouse", false);
+        inputHandler.handle(getMouseText(event), false);
       }
     });
     
@@ -59,7 +60,11 @@ public class NetworkTablesInput extends Application {
     stage.show();
   }
   
-  private String getText(KeyEvent event) {
+  private String getKeyText(KeyEvent event) {
     return event.getCode().getName();
+  }
+  
+  private String getMouseText(MouseEvent event) {
+    return event.getButton() == MouseButton.PRIMARY ? "Left Mouse" : "Right Mouse";
   }
 }
