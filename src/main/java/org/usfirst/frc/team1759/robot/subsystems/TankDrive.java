@@ -35,6 +35,7 @@ public class TankDrive extends Subsystem {
 		leftBack = new WPI_TalonSRX(6);
 		left = new SpeedControllerGroup(leftFront, leftBack);
 		right = new SpeedControllerGroup(rightFront, rightBack);
+		myRobot = new DifferentialDrive(left, right);
 	}
 
 	@Override

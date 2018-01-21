@@ -39,25 +39,28 @@ public class OI {
 		leftJoystick = new Joystick(0);
 		rightJoystick = new Joystick(1);
 
+		// Can set to false to force keyboard controls
 		joysticksAttached = leftJoystick != null && rightJoystick != null;
 
 		if (joysticksAttached) {
+		  System.out.println("Creating OI with joystick buttons");
 			highLaunch = new JoystickButton(rightJoystick, HIGH_LAUNCHING);
 			lowLaunch = new JoystickButton(leftJoystick, LOW_LAUNCHING);
 			intakeUp = new JoystickButton(rightJoystick, INTAKE_UP);
 			intakeDown = new JoystickButton(leftJoystick, INTAKE_DOWN);
-			
 		} else {
 			// set to WASD control
+		  System.out.println("Creating OI with network buttons");
 			inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
-			highLaunch = new NetworkButton(inputTable, "q");
-			lowLaunch = new NetworkButton(inputTable, "e");
-			intakeUp = new NetworkButton(inputTable, "f");
-			intakeDown = new NetworkButton(inputTable, "r");
-			forward = new NetworkButton(inputTable, "w");
-			back = new NetworkButton(inputTable, "s");
-			left = new NetworkButton(inputTable, "a");
-			right = new NetworkButton(inputTable, "d");
+			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
+			highLaunch = new NetworkButton(inputTable, "Q");
+			lowLaunch = new NetworkButton(inputTable, "E");
+			intakeUp = new NetworkButton(inputTable, "F");
+			intakeDown = new NetworkButton(inputTable, "R");
+			forward = new NetworkButton(inputTable, "W");
+			back = new NetworkButton(inputTable, "S");
+			left = new NetworkButton(inputTable, "A");
+			right = new NetworkButton(inputTable, "D");
 			sneak = new NetworkButton(inputTable, "Shift");
 		}
 	}
