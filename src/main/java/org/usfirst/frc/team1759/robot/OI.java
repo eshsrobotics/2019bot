@@ -49,7 +49,28 @@ public class OI {
 			intakeUp = new JoystickButton(rightJoystick, INTAKE_UP);
 			intakeDown = new JoystickButton(leftJoystick, INTAKE_DOWN);
 		} else {
-			// set to WASD control
+			/*
+			 * Network Button key strings (for NetworkButton constructor):
+			 * - Alphanumeric: Uppercase of the key (i.e. A, B, C, ... or 0, 1, 2, ...)
+			 * - F Keys: F1, F2, ...
+			 * - Shift: "Shift"
+			 * - Control: "Ctrl"
+			 * - Alt: "Alt"
+			 * - Windows: "Windows"
+			 * - Enter: "Enter"
+			 * - Escape: "Esc"
+			 * - -: "Minus"
+			 * - =: "Equals"
+			 * - [: "Open Bracket"
+			 * - ]: "Close Bracket"
+			 * - /: "Slash"
+			 * - ': "Quote"
+			 * - ;: "Semicolon"
+			 * - Caps Lock - "Caps Lock"
+			 * - `: "Back Quote"
+			 * 
+			 * For the mouse right and left buttons, use "Right Mouse" and "Left Mouse"
+			 */
 		  System.out.println("Creating OI with network buttons");
 			inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
 			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
