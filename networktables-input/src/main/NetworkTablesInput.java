@@ -15,7 +15,12 @@ public class NetworkTablesInput extends Application {
 
   @Override
   public void start(Stage stage) throws Exception {
-    InputHandler inputHandler = new InputHandler();
+    InputHandler inputHandler;
+    if (getParameters().getRaw().isEmpty()) {
+      inputHandler = new InputHandler();
+    } else {
+      inputHandler = new InputHandler(getParameters().getRaw().get(0));
+    }
     
     VBox main = new VBox();
     main.getChildren().add(new Text("Application loaded"));
