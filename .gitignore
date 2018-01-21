@@ -1,10 +1,16 @@
 # Build output folders.
 /dist/
 /bin/
-/build/
 
 # Mac OS X artifacts.
 .DS_Store
 
 # Emacs backup files.
 *~
+
+# Gradle
+.gradle
+/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
