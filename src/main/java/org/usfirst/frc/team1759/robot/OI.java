@@ -22,6 +22,8 @@ public class OI {
 	public Button left;
 	public Button right; 
 	public Button sneak;
+	public Button climbUp;
+	public Button climbDown;
 
 	public Joystick leftJoystick;
 	public Joystick rightJoystick;
@@ -74,10 +76,12 @@ public class OI {
 		  System.out.println("Creating OI with network buttons");
 			inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
 			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
-			highLaunch = new NetworkButton(inputTable, "Q");
-			lowLaunch = new NetworkButton(inputTable, "E");
-			intakeUp = new NetworkButton(inputTable, "F");
-			intakeDown = new NetworkButton(inputTable, "R");
+			highLaunch = new NetworkButton(inputTable, "U");
+			lowLaunch = new NetworkButton(inputTable, "I");
+			intakeUp = new NetworkButton(inputTable, "O");
+			intakeDown = new NetworkButton(inputTable, "P");
+			climbUp = new NetworkButton(inputTable, "J");
+			climbDown = new NetworkButton(inputTable, "K");
 			forward = new NetworkButton(inputTable, "W");
 			back = new NetworkButton(inputTable, "S");
 			left = new NetworkButton(inputTable, "A");
