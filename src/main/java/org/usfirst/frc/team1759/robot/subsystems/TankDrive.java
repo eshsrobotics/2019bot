@@ -22,17 +22,20 @@ public class TankDrive extends Subsystem {
 	DifferentialDrive myRobot;
 	WPI_TalonSRX leftFront;
 	WPI_TalonSRX leftBack;
+	WPI_TalonSRX leftMid;
 	WPI_TalonSRX rightFront;
 	WPI_TalonSRX rightBack;
+	WPI_TalonSRX rightMid;
 	SpeedControllerGroup left;
 	SpeedControllerGroup right;
-	RobotMap robotMap;
 	
 	public TankDrive() {
-		rightFront = new WPI_TalonSRX(0);
-		rightBack = new WPI_TalonSRX(1);
-		leftFront = new WPI_TalonSRX(5);
-		leftBack = new WPI_TalonSRX(6);
+		rightFront = new WPI_TalonSRX(RobotMap.RIGHT_FRONT);
+		rightBack = new WPI_TalonSRX(RobotMap.RIGHT_BACK);
+		//rightMid = new WPI_TalonSRX(RobotMap.RIGHT_MID);
+		//leftMid = new WPI_TalonSRX(RobotMap.LEFT_MID);
+		leftFront = new WPI_TalonSRX(RobotMap.LEFT_FRONT);
+		leftBack = new WPI_TalonSRX(RobotMap.LEFT_MID);
 		left = new SpeedControllerGroup(leftFront, leftBack);
 		right = new SpeedControllerGroup(rightFront, rightBack);
 		myRobot = new DifferentialDrive(left, right);
@@ -69,6 +72,9 @@ public class TankDrive extends Subsystem {
 				right = -1;
 			}
 			if (oi.sneak.get()) {
+				if (oi.left.get() || oi.right.get()) {
+					
+				}
 				left *= 0.5;
 				right *= 0.5;
 			}

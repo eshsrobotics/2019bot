@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 public class Robot extends IterativeRobot {
 	private TankDrive tank;
 	private Launcher launcher;
+	private Intake intake;
 	
 	private OI oi;
 	
@@ -30,6 +31,7 @@ public class Robot extends IterativeRobot {
 		launcher = new Launcher();
 		oi = new OI();
 		tank = new TankDrive();
+		intake = new Intake();
 	}
 	
 	public void disabledInit() {
@@ -56,5 +58,6 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		tank.tankDrive(oi);
 		launcher.launch(oi);
+		intake.intake(oi);
 	}
 }
