@@ -9,30 +9,33 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
-
 /**
- * This subsystem is used to control the tank drive for 2018bot. Constructor calls multiple CANTalons,
- * then assigns them into SpeedControllerGroups. Can be instantiated as using a gyro or not using a gyro.
+ * This subsystem is used to control the tank drive for 2018bot. Constructor
+ * calls multiple CANTalons, then assigns them into SpeedControllerGroups. Can
+ * be instantiated as using a gyro or not using a gyro.
  * 
  * @author Aidan Galbreath
  */
 
 public class TankDrive extends Subsystem {
-	
+
 	DifferentialDrive myRobot;
 	WPI_TalonSRX leftFront;
 	WPI_TalonSRX leftBack;
+	WPI_TalonSRX leftMid;
 	WPI_TalonSRX rightFront;
 	WPI_TalonSRX rightBack;
+	WPI_TalonSRX rightMid;
 	SpeedControllerGroup left;
 	SpeedControllerGroup right;
-	RobotMap robotMap;
-	
+
 	public TankDrive() {
-		rightFront = new WPI_TalonSRX(0);
-		rightBack = new WPI_TalonSRX(1);
-		leftFront = new WPI_TalonSRX(5);
-		leftBack = new WPI_TalonSRX(6);
+		rightFront = new WPI_TalonSRX(RobotMap.RIGHT_FRONT);
+		rightBack = new WPI_TalonSRX(RobotMap.RIGHT_BACK);
+		// rightMid = new WPI_TalonSRX(RobotMap.RIGHT_MID);
+		// leftMid = new WPI_TalonSRX(RobotMap.LEFT_MID);
+		leftFront = new WPI_TalonSRX(RobotMap.LEFT_FRONT);
+		leftBack = new WPI_TalonSRX(RobotMap.LEFT_MID);
 		left = new SpeedControllerGroup(leftFront, leftBack);
 		right = new SpeedControllerGroup(rightFront, rightBack);
 		myRobot = new DifferentialDrive(left, right);
@@ -40,22 +43,22 @@ public class TankDrive extends Subsystem {
 
 	@Override
 	public void setName(String subsystem, String name) {
-		
+
 	}
 
 	@Override
 	public void initDefaultCommand() {
-		myRobot = new DifferentialDrive (left, right);
+		myRobot = new DifferentialDrive(left, right);
 	}
-	
+
 	public void tankDrive(OI oi) {
 		if (oi.joysticksAttached) {
 			myRobot.tankDrive(oi.leftJoystick.getY(), oi.rightJoystick.getY());
 		} else {
 			double left = 0;
 			double right = 0;
-			
-			if(oi.forward.get()) {
+
+			if (oi.forward.get()) {
 				left = 1;
 				right = 1;
 			} else if (oi.back.get()) {
@@ -65,14 +68,19 @@ public class TankDrive extends Subsystem {
 				left = -1;
 				right = 1;
 			} else if (oi.right.get()) {
-				left =1;
+				left = 1;
 				right = -1;
 			}
 			if (oi.sneak.get()) {
-				left *= 0.5;
-				right *= 0.5;
+				if (oi.left.get() || oi.right.get()) {
+					left *= 0.8;
+					right *= 0.8;
+				} else {
+					left *= 0.5;
+					right *= 0.5;
+				}
 			}
-			
+
 			myRobot.tankDrive(left, right);
 		}
 	}
