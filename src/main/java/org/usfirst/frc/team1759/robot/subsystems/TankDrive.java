@@ -30,6 +30,7 @@ public class TankDrive extends Subsystem {
 	SpeedControllerGroup right;
 
 	public TankDrive() {
+
 		rightFront = new WPI_TalonSRX(RobotMap.RIGHT_FRONT_PORT);
 		rightBack = new WPI_TalonSRX(RobotMap.RIGHT_BACK_PORT);
 		// rightMid = new WPI_TalonSRX(RobotMap.RIGHT_MID_PORT);
@@ -40,7 +41,6 @@ public class TankDrive extends Subsystem {
 		right = new SpeedControllerGroup(rightFront, rightBack);
 		myRobot = new DifferentialDrive(left, right);
 	}
-
 	@Override
 	public void setName(String subsystem, String name) {
 

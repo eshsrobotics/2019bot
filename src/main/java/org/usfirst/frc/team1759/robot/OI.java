@@ -37,9 +37,9 @@ public class OI {
 	public static final int HIGH_LAUNCHING_BUTTON = 1;
 	public static final int LOW_LAUNCHING_BUTTON = 1;
 
+	// They look the same, but one is on the left joystick and one is on the right.
 	public static final int INTAKE_UP_BUTTON = 2;
 	public static final int INTAKE_DOWN_BUTTON = 2;
-	
 	private NetworkTable inputTable;
 
 	public OI() {
@@ -51,7 +51,7 @@ public class OI {
 		joysticksAttached = leftJoystick != null && rightJoystick != null;
 
 		if (joysticksAttached) {
-		  System.out.println("Creating OI with joystick buttons");
+			System.out.println("Creating OI with joystick buttons");
 			highLaunch = new JoystickButton(rightJoystick, HIGH_LAUNCHING_BUTTON);
 			lowLaunch = new JoystickButton(leftJoystick, LOW_LAUNCHING_BUTTON);
 			intakeUp = new JoystickButton(rightJoystick, INTAKE_UP_BUTTON);
