@@ -1,0 +1,34 @@
+<project name="DriverStationClientCodeBuild" default="build">
+
+	
+    <property name="build.dir" value="build"/>
+	<property name="source.dir" value="networktables-input"/>
+	
+	<propery name="build.classpath">
+	    <fileset dir="lib">
+	    	  <include name="*.jar" />  	
+		</fileset>
+	</path>
+	
+	<echo message="${build.classpath}" />
+	
+    <target name="build" description="Builds a stand-alone, client JAR file that can be deployed on driver station.  The JAR program handles both vision processing and keyboard input.">    	    	
+    	<javac destdir="${build.dir}/classes"
+    		   debug="on"
+    		   includeAntRuntime="false"
+    		   verbose="true">
+    		<src path="${source.dir}" />
+    		<include name="**/*.java" />
+    		<classpath refid="build.classpath" />
+    	</javac>    	
+    	
+    	<!-- <jar destfile="networktables-input.jar"
+    		 basedir="."
+    		 includes="">
+            <manifest>
+                <attribute name="Main-Class" value="main.NetworkTablesInput" />
+                <attribute name="Class-Path" value="." />
+            </manifest>    		
+    	</jar> -->    
+    </target>
+</project>
