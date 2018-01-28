@@ -34,6 +34,9 @@ public class Intake extends Subsystem {
 		} else if (oi.intakeDown.get()) {
 			leftIntake.set(-1.0 * SPEED_MULT);
 			rightIntake.set(-1.0 * SPEED_MULT);
+		} else {
+			leftIntake.set(0);
+			rightIntake.set(0);
 		}
 	}
 }
