@@ -7,6 +7,10 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+/**
+ * This subsystem is used to control the belts that lift the power cube from the ground to the launching mechanism. This is done via two buttons.
+ * While joysticks are connected, it moves forward 
+ */
 public class Intake extends Subsystem {
 	WPI_TalonSRX leftIntake;
 	WPI_TalonSRX rightIntake;
