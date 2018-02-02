@@ -12,8 +12,8 @@ public class Launcher extends Subsystem {
 	Solenoid lowLauncher;
 
 	public Launcher() {
-		launcher = new Solenoid(RobotMap.HIGH_LAUNCH);
-		lowLauncher = new Solenoid(RobotMap.LOW_LAUNCH);
+		launcher = new Solenoid(RobotMap.HIGH_LAUNCH_PORT);
+		lowLauncher = new Solenoid(RobotMap.LOW_LAUNCH_PORT);
 	}
 
 	@Override

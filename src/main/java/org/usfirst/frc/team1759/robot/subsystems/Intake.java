@@ -17,8 +17,8 @@ public class Intake extends Subsystem {
 	private final double SPEED_MULT = 0.5;
 
 	public Intake() {
-		leftIntake = new WPI_TalonSRX(RobotMap.LEFT_IN);
-		rightIntake = new WPI_TalonSRX(RobotMap.RIGHT_IN);
+		leftIntake = new WPI_TalonSRX(RobotMap.LEFT_IN_PORT);
+		rightIntake = new WPI_TalonSRX(RobotMap.RIGHT_IN_PORT);
 	}
 
 	@Override
