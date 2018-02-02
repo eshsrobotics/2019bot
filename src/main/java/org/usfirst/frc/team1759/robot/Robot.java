@@ -11,6 +11,7 @@ import org.usfirst.frc.team1759.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.command.Scheduler;
 
 /**
  * This is a demo program showing the use of the RobotDrive class, specifically
@@ -20,7 +21,6 @@ public class Robot extends IterativeRobot {
 	private TankDrive tank;
 	private Launcher launcher;
 	private Intake intake;
-	
 	private OI oi;
 	
 	@Override
@@ -39,7 +39,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void disabledPeriodic() {
-
+		Scheduler.getInstance().run();
 	}
 	
 	public void autonomousInit() {
@@ -47,7 +47,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void autonomousPeriodic() {
-		
+		Scheduler.getInstance().run();
 	}
 	
 	public void teleopInit() {
@@ -56,6 +56,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
+		Scheduler.getInstance().run();
 		tank.tankDrive(oi);
 		launcher.launch(oi);
 		intake.intake(oi);
