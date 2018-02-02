@@ -10,6 +10,7 @@ package org.usfirst.frc.team1759.robot;
 import org.usfirst.frc.team1759.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
@@ -22,6 +23,7 @@ public class Robot extends IterativeRobot {
 	private Launcher launcher;
 	private Intake intake;
 	private OI oi;
+	private MatchData matchData;
 	
 	@Override
 	public void robotInit() {
@@ -32,6 +34,8 @@ public class Robot extends IterativeRobot {
 		oi = new OI();
 		tank = new TankDrive();
 		intake = new Intake();
+		// Parse match data for use later on
+		matchData = new MatchData(DriverStation.getInstance());
 	}
 	
 	public void disabledInit() {
