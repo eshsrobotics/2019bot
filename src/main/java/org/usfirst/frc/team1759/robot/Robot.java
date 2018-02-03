@@ -32,8 +32,8 @@ public class Robot extends IterativeRobot {
 		oi = new OI();
 		tank = new TankDrive();
 		intake = new Intake();
-		climber = new Climber();
 		launcher = new Launcher();
+		climber = new Climber();
 	}
 	
 	public void disabledInit() {
