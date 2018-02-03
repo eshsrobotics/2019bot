@@ -32,8 +32,8 @@ public class RobotMap {
 	public static int RESERVE_PORT_2 = 9;
 	
 	// Climber ports
-	public static int CLIMBER_PORT_1 = 10;
-	public static int CLIMBER_PORT_2 = 11;
+	public static int CLIMBER_PORT_1 = 10; 		//Spark, not Talon
+	public static int CLIMBER_PORT_2 = 11;		//Spark, not Talon
 	
 	
 
