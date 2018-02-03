@@ -8,7 +8,7 @@ package org.usfirst.frc.team1759.robot;
  * 
  * THIS IS NOT FOR BUTTONS.
  * 
- * @author Aidan Galbreath
+ * @author Aidan Galbreath and Spencer Moore
  */
 public class RobotMap {
 	
