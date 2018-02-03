@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="networktables-input">
+    <target name="build" description="build a single runnable jar for keyboard input via networktables">
+        <mkdir dir="build" />
+        <javac srcdir="src" destdir="build" includeantruntime="false">
+            <classpath>
+                <fileset dir="lib" includes="**/*.jar" />
+            </classpath>
+        </javac>
+        <jar destfile="networktables-input.jar">
+            <zipgroupfileset dir="lib" includes="*.jar"/>
+            <fileset dir="build" includes="**/*.class" />
+            <manifest>
+                <attribute name="Main-Class" value="main.NetworkTablesInput"/>
+            </manifest>
+        </jar>
+    </target>
+</project>
