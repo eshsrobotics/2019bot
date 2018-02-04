@@ -9,63 +9,74 @@
     <condition property="is_windows">
         <os family="windows"/>
     </condition>
-    
+
     <condition property="is_linux">
         <os family="unix"/>
     </condition>
 
-    
-    <path id="build.classpath">
-	<fileset dir="${lib.dir}">
+
+    <path id="_classpath">
+        <fileset dir="${lib.dir}">
             <include name="*.jar" />
-	    <exclude name="Networktables*.jar" />
-	    <include if="is_windows" name="NetworkTables-3.1.7-desktop.jar" />
-	    <include if="is_linux" name="NetworkTables.jar" />
-	</fileset>
-	
-	<!-- If we're on Windows, include the desktop JAR. -->
-	
-	<!-- <pathelement location="${build}" /> -->
+            <!-- The NetworkTables JAR varies based on operating system. -->
+            <exclude name="Networktables*.jar" />
+            <include if="is_windows" name="NetworkTables-3.1.7-desktop.jar" />
+            <include if="is_linux" name="NetworkTables.jar" />
+        </fileset>
     </path>
 
     <target name="debug">
-	<!-- Convert the build.classpath ID into a local property so we cna print it out. -->
-	<pathconvert property="foo" refid="build.classpath"/>
-	<echo message="${foo}" />
+        <!-- Convert the build.classpath ID into a local property so we cna print it out. -->
+        <pathconvert property="foo" refid="_classpath"/>
+        <echo message="${foo}" />
     </target>
 
     <target name="clean">
-	<delete verbose="true">
-	    <fileset dir="${classes.dir}" includes="**/*.class" />
-	    <fileset dir="." includes="networktable-input.jar" />
-	</delete>
+        <delete verbose="true">
+            <fileset dir="${classes.dir}" includes="**/*.class" />
+            <fileset dir="." includes="networktable-input.jar" />
+        </delete>
     </target>
 
     <!-- If this fails on the JavaFX imports and you're on a Raspberry
          Pi, consider running "apt-get install openjfx". -->
-    
+
     <target name="compile" description="Builds a stand-alone, client JAR file that can be deployed on driver station.  The JAR program handles both vision processing and keyboard input.">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${source.dir}"
-	       destdir="${classes.dir}"
+               destdir="${classes.dir}"
                debug="on"
                includeAntRuntime="false"
                verbose="true">
             <include name="**/*.java" />
-            <classpath refid="build.classpath" />
+            <classpath refid="_classpath" />
         </javac>
     </target>
-    
+
     <target name="jar" depends="compile">
+        <pathconvert property="build.classpath" refid="_classpath"/>
         <jar destfile="networktables-input.jar"
              basedir="${classes.dir}"
              includes="**/*.class"
-	     excludes="">
+             excludes="">
             <manifest>
-		<attribute name="Main-Class" value="main.NetworkTablesInput" />
-		<attribute name="Class-Path" value="." />
+                <attribute name="Main-Class" value="main.NetworkTablesInput" />
+                <attribute name="Class-Path" value="." />
             </manifest>
-	    <zipfileset prefix="classes" src="lib/NetworkTables.jar"/>
+            <!-- Use the <archives/> resource
+                 (http://ant.Apache.org/manual/Types/resources.html#archives)
+                 to reference every single class file within every single JAR files in the
+                 classpath.  All of them will be copies into the JAR
+                 as-is. -->
+            <archives>
+                <zips>
+                    <restrict>
+                        <path path="${build.classpath}"/>
+                        <name name="*.jar"/>
+                    </restrict>
+                </zips>
+            </archives>
+            <!-- <zipfileset prefix="classes" src="lib/NetworkTables.jar"/> -->
         </jar>
     </target>
 </project>
