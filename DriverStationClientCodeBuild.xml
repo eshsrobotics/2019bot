@@ -1,33 +1,71 @@
 <project name="DriverStationClientCodeBuild" default="build">
 
 
+    <property name="lib.dir" value="lib"/>
     <property name="build.dir" value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="source.dir" value="networktables-input"/>
 
-    <echo message="${build.classpath}" />
+    <condition property="is_windows">
+        <os family="windows"/>
+    </condition>
+    
+    <condition property="is_linux">
+        <os family="unix"/>
+    </condition>
 
-    <target name="build" description="Builds a stand-alone, client JAR file that can be deployed on driver station.  The JAR program handles both vision processing and keyboard input.">
+    
+    <path id="build.classpath">
+	<fileset dir="${lib.dir}">
+            <include name="*.jar" />
+	    <exclude name="Networktables*.jar" />
+	    <include if="is_windows" name="NetworkTables-3.1.7-desktop.jar" />
+	    <include if="is_linux" name="NetworkTables.jar" />
+	</fileset>
+	
+	<!-- If we're on Windows, include the desktop JAR. -->
+	
+	<!-- <pathelement location="${build}" /> -->
+    </path>
+
+    <target name="debug">
+	<!-- Convert the build.classpath ID into a local property so we cna print it out. -->
+	<pathconvert property="foo" refid="build.classpath"/>
+	<echo message="${foo}" />
+    </target>
+
+    <target name="clean">
+	<delete verbose="true">
+	    <fileset dir="${classes.dir}" includes="**/*.class" />
+	    <fileset dir="." includes="networktable-input.jar" />
+	</delete>
+    </target>
+
+    <!-- If this fails on the JavaFX imports and you're on a Raspberry
+         Pi, consider running "apt-get install openjfx". -->
+    
+    <target name="compile" description="Builds a stand-alone, client JAR file that can be deployed on driver station.  The JAR program handles both vision processing and keyboard input.">
         <mkdir dir="${classes.dir}"/>
-        <javac destdir="${classes.dir}"
+        <javac srcdir="${source.dir}"
+	       destdir="${classes.dir}"
                debug="on"
                includeAntRuntime="false"
                verbose="true">
-            <src path="${source.dir}" />
             <include name="**/*.java" />
-            <!-- <classpath refid="build.classpath" /> -->
-            <classpath>
-                <pathelement location="lib/*.jar"/>
-            </classpath>
+            <classpath refid="build.classpath" />
         </javac>
-
-        <!-- <jar destfile="networktables-input.jar"
-             basedir="."
-             includes="">
-             <manifest>
-             <attribute name="Main-Class" value="main.NetworkTablesInput" />
-             <attribute name="Class-Path" value="." />
-             </manifest>
-             </jar> -->
+    </target>
+    
+    <target name="jar" depends="compile">
+        <jar destfile="networktables-input.jar"
+             basedir="${classes.dir}"
+             includes="**/*.class"
+	     excludes="">
+            <manifest>
+		<attribute name="Main-Class" value="main.NetworkTablesInput" />
+		<attribute name="Class-Path" value="." />
+            </manifest>
+	    <zipfileset prefix="classes" src="lib/NetworkTables.jar"/>
+        </jar>
     </target>
 </project>
