@@ -1,37 +1,118 @@
-<project name="DriverStationClientCodeBuild" default="build">
-
+<!-- Every task can have an "if" or "unless" attribute as long as the right
+     XML namespaces are imported in the document root, a useful trick gleaned
+     from https://ant.Apache.org/manual/ifunless.html (which only works for
+     Ant 1.9.1 and above.) -->
+<project name="DriverStationClientCodeBuild"
+         default="build"
+         xmlns:if="ant:if"
+         xmlns:unless="ant:unless">
 
     <property name="lib.dir" value="lib"/>
     <property name="build.dir" value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="source.dir" value="networktables-input"/>
 
+    <!-- Most Linux distributions supply the /etc/os-release file, which looks
+         like a standard Java properties file and has a consistent syntax.  It
+         is part of the Linux Standards Base.
+
+         The following line imports all of its properties into Ant as-is (except for
+         the common "lsb." prefix.)  The best thing is that Ant doesn't care if the
+         properties file does not exist (see
+         https://ant.Apache.org/manual/Tasks/property.html), so this is safe
+         to run on Windows, too, merely giving us an empty set of properties).
+
+         To use one of these properties, simply create a <condition/> that uses
+         the key and then test for the condition:
+
+           <condition property="is_debian_or_ubuntu">
+             <or>
+               <matches string="${lsb.ID}" pattern="debian" casesensitive="false" />
+               <matches string="${lsb.ID}" pattern="ubuntu" casesensitive="false" />
+             </or>
+           </condition>
+           <echo message="Only print this on Debian or Ubuntu" if:set="${is_debian_or_ubuntu}"
+    -->
+    <property file="/etc/os-release" prefix="lsb" />
+
+    <!-- The most important condition in this file: are we on Raspian or not? -->
+    <condition property="is_raspberry_pi">
+        <and>
+            <os family="unix"/>
+            <!-- Raspberry Pi 3s are 64-bit, but run a 32-bit Raspian OS.
+                 What is their ${os.arch}? -->
+            <!-- <os arch="i386"/> -->
+            <matches string="${lsb.ID}" pattern="raspian" casesensitive="false" />
+        </and>
+    </condition>
+    <!-- The following are just test conditions for playing around; they has
+         no real significance. -->
+    <condition property="is_mga32">
+        <and>
+            <os family="unix"/>
+            <os arch="i386"/>
+            <matches string="${lsb.ID}" pattern="mageia" casesensitive="false" />
+        </and>
+    </condition>
     <condition property="is_windows">
         <os family="windows"/>
     </condition>
 
-    <condition property="is_linux">
-        <os family="unix"/>
-    </condition>
+    <!-- Construct an intelligent classpath.
 
-
+         See http://ant.Apache.org/manual/Types/selectors.html for more, the
+         selector containers in particular.
+    -->
     <path id="_classpath">
         <fileset dir="${lib.dir}">
-            <include name="*.jar" />
-            <!-- The NetworkTables JAR varies based on operating system. -->
-            <exclude name="Networktables*.jar" />
-            <include if="is_windows" name="NetworkTables-3.1.7-desktop.jar" />
-            <include if="is_linux" name="NetworkTables.jar" />
+            <or>
+                <!-- Include everything *except* the NetworkTables libraries; we
+                     handle those separately. -->
+                <filename name="NetworkTables*.jar" negate="true"/>
+                <!-- Because NetworkTables is driven by a JNI interface to
+                     native code, there are two different NetworkTables JAR
+                     libraries, each corresponding to one of the two platforms
+                     we target during development:
+
+                     - lib/NetworkTables-x.y.z-arm-raspbian.jar: The ARM32
+                       build, appropriate for Raspberry Pis running Raspian
+                       (these are our standard development platforms because
+                       they are cheap);
+
+                     - lib/NetworkTables-x.y.z-desktop.jar: A standard build
+                       for both 32- and 64-bit desktop machines, such as the
+                       MageiaLinux box I'm trying this from or the driver
+                       stations that we use for deploying to the robot.
+
+                     We only need one of the two in the classpath, so we use
+                     Ant's OS detection logic to create condition objects for
+                     us, then use the condition objects to include the right
+                     JAR in the classpath. -->
+                <selector if="is_raspberry_pi">
+                    <filename name="NetworkTables-3.1.7-arm-raspian.jar" />
+                </selector>
+                <selector unless="is_raspberry_pi">
+                    <filename name="NetworkTables-3.1.7-desktop.jar" />
+                </selector>
+            </or>
         </fileset>
     </path>
 
-    <target name="debug">
-        <!-- Convert the build.classpath ID into a local property so we cna print it out. -->
+
+    <target name="debug"
+            description="Prints various parameters used to debug this build script.">
+        <!-- Convert the _classpath into a local property so we can print it out. -->
         <pathconvert property="foo" refid="_classpath"/>
-        <echo message="${foo}" />
+        <echo message="_classpath: ${foo}" />
+        <echo message="LSB properties: ID=${lsb.ID}" />
+        <echo message="OS: { Name: ${os.name}, arch: ${os.arch}, version: ${os.version} }" />
+        <echo message="We are on 32-bit Mageialinux." if:set="is_mga32" />
+        <echo message="We are on a supported Raspberry Pi." if:set="is_raspberry_pi" />
+        <echo message="We are on a supported Windows OS." if:set="is_windows" />
     </target>
 
-    <target name="clean">
+    <target name="clean"
+            description="Removes all temporary build artifacts.">
         <delete verbose="true">
             <fileset dir="${classes.dir}" includes="**/*.class" />
             <fileset dir="." includes="networktable-input.jar" />
@@ -40,8 +121,11 @@
 
     <!-- If this fails on the JavaFX imports and you're on a Raspberry
          Pi, consider running "apt-get install openjfx". -->
-
-    <target name="compile" description="Builds a stand-alone, client JAR file that can be deployed on driver station.  The JAR program handles both vision processing and keyboard input.">
+    <target name="compile"
+            description="Builds a stand-alone, client JAR file that can be
+                         deployed on driver station (and hopefully, anywhere
+                         else.)  The JAR program handles both vision
+                         processing and keyboard input.">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${source.dir}"
                destdir="${classes.dir}"
@@ -53,7 +137,10 @@
         </javac>
     </target>
 
-    <target name="jar" depends="compile">
+    <target name="jar"
+            depends="compile"
+            description="Zips up all the build artifacts from the compile step
+                         as a single coherent, executable JAR file.">
         <pathconvert property="build.classpath" refid="_classpath"/>
         <jar destfile="networktables-input.jar"
              basedir="${classes.dir}"
@@ -65,9 +152,9 @@
             </manifest>
             <!-- Use the <archives/> resource
                  (http://ant.Apache.org/manual/Types/resources.html#archives)
-                 to reference every single class file within every single JAR files in the
-                 classpath.  All of them will be copies into the JAR
-                 as-is. -->
+                 to reference every single class file within every single JAR
+                 files in the classpath.  All of them will be copies into the
+                 JAR as-is. -->
             <archives>
                 <zips>
                     <restrict>
@@ -76,7 +163,13 @@
                     </restrict>
                 </zips>
             </archives>
-            <!-- <zipfileset prefix="classes" src="lib/NetworkTables.jar"/> -->
+            <!--
+                This would also work, but then you'd have to list the JARs one
+                by one.  The advantage is that we get to pick an internal
+                directory prefix.
+
+                 <zipfileset prefix="classes" src="lib/NetworkTables.jar"/>
+            -->
         </jar>
     </target>
 </project>
