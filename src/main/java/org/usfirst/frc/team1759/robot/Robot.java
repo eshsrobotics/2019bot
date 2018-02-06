@@ -21,6 +21,7 @@ public class Robot extends IterativeRobot {
 	private TankDrive tank;
 	private Launcher launcher;
 	private Intake intake;
+	private Climber climber;
 	private OI oi;
 	
 	@Override
@@ -28,10 +29,11 @@ public class Robot extends IterativeRobot {
 		//Streams usb camera video feed straight to Dashboard.
 		CameraServer.getInstance().startAutomaticCapture();
 		//Initialize drive.
-		launcher = new Launcher();
 		oi = new OI();
 		tank = new TankDrive();
 		intake = new Intake();
+		climber = new Climber();
+		launcher = new Launcher();
 	}
 	
 	public void disabledInit() {
@@ -60,5 +62,6 @@ public class Robot extends IterativeRobot {
 		tank.tankDrive(oi);
 		launcher.launch(oi);
 		intake.intake(oi);
+		climber.climb(oi);
 	}
 }

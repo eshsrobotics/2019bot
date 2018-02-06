@@ -33,14 +33,20 @@ public class OI {
 
 	public Joystick leftJoystick;
 	public Joystick rightJoystick;
+	
+	private NetworkTable inputTable;
 
+	//With the variables below, the high/up option is a button keyed to the right joystick, the 
+	//low/down option is a button keyed to the left joystick.
+	
 	public static final int HIGH_LAUNCHING_BUTTON = 1;
 	public static final int LOW_LAUNCHING_BUTTON = 1;
 
-	// They look the same, but one is on the left joystick and one is on the right.
 	public static final int INTAKE_UP_BUTTON = 2;
 	public static final int INTAKE_DOWN_BUTTON = 2;
-	private NetworkTable inputTable;
+	
+	public static final int CLIMBER_UP_BUTTON = 7;
+	public static final int CLIMBER_DOWN_BUTTON = 7;
 
 	public OI() {
 
@@ -56,6 +62,8 @@ public class OI {
 			lowLaunch = new JoystickButton(leftJoystick, LOW_LAUNCHING_BUTTON);
 			intakeUp = new JoystickButton(rightJoystick, INTAKE_UP_BUTTON);
 			intakeDown = new JoystickButton(leftJoystick, INTAKE_DOWN_BUTTON);
+			climbUp = new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON);
+			climbDown = new JoystickButton(leftJoystick, CLIMBER_DOWN_BUTTON);
 		} else {
 			/*
 			 * Network Button key strings (for NetworkButton constructor):
