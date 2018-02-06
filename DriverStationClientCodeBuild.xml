@@ -35,17 +35,15 @@
     -->
     <property file="/etc/os-release" prefix="lsb" />
 
-    <!-- The most important condition in this file: are we on Raspian or not? -->
+    <!-- The most important condition in this file: are we on Raspbian or not? -->
     <condition property="is_raspberry_pi">
         <and>
             <os family="unix"/>
-            <!-- Raspberry Pi 3s are 64-bit, but run a 32-bit Raspian OS.
-                 What is their ${os.arch}? -->
-            <!-- <os arch="i386"/> -->
-            <matches string="${lsb.ID}" pattern="raspian" casesensitive="false" />
+            <os arch="arm"/>
+            <matches string="${lsb.ID}" pattern="raspbian" casesensitive="false" />
         </and>
     </condition>
-    <!-- The following are just test conditions for playing around; they has
+    <!-- The following are just test conditions for playing around; they have
          no real significance. -->
     <condition property="is_mga32">
         <and>
@@ -56,6 +54,9 @@
     </condition>
     <condition property="is_windows">
         <os family="windows"/>
+    </condition>
+    <condition property="is_linux">
+        <os family="unix"/>
     </condition>
 
     <!-- Construct an intelligent classpath.
@@ -75,7 +76,7 @@
                      we target during development:
 
                      - lib/NetworkTables-x.y.z-arm-raspbian.jar: The ARM32
-                       build, appropriate for Raspberry Pis running Raspian
+                       build, appropriate for Raspberry Pis running Raspbian
                        (these are our standard development platforms because
                        they are cheap);
 
@@ -89,7 +90,7 @@
                      us, then use the condition objects to include the right
                      JAR in the classpath. -->
                 <selector if="is_raspberry_pi">
-                    <filename name="NetworkTables-3.1.7-arm-raspian.jar" />
+                    <filename name="NetworkTables-3.1.7-arm-raspbian.jar" />
                 </selector>
                 <selector unless="is_raspberry_pi">
                     <filename name="NetworkTables-3.1.7-desktop.jar" />
