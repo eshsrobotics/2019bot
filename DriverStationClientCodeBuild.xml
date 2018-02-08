@@ -7,14 +7,14 @@
          xmlns:if="ant:if"
          xmlns:unless="ant:unless">
 
-    <property name="source.dir" value="networktables-input/src"/>
-    <property name="build.dir" value="build"/>
-    <property name="classes.dir" location="${build.dir}/classes"/>
-    <property name="lib.dir" value="lib"/>
-    <property name="output.jar" value="networktables-input.jar"/>
-    <property name="dist.dir" value="${build.dir}"/>
-    <property name="networktables.desktop.jar" value="NetworkTables-3.1.7-desktop.jar" />
-    <property name="networktables.raspbian.jar" value="NetworkTables-3.1.7-arm-raspbian.jar" />
+    <property name="source.dir" value="networktables-input/src" />
+    <property name="build.dir" value="build" />
+    <property name="classes.dir" location="${build.dir}/classes" />
+    <property name="lib.dir" value="lib" />
+    <property name="output.jar" value="${build.dir}/networktables-input.jar" />
+    <property name="dist.dir" value="${build.dir}/networktables-input" />
+    <property name="networktables.desktop.jar" value="${lib.dir}/NetworkTables-3.1.7-desktop.jar" />
+    <property name="networktables.raspbian.jar" value="${lib.dir}/NetworkTables-3.1.7-arm-raspbian.jar" />
 
     <!-- Most Linux distributions supply the /etc/os-release file, which looks
          like a standard Java properties file and has a consistent syntax.  It
@@ -126,6 +126,7 @@
         <delete verbose="true">
             <fileset dir="${classes.dir}" includes="**/*.class" />
             <fileset dir="." includes="networktable-input.jar" />
+            <dirset dir="${dist.dir}" />
         </delete>
     </target>
 
@@ -189,5 +190,109 @@
                 <zipfileset prefix="classes" src="lib/NetworkTables.jar"/>
             -->
         </jar>
+    </target>
+
+    <target name="dist"
+            description="Creates a 'distribution' -- that is, a ZIP file
+                         containing all of our contents ready to run."
+            depends="jar">
+
+
+        <mkdir dir="${dist.dir}" />
+        <copy file="${output.jar}"
+              todir="${dist.dir}"
+              preservelastmodified="true"
+              verbose="true" />
+
+        <!-- Based on the architecture, we need to choose the right native
+             NetworkTable library to stick in the java.library.path.
+
+             Unfortunately, just having those binaries inside the JAR files is
+             not enough.  Java seems to have a lot of trouble referring to
+             such embedded resources, and there are programmers out there who
+             actively discourage doing so [1], which makes me wonder why on
+             Earth people bother sticking them there in the first place.
+
+             [1]: https://stackoverflow.com/a/8731494
+        -->
+        <condition property="is_osx">
+            <and>
+                <!--
+                    On OS X, Ant sets "unix" and "mac" to true; see [1].
+                    https://alvinalexander.com/blog/post/java/better-test-detect-unix-operating-system-ant-build-script
+                -->
+                <os family="mac"/>
+                <os family="unix"/>
+            </and>
+        </condition>
+        <condition property="is_osx32">
+            <and><istrue value="${is_osx}"/><os arch="i386"/></and>
+        </condition>
+        <condition property="is_osx64">
+            <and><istrue value="${is_osx}"/><os arch="x86_64"/></and>
+        </condition>
+        <condition property="is_linux32">
+            <and><os family="unix"/><not><os family="mac"/></not><os arch="i386"/></and>
+        </condition>
+        <condition property="is_linux64">
+            <and><os family="unix"/><not><os family="mac"/></not><os arch="x86_64"/></and>
+        </condition>
+        <condition property="is_win32">
+            <and><os family="windows"/><os arch="i386"/></and>
+        </condition>
+        <condition property="is_win64">
+            <and><os family="windows"/><os arch="x86_64"/></and>
+        </condition>
+        <condition property="is_arm"><os arch="arm"/></condition>
+
+        <property name="suffix" value="linux32" if:set="is_linux32" />
+        <property name="suffix" value="linux64" if:set="is_linux64" />
+        <property name="suffix" value="win32.driver-station" if:set="is_win32" />
+        <property name="suffix" value="win64.driver-station" if:set="is_win64" />
+        <property name="suffix" value="osx32" if:set="is_osx32" />
+        <property name="suffix" value="osx64" if:set="is_osx64" />
+        <property name="suffix" value="arm" if:set="is_arm" />
+
+        <!-- Copy the architecture-independent files. -->
+        <copy todir="${dist.dir}" preservelastmodified="true" verbose="true">
+            <flattenmapper/>
+            <fileset dir=".">
+                <include name="${output.jar}"/>
+            </fileset>
+        </copy>
+
+        <!-- Unzip all of the NetworkTable JARs, then copy the native binaries
+             we need and delete the rest.  That's actually easier to do than
+             using the <zipfileset/>, since an empty <zipfleset/> is bizarrely
+             interpreted to mean "the entire contents of the ZIP." -->
+        <property name="temp.dir" value="${dist.dir}/tmp" />
+        <unzip src="${networktables.desktop.jar}" dest="${temp.dir}" unless:set="is_arm" />
+        <copy todir="${dist.dir}" preservelastmodified="true" verbose="true" unless:set="is_arm">
+            <flattenmapper/>
+            <fileset dir="${temp.dir}">
+                <include name="Linux/x86/libntcore.so" if:set="is_linux32" />
+                <include name="Linux/amd64/libntcore.so" if:set="is_linux64" />
+                <include name="Windows/x86/ntcore.dll" if:set="is_win32" />
+                <include name="Windows/amd64/ntcore.dll" if:set="is_win64" />
+                <include name="Mac OS X/x86/libntcore.dylib" if:set="is_osx32" />
+                <include name="Mac OS X/x86_64/libntcore.dylib" if:set="is_osx64" />
+            </fileset>
+        </copy>
+        <delete dir="${temp.dir}" quiet="true" unless:set="is_arm" />
+        <unzip src="${networktables.raspbian.jar}" dest="${temp.dir}" if:set="is_arm" />
+        <copy todir="${dist.dir}" preservelastmodified="true" verbose="true" if:set="is_arm">
+            <flattenmapper/>
+            <fileset dir="${temp.dir}">
+                <include name="Linux/arm/libntcore.so"/>
+            </fileset>
+        </copy>
+        <delete dir="${temp.dir}" quiet="true" if:set="is_arm" />
+
+        <!-- Zip it back up. -->
+        <zip basedir="${dist.dir}"
+             destfile="networktables-input.${suffix}.zip"
+             includes="*"
+             encoding="UTF-8"/>
+
     </target>
 </project>
