@@ -7,12 +7,14 @@
          xmlns:if="ant:if"
          xmlns:unless="ant:unless">
 
-    <property name="source.dir" value="networktables-input/src" />
+    <property name="source.dir" value="networktables-input" />
     <property name="build.dir" value="build" />
     <property name="classes.dir" location="${build.dir}/classes" />
     <property name="lib.dir" value="lib" />
     <property name="output.jar" value="${build.dir}/networktables-input.jar" />
     <property name="dist.dir" value="${build.dir}/networktables-input" />
+    <property name="dist.script.sh" value="${source.dir}/networktables-input.sh" />
+    <property name="dist.script.bat" value="${source.dir}/networktables-input.bat" />
     <property name="networktables.desktop.jar" value="${lib.dir}/NetworkTables-3.1.7-desktop.jar" />
     <property name="networktables.raspbian.jar" value="${lib.dir}/NetworkTables-3.1.7-arm-raspbian.jar" />
 
@@ -92,7 +94,7 @@
         <!-- We only need a new build when the Java files corresponding to the
              class files are updated. -->
         <globmapper from="*.java" to="${classes.dir}/*.class" />
-        <srcfiles dir="${source.dir}" includes="**/*.java" />
+        <srcfiles dir="${source.dir}/src" includes="**/*.java" />
     </uptodate>
     <uptodate property="jar.uptodate" targetfile="${output.jar}">
         <!-- We only need a new JAR if the class files or dependency libraries
@@ -125,8 +127,9 @@
             description="Removes all temporary build artifacts.">
         <delete verbose="true">
             <fileset dir="${classes.dir}" includes="**/*.class" />
-            <fileset dir="." includes="networktable-input.jar" />
-            <dirset dir="${dist.dir}" />
+            <fileset dir="." includes="${output.jar}" />
+            <fileset dir="${build.dir}" includes="*.zip" />
+            <dirset dir="${dist.dir}" includes="**" />
         </delete>
     </target>
 
@@ -218,7 +221,7 @@
         <condition property="is_osx">
             <and>
                 <!--
-                    On OS X, Ant sets "unix" and "mac" to true; see [1].
+                    On OS X, Ant sets "unix" and "mac" to true; see
                     https://alvinalexander.com/blog/post/java/better-test-detect-unix-operating-system-ant-build-script
                 -->
                 <os family="mac"/>
@@ -257,15 +260,21 @@
         <copy todir="${dist.dir}" preservelastmodified="true" verbose="true">
             <flattenmapper/>
             <fileset dir=".">
-                <include name="${output.jar}"/>
+                <include name="${output.jar}" />
+                <include name="${dist.script.sh}" />
+                <include name="${dist.script.bat}" />
             </fileset>
         </copy>
 
-        <!-- Unzip all of the NetworkTable JARs, then copy the native binaries
-             we need and delete the rest.  That's actually easier to do than
-             using the <zipfileset/>, since an empty <zipfleset/> is bizarrely
-             interpreted to mean "the entire contents of the ZIP." -->
+        <!-- Unzip all of the NetworkTable JARs, then copy only the native
+             binary we need and delete the rest.  That's actually easier to do
+             than using the <zipfileset/> to extract said binary, since an
+             empty <zipfleset/> is bizarrely interpreted to mean "the entire
+             contents of the ZIP."
+             -->
         <property name="temp.dir" value="${dist.dir}/tmp" />
+
+        <!-- Are we on a desktop system? -->
         <unzip src="${networktables.desktop.jar}" dest="${temp.dir}" unless:set="is_arm" />
         <copy todir="${dist.dir}" preservelastmodified="true" verbose="true" unless:set="is_arm">
             <flattenmapper/>
@@ -279,6 +288,8 @@
             </fileset>
         </copy>
         <delete dir="${temp.dir}" quiet="true" unless:set="is_arm" />
+
+        <!-- Are we on a Raspberry Pi? -->
         <unzip src="${networktables.raspbian.jar}" dest="${temp.dir}" if:set="is_arm" />
         <copy todir="${dist.dir}" preservelastmodified="true" verbose="true" if:set="is_arm">
             <flattenmapper/>
@@ -288,11 +299,14 @@
         </copy>
         <delete dir="${temp.dir}" quiet="true" if:set="is_arm" />
 
-        <!-- Zip it back up. -->
-        <zip basedir="${dist.dir}"
-             destfile="networktables-input.${suffix}.zip"
-             includes="*"
-             encoding="UTF-8"/>
-
+        <!-- Zip it back up.  Make sure the name of the zipfile reflects what
+             it's built for. -->
+        <echo message="build.dir: ${build.dir}"/>
+        <echo message="dist.dir: ${dist.dir}"/>
+        <zip basedir="${build.dir}"
+             destfile="${build.dir}/networktables-input.${suffix}.zip"
+             includes="networktables-input/**"
+             encoding="UTF-8">
+        </zip>
     </target>
 </project>
