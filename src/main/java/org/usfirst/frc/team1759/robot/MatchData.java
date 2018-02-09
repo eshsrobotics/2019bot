@@ -78,7 +78,7 @@ public class MatchData {
     return scalePosition;
   }
   
-  public Position getOwnPosition() {
+  public Position getOwnStartPosition() {
 	  // Hardcoded temporarily, should read from a switch in the final version
 	  return Position.LEFT;
   }
