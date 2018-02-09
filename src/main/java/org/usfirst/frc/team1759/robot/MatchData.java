@@ -31,7 +31,8 @@ Our side   |   |            |           |       |  Other side
 public class MatchData { 
   public enum Position {
     LEFT,
-    RIGHT
+    RIGHT,
+    CENTER
   };
   
   private DriverStation driverStation;
@@ -42,6 +43,8 @@ public class MatchData {
   private Position switch2Position;
   // The position of our side of the scale
   private Position scalePosition;
+  // The position of our robot
+  private Position ourPosition;
   
   public MatchData(DriverStation driverStation) {
     if (driverStation == null) {
@@ -50,7 +53,7 @@ public class MatchData {
     this.driverStation = driverStation;
     
     String positionString = driverStation.getGameSpecificMessage();
-    if (positionString == null) {
+    if (positionString == null || positionString.length() != 3) {
       positionString = "LLL";
       System.out.println("No position string returned by driver station: defaulting to string of \"" + positionString + "\"");
     }
