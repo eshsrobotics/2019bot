@@ -8,4 +8,4 @@ if [[ "$JAVA_HOME" != "" ]]; then
     JAVA_COMMAND="$JAVA_HOME/bin/java"
 fi
 
-$JAVA_COMMAND -Djava.library.path="$PWD" -jar ./networktables-input.jar
+$JAVA_COMMAND -Djava.library.path="$PWD" -jar ./networktables-input.jar "$@"
