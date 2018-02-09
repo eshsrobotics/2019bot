@@ -7,11 +7,15 @@
 
 package org.usfirst.frc.team1759.robot;
 
-import org.usfirst.frc.team1759.robot.subsystems.*;
+import org.usfirst.frc.team1759.robot.subsystems.Climber;
+import org.usfirst.frc.team1759.robot.subsystems.Intake;
+import org.usfirst.frc.team1759.robot.subsystems.Launcher;
+import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
 
-import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 
 /**
  * This is a demo program showing the use of the RobotDrive class, specifically
@@ -23,17 +27,11 @@ public class Robot extends IterativeRobot {
 	private Intake intake;
 	private Climber climber;
 	private OI oi;
+	private Accelerometer accelerometer;
 	
 	@Override
 	public void robotInit() {
-		//Streams usb camera video feed straight to Dashboard.
-		CameraServer.getInstance().startAutomaticCapture();
-		//Initialize drive.
-		oi = new OI();
-		tank = new TankDrive();
-		intake = new Intake();
-		launcher = new Launcher();
-		climber = new Climber();
+		accelerometer = new BuiltInAccelerometer();
 	}
 	
 	public void disabledInit() {
@@ -58,10 +56,6 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		Scheduler.getInstance().run();
-		tank.tankDrive(oi);
-		launcher.launch(oi);
-		intake.intake(oi);
-		climber.climb(oi);
+		System.out.printf("Acceleration - x: %f y: %f z: %f\n", accelerometer.getX(), accelerometer.getY(), accelerometer.getZ());
 	}
 }
