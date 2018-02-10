@@ -36,6 +36,9 @@ public class Robot extends IterativeRobot {
 		intake = new Intake();
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
+		
+		// TODO
+		//currentPosition = new Vector2(0, 0);
 	}
 	
 	public void disabledInit() {
