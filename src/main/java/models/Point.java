@@ -44,4 +44,11 @@ public class Point {
                 // The vector from P1 to P2 is P2 - P1.
                 return new Vector2(dest).sub(new Vector2(this));
         }
+
+        /**
+         * Returns the distance between this point and another.
+         */
+        public double dist(Point other) {
+                return vectorTo(other).length();
+        }
 }
