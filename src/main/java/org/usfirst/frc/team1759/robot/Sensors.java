@@ -18,7 +18,7 @@ public class Sensors {
 	
 	public Sensors() {
 		accelerometer = new BuiltInAccelerometer();
-		gyro = new ADXRS450_Gyro();
+		//gyro = new ADXRS450_Gyro();
 	}
 	
 }

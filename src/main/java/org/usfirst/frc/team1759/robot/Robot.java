@@ -29,11 +29,6 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void robotInit() {
-		oi = new OI();
-		tank = new TankDrive();
-		launcher = new Launcher();
-		intake = new Intake();
-		climber = new Climber();
 		sensors = new Sensors();
 	}
 	
@@ -59,7 +54,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		System.out.printf("Acceleration - x: %f y: %f z: %f\n", sensors.accelerometer.getX(), sensors.accelerometer.getY(), sensors.accelerometer.getZ());
+		System.out.println("Acceleration - x: " + sensors.accelerometer.getX() + " y: " + sensors.accelerometer.getY() + " z: " + sensors.accelerometer.getZ());
 //		tank.tankDrive(oi);
 //		launcher.launch(oi);
 //		intake.intake(oi);
