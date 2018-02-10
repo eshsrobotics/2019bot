@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.command.Command;
 public class Turn extends Command {
 
 	Vector2 myPosition;
+	TankDrive tank;
+	
 	double myAngle;
 	double destAngle;
 	double degreesLeft;
@@ -17,6 +19,7 @@ public class Turn extends Command {
 	public void execute(TankDrive tank, Sensors sensors, Vector2 dest) {
 		
 		myPosition = new Vector2(0, 0);			//What do I use for the paramaters? Is this declared from a global myPosition Vector?
+		tank = new TankDrive();
 		myAngle = Sensors.gyro.getAngle();
 		destAngle = myPosition.angle(dest);
 		
@@ -26,19 +29,19 @@ public class Turn extends Command {
 			degreesLeft = destAngle - myAngle;	//If degreesLeft is negative, we will want to go left. If degreesLeft is positive, we will want to go left.
 			
 			if(degreesLeft > 45) {				//If we are more than 45 degrees off, go quickly.
-				
+				tank.tankDrive(-1, 1);
 			} else if (degreesLeft > 15) {		//If we are less than 45 degrees off, but more than 15 degrees off, go a little slower.
-				
+				tank.tankDrive(-.5, .5);
 			} else if (degreesLeft > 0) {		//If we are less than 15 degrees off, but more than 0 degrees off, we need precision.
-				
+				tank.tankDrive(-.25, -.25);
 			} else if (degreesLeft < -45) {		//If we are more than 45 degrees off, go quickly.
-				
+				tank.tankDrive(1, -1);
 			} else if (degreesLeft < -15) {		//If we are less than 45 degrees off, but more than 15 degrees off, go a little slower.
-				
+				tank.tankDrive(.5, -.5);
 			} else if (degreesLeft < 0) {		//If we are less than 15 degrees off, but more than 0 degrees off, we need precision.
-				
+				tank.tankDrive(.25, -.25);
 			} else {							//If none of the above are true, we have reached our destination.
-				
+				degreesLeft = 0;
 			}
 		}
 	}

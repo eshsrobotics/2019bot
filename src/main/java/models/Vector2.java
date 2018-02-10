@@ -30,5 +30,9 @@ public class Vector2 {
 	public double dist(Vector2 dest) {
 		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	}
+	
+	public Point convert() {
+		return new Point(x, y);
+	}
 
 }
