@@ -12,10 +12,8 @@ import org.usfirst.frc.team1759.robot.subsystems.Intake;
 import org.usfirst.frc.team1759.robot.subsystems.Launcher;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
 
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 
 /**
  * This is a demo program showing the use of the RobotDrive class, specifically
@@ -27,11 +25,16 @@ public class Robot extends IterativeRobot {
 	private Intake intake;
 	private Climber climber;
 	private OI oi;
-	private Accelerometer accelerometer;
+	private Sensors sensors;
 	
 	@Override
 	public void robotInit() {
-		accelerometer = new BuiltInAccelerometer();
+		oi = new OI();
+		tank = new TankDrive();
+		launcher = new Launcher();
+		intake = new Intake();
+		climber = new Climber();
+		sensors = new Sensors();
 	}
 	
 	public void disabledInit() {
@@ -56,6 +59,10 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		System.out.printf("Acceleration - x: %f y: %f z: %f\n", accelerometer.getX(), accelerometer.getY(), accelerometer.getZ());
+		System.out.printf("Acceleration - x: %f y: %f z: %f\n", sensors.accelerometer.getX(), sensors.accelerometer.getY(), sensors.accelerometer.getZ());
+//		tank.tankDrive(oi);
+//		launcher.launch(oi);
+//		intake.intake(oi);
+//		climber.climb(oi);
 	}
 }
