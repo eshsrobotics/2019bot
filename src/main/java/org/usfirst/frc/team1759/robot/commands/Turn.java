@@ -1,4 +1,4 @@
-package commands;
+package org.usfirst.frc.team1759.robot.commands;
 
 import models.Constants;
 import models.Point;
@@ -25,6 +25,7 @@ public class Turn extends Command {
 	 */
 	private Vector2 gyroAngleToVector(double gyroangle) {
 		gyroangle = Sensors.gyro.getAngle();
+		double myAngleInRadians = myAngle * Constants.DEGREES_TO_RADIANS;
 		myHeading = new Vector2(Math.cos(myAngleInRadians),		//X on a unit vector is cos(theta)
 					Math.sin(myAngleInRadians));	//Y on a unit vector is sin(theta)
 		return myHeading;
@@ -49,8 +50,6 @@ public class Turn extends Command {
 	}
 	
 	public void execute(Vector2 heading) {
-		
-		double myAngleInRadians = myAngle * Constants.DEGREES_TO_RADIANS;
 		destAngle = myHeading.angle(heading);	//Unit vectors should expect a magnitude of 1, with heading found as above.
 		
 		while (myAngle != destAngle) {
