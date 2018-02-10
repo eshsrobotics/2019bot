@@ -12,6 +12,14 @@ public class Vector2 {
         public double y;
 
         /**
+         * Constructs a vector with the given coordinates.
+         */
+        public Vector2(double x, double y) {
+                 this.x = x;
+                 this.y = y;
+        }
+
+        /**
          * Copies the given vector into this one.
          */
         public Vector2(Vector2 vector) {
@@ -20,11 +28,12 @@ public class Vector2 {
         }
 
         /**
-         * Constructs a vector with the given coordinates.
+         * Initializes this vector from the given point.
          */
-        public Vector2(double x, double y) {
-                 this.x = x;
-                 this.y = y;
+        public Vector2(Point p) {
+                // This can be interpreted as the vector pointing from origin to p.
+                this.x = p.x;
+                this.y = p.y;
         }
 
         /**
@@ -35,10 +44,24 @@ public class Vector2 {
         }
 
         /**
+         * Returns the difference between this vector and another.
+         */
+        public Vector2 sub(Vector2 vector) {
+                return new Vector2(x - vector.x, y - vector.y);
+        }
+
+        /**
          * Returns a vector equal to this vector scaled by the given factor.
          */
         public Vector2 mult(double scalar) {
                 return new Vector2(x * scalar, y * scalar);
+        }
+
+        /**
+         * Returns a vector equal to this vector scaled by the multiplicative inverse of the given factor.
+         */
+        public Vector2 div(double scalar) {
+                return new Vector2(x / scalar, y / scalar);
         }
 
         /***
@@ -56,13 +79,6 @@ public class Vector2 {
         }
 
 
-        /**
-         * Converts this vector to the equivalent point.
-         */
-        public Point toPoint() {
-                return new Point(x, y);
-        }
-
         /***
          * Returns the normalized version of this vector.
          *
@@ -71,7 +87,7 @@ public class Vector2 {
          * vector.
          */
         public Vector2 normalized() {
-                return this.mult(1.0/length());
+                return this.div(length());
         }
 
         /***
