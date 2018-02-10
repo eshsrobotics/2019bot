@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 public class Sensors {
-	Accelerometer accelerometer;
-	Gyro gyro;
+	public static Accelerometer accelerometer;
+	public static Gyro gyro;
 	
 	public Sensors() {
 		accelerometer = new BuiltInAccelerometer(Accelerometer.Range.k2G);
