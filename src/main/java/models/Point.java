@@ -14,7 +14,7 @@ public class Point {
 		return new Point(x + vector.x, y + vector.y);
 	}
 	
-	public Vector2 convert() {
+	public Vector2 toVector() {
 		return new Vector2(x, y);
 	}
 }
