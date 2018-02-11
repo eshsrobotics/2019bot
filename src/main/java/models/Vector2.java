@@ -93,7 +93,7 @@ public class Vector2 {
         /***
          * Returns the angle, in radians, between this vector and another.
          */
-        public double angle(Vector2 other) {
+        public double angleBetween(Vector2 other) {
                 // a • b = |a| |b| cos θ
                 return Math.acos(this.length() * other.length()) / this.dot(other);
         }
