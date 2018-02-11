@@ -6,7 +6,6 @@ import models.Vector2;
 
 import org.usfirst.frc.team1759.robot.Sensors;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
-
 import edu.wpi.first.wpilibj.command.Command;
 
 /***
@@ -17,9 +16,9 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class TurnCommand extends Command {
 
-                /***
-                 * The tank drive we're supposed to be turning.
-                 */
+        /***
+         * The tank drive we're supposed to be turning.
+         */
         TankDrive tank;
 
         /**
@@ -50,7 +49,7 @@ public class TurnCommand extends Command {
          */
 
         public TurnCommand(TankDrive tank) {
-            tank = new TankDrive();
+                tank = new TankDrive();
                 goalHeading = initialHeading; // By default, we don't turn.
         }
 
@@ -113,55 +112,60 @@ public class TurnCommand extends Command {
         @Override
         protected void execute() {
 
-                        double currentGyroAngleInDegrees = Sensors.gyro.getAngle();
-                        double desiredGyroAngleInDegrees = vectorToGyroAngle(goalHeading);
-                        double degreesToTurn = desiredGyroAngleInDegrees - currentGyroAngleInDegrees;
+                double currentGyroAngleInDegrees = Sensors.gyro.getAngle();
+                double desiredGyroAngleInDegrees = vectorToGyroAngle(goalHeading);
+                double degreesToTurn = desiredGyroAngleInDegrees - currentGyroAngleInDegrees;
 
-                        // Turn at the appropriate magnitude.
-                        //
-                        // You're probably wondering wondering what I mean.
-                        //
-                        // Suppose you have min, max, and current, which lies somewhere
-                        // between.  The linear interpolation formula to get the
-                        // parameter of interpolation, u, representing the percentage
-                        // of distance current is between min and max, is:
-                        //
-                        //        (current - min)
-                        //    u = ---------------
-                        //          (max - min)
-                        //
-                        //    u = 0 when current is at min.
-                        //    u = 1 when current is at max.
-                        //
-                        // Now consider our robot's turning angle:
-                        //   current is degreesToTurn.
-                        //   max is the maxTurningAngleDegrees.
-                        //   min is the minTurningAngleDegrees.
-                        //
-                        // Let's calculate the "magnitude of our turn", which is 1 at
-                        // the max turning angle and 0 at the minimum.
+                // Turn at the appropriate magnitude.
+                //
+                // You're probably wondering wondering what I mean!
+                //
+                // Suppose you have min, max, and current, which lies somewhere
+                // between.  The linear interpolation formula to get the
+                // parameter of interpolation, u, representing the percentage
+                // of distance current is between min and max, is:
+                //
+                //        (current - min)
+                //    u = ---------------
+                //          (max - min)
+                //
+                //    Note that:
+                //    * u = 0 when current is at min.
+                //    * u = 1 when current is at max.
+                //
+                // Now consider our robot's turning angle:
+                //   * current is degreesToTurn.
+                //   * max is the maxTurningAngleDegrees.
+                //   * min is the minTurningAngleDegrees.
+                //
+                // Let's calculate the "magnitude of our turn", which is 1 at
+                // the max turning angle and 0 at the minimum.
 
-                        final double minTurningAngleDegrees = epsilon; // We can't more slowly than this.
-                        final double maxTurningAngleDegrees = 10.0;    // We don't want to turn faster than this.
+                final double minTurningAngleDegrees = epsilon; // We can't more slowly than this.
+                final double maxTurningAngleDegrees = 10.0;    // We don't want to turn faster than this.
 
-                        if (Math.abs(degreesToTurn) > maxTurningAngleDegrees) {
-                                // Not allowed to turn faster than this.
-                                degreesToTurn = Math.signum(degreesToTurn) * maxTurningAngleDegrees;
-                        }
+                if (Math.abs(degreesToTurn) > maxTurningAngleDegrees) {
+                        // Not allowed to turn faster than this.
+                        degreesToTurn = Math.signum(degreesToTurn) * maxTurningAngleDegrees;
+                }
 
-                        // 0 <= turningMagnitude <= 1.
-                        // As we get closer and closer to our desired goal, we should
-                        // turn more and more slowly.
+                // 0 <= turningMagnitude <= 1.
+                // As we get closer and closer to our desired goal, we should
+                // turn more and more slowly.
+                //
+                // Warning: In the end, this may be *too* slow.  We
+                // may need to increase epsilon and/or the
+                // minTurningAngleDegrees.
 
-                        double turningMagnitude = (degreesToTurn - minTurningAngleDegrees) / (maxTurningAngleDegrees - minTurningAngleDegrees);
+                double turningMagnitude = (degreesToTurn - minTurningAngleDegrees) / (maxTurningAngleDegrees - minTurningAngleDegrees);
 
-                        if (degreesToTurn < epsilon) {
-                                // Turn left.
-                                tank.tankDrive(-turningMagnitude, turningMagnitude);
-                        } else if (degreesToTurn > epsilon) {
-                                // Turn right.
-                                tank.tankDrive(turningMagnitude, -turningMagnitude);
-                        }
+                if (degreesToTurn < epsilon) {
+                        // Turn left.
+                        tank.tankDrive(-turningMagnitude, turningMagnitude);
+                } else if (degreesToTurn > epsilon) {
+                        // Turn right.
+                        tank.tankDrive(turningMagnitude, -turningMagnitude);
+                }
         }
 
         @Override
@@ -174,7 +178,8 @@ public class TurnCommand extends Command {
          */
         @Override
         protected boolean isFinished() {
-                        double angleDifference = Math.acos(initialHeading.dot(goalHeading));
+
+                double angleDifference = Math.acos(initialHeading.dot(goalHeading));
                 if (Math.abs(angleDifference) < epsilon) {
                         return true;
                 } else {
