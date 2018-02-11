@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.command.Command;
 /***
  * This command's purpose is to rotate the tank drive continuously until the
  * robot is pointing at the desired heading.
+ * 
+ * This should not be running at the same time as Go(), as they both utilize the TankDrive.
  *
  * @author uakotaobi
  */
@@ -52,19 +54,7 @@ public class TurnCommand extends Command {
                 tank = new TankDrive();
                 goalHeading = initialHeading; // By default, we don't turn.
         }
-
-        /**
-         * This function is used to convert from the degrees that the gyro gives to a Vector2 heading.
-         * @param gyroAngleInDegrees The gyro angle to convert.
-         * @return A unit vector pointing gyroangle degrees clockwise from (0, 1).
-         */
-        private Vector2 gyroAngleToVector(double gyroAngleInDegrees) {
-                double gyroAngleInRadians = gyroAngleInDegrees * Constants.DEGREES_TO_RADIANS;
-                Vector2 myHeading = new Vector2(Math.cos(gyroAngleInRadians),	//X on a unit vector is cos(theta)
-                                                Math.sin(gyroAngleInRadians));	//Y on a unit vector is sin(theta)
-                return myHeading;
-        }
-
+        
         /***
          * Returns the gyro angle, in degrees, between the initial heading at
          * start() and the given heading.
