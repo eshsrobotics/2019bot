@@ -65,12 +65,14 @@ public class Go extends Command {
 	
 	static final double range = 0.2;
 
-	
-	public Go(TankDrive tank, Point dest) {
+	/**
+	 * This initializes the Go command.
+	 * @param tank
+	 */
+	public Go(TankDrive tank) {
 		tank = new TankDrive();
 		initialPoint = Constants.ORIGIN;
 		currentPoint = initialPoint;
-		dest = new Point(dest.x, dest.y);
 		sense = new Sensors();
 		timeInitInMilli = System.currentTimeMillis();
 		timeInit = timeInitInMilli * Constants.MILLI_TO_SEC;
@@ -81,6 +83,16 @@ public class Go extends Command {
 		prevTime = timeInit;
 		prevVeloX = initVeloX;
 		prevVeloY = initVeloY;
+	}
+	
+	/**
+	 * This function sets the destination point.
+	 * @param dest
+	 * @return
+	 */
+	public Point setDest(Point dest) {
+		dest = new Point(dest.x, dest.y);
+		return dest;
 	}
 	
 	/**
@@ -101,7 +113,15 @@ public class Go extends Command {
 	}
 	
 	/**
-	 * This function is a basic kinematics function, one which determines our position and returns it as a point.
+	 * This function is derived from the kinematics formula, attempting to create a way to determine position with a non-constant acceleration.
+	 * This position is based off of two formulas: One for X and one for Y. Each is calculated the same way, but with Y substituted for X in the second.
+	 * 
+	 * Position = .5 * acceleration * time^2 + (previous velocity * time) + previous position
+	 * Previous Velocity = Previous acceleration * time + Initial Velocity
+	 * 
+	 * Therefore,
+	 * 
+	 * Position = .5 * acceleration * time^2 + (((previous acceleration  * time) + initial velocity) * time) + previous position
 	 * @return
 	 */
 	public Point updateCurrentPoint() {
