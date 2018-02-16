@@ -63,7 +63,7 @@ public class OI {
 			launchOut = new JoystickButton(rightJoystick, LAUNCHING_BUTTON_OUT);
 			launchIn = new JoystickButton(leftJoystick, LAUNCHING_BUTTON_IN);
 			totalIntake = new JoystickButton(rightJoystick, FULL_INTAKE_BUTTON);
-			partialIntake = new JoystickButton(rightStick, PARTIAL_INTAKE_BUTTON);
+			partialIntake = new JoystickButton(rightJoystick, PARTIAL_INTAKE_BUTTON);
 			expel = new JoystickButton(rightJoystick, EXPEL_INTAKE_BUTTON);
 			climbUp = new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON);
 			climbDown = new JoystickButton(leftJoystick, CLIMBER_DOWN_BUTTON);
