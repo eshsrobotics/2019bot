@@ -19,10 +19,12 @@ public class OI {
 
 	public boolean joysticksAttached;
 	
-	public Button highLaunch;
-	public Button lowLaunch;
+	public Button launchOut;
+	public Button launchIn;
 	public Button intakeUp;
 	public Button intakeDown;
+	public Button armUp;
+	public Button armDown;
 	public Button forward;
 	public Button back;
 	public Button left;
@@ -39,11 +41,14 @@ public class OI {
 	//With the variables below, the high/up option is a button keyed to the right joystick, the 
 	//low/down option is a button keyed to the left joystick.
 	
-	public static final int HIGH_LAUNCHING_BUTTON = 1;
-	public static final int LOW_LAUNCHING_BUTTON = 1;
+	public static final int LAUNCHING_BUTTON_OUT = 1;
+	public static final int LAUNCHING_BUTTON_IN = 1;
 
 	public static final int INTAKE_UP_BUTTON = 2;
 	public static final int INTAKE_DOWN_BUTTON = 2;
+	
+	public static final int ARM_UP_BUTTON = 3;
+	public static final int ARM_DOWN_BUTTON = 3;
 	
 	public static final int CLIMBER_UP_BUTTON = 7;
 	public static final int CLIMBER_DOWN_BUTTON = 7;
@@ -58,10 +63,12 @@ public class OI {
 
 		if (joysticksAttached) {
 			System.out.println("Creating OI with joystick buttons");
-			highLaunch = new JoystickButton(rightJoystick, HIGH_LAUNCHING_BUTTON);
-			lowLaunch = new JoystickButton(leftJoystick, LOW_LAUNCHING_BUTTON);
+			launchOut = new JoystickButton(rightJoystick, LAUNCHING_BUTTON_OUT);
+			launchIn = new JoystickButton(leftJoystick, LAUNCHING_BUTTON_IN);
 			intakeUp = new JoystickButton(rightJoystick, INTAKE_UP_BUTTON);
 			intakeDown = new JoystickButton(leftJoystick, INTAKE_DOWN_BUTTON);
+			armUp = new JoystickButton(rightJoystick, ARM_UP_BUTTON);
+			armDown = new JoystickButton(leftJoystick, ARM_DOWN_BUTTON);
 			climbUp = new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON);
 			climbDown = new JoystickButton(leftJoystick, CLIMBER_DOWN_BUTTON);
 		} else {
@@ -90,12 +97,14 @@ public class OI {
 		  System.out.println("Creating OI with network buttons");
 			inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
 			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
-			highLaunch = new NetworkButton(inputTable, "U");
-			lowLaunch = new NetworkButton(inputTable, "I");
+			launchOut = new NetworkButton(inputTable, "J");
+			launchIn = new NetworkButton(inputTable, "K");
 			intakeUp = new NetworkButton(inputTable, "O");
 			intakeDown = new NetworkButton(inputTable, "P");
-			climbUp = new NetworkButton(inputTable, "J");
-			climbDown = new NetworkButton(inputTable, "K");
+			armUp = new NetworkButton(inputTable, "U");
+			armDown = new NetworkButton(inputTable, "I");
+			climbUp = new NetworkButton(inputTable, "N");
+			climbDown = new NetworkButton(inputTable, "M");
 			forward = new NetworkButton(inputTable, "W");
 			back = new NetworkButton(inputTable, "S");
 			left = new NetworkButton(inputTable, "A");

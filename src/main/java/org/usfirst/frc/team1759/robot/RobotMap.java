@@ -20,16 +20,21 @@ public class RobotMap {
 	public static int RIGHT_MID_PORT = 8;// Currently unused.
 	public static int RIGHT_BACK_PORT = 6;
 	
-	// For solonoid
-	public static int HIGH_LAUNCH_PORT = 0;
-	public static int LOW_LAUNCH_PORT = 1;
+	// For launcher solenoid
+	public static int HIGH_LAUNCH_PORT_OUT = 0;
+	public static int HIGH_LAUNCH_PORT_IN = 1;
+	
+	// For intake solenoid
+	public static int INTAKE_PORT_OUT = 2;
+	public static int INTAKE_PORT_IN = 3;
 	
 	// Intake motors
 	public static int LEFT_IN_PORT = 2;
 	public static int RIGHT_IN_PORT = 7;
 	
-	public static int RESERVE_PORT_1 = 4;
-	public static int RESERVE_PORT_2 = 9;
+	// Intake Wheels
+	public static int LIFT_LEFT_PORT = 4;
+	public static int LIFT_RIGHT_PORT = 9;
 	
 	// Climber ports
 	public static int CLIMBER_PORT_1 = 10; 		//Spark, not Talon
