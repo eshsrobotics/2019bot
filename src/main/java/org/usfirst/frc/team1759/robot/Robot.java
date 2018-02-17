@@ -9,6 +9,7 @@ package org.usfirst.frc.team1759.robot;
 
 import org.usfirst.frc.team1759.commands.ExpelCommand;
 import org.usfirst.frc.team1759.commands.IntakeCommand;
+import org.usfirst.frc.team1759.robot.commands.FollowPath;
 import org.usfirst.frc.team1759.robot.subsystems.Arm;
 import org.usfirst.frc.team1759.robot.subsystems.Climber;
 import org.usfirst.frc.team1759.robot.subsystems.Intake;
@@ -19,8 +20,11 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import models.Graph;
 
 /**
  * This is a demo program showing the use of the RobotDrive class, specifically
@@ -37,6 +41,8 @@ public class Robot extends IterativeRobot {
 	private IntakeCommand fullIntakeCommand;
 	private ExpelCommand expelCommand;
 	private OI oi;
+	private MatchData matchData;
+	private Encoder encoder;
 
 	@Override
 	public void robotInit() {
@@ -56,6 +62,12 @@ public class Robot extends IterativeRobot {
 		fullIntakeCommand = new IntakeCommand(upperIntake, lowerIntake, arm);
 		expelCommand = new ExpelCommand(lowerIntake, arm);
 		climber = new Climber();
+		// Parse match data for use later on
+		matchData = new MatchData(DriverStation.getInstance());
+		encoder = new Encoder(0, 1);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
+		
+		// TODO
+		//currentPosition = new Vector2(0, 0);
 	}
 
 	public void disabledInit() {
@@ -67,7 +79,9 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void autonomousInit() {
-
+		Graph graph = new Graph(matchData);
+		FollowPath followPath = new FollowPath(encoder, tank, graph.currentNode, Graph.findPath(graph.currentNode, graph.target));
+		followPath.start();
 	}
 
 	public void autonomousPeriodic() {

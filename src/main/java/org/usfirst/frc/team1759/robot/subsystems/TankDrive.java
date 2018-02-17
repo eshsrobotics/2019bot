@@ -85,7 +85,7 @@ public class TankDrive extends Subsystem {
 		}
 	}
 	
-	public void autoDrive(double left, double right) {
-		myRobot.tankDrive(left, right);
+	public void tankDrive (double leftSpeed, double rightSpeed) {
+		myRobot.tankDrive(leftSpeed, rightSpeed);
 	}
 }
