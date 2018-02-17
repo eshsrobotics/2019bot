@@ -9,6 +9,7 @@ package org.usfirst.frc.team1759.robot;
 
 import models.Graph;
 
+import org.usfirst.frc.team1759.robot.commands.FollowPath;
 import org.usfirst.frc.team1759.robot.subsystems.Intake;
 import org.usfirst.frc.team1759.robot.subsystems.Launcher;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
@@ -55,7 +56,8 @@ public class Robot extends IterativeRobot {
 	
 	public void autonomousInit() {
 		Graph graph = new Graph(matchData);
-		FollowPath followPath = new FollowPath(tankDrive, Graph.findPath());
+		FollowPath followPath = new FollowPath(tank, Graph.findPath(graph.currentNode, graph.target));
+		followPath.start();
 	}
 	
 	public void autonomousPeriodic() {
