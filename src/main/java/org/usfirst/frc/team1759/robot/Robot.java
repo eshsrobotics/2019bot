@@ -37,42 +37,45 @@ public class Robot extends IterativeRobot {
 	private IntakeCommand fullIntakeCommand;
 	private ExpelCommand expelCommand;
 	private OI oi;
-	
+
 	@Override
 	public void robotInit() {
-		//Streams usb camera video feed straight to Dashboard.
+		// Streams usb camera video feed straight to Dashboard.
 		CameraServer.getInstance().startAutomaticCapture();
-		//Initialize drive.
+		// Initialize drive.
 		oi = new OI();
 		tank = new TankDrive();
-		upperIntake = new Intake(new WPI_TalonSRX(RobotMap.UPPER_LEFT_INTAKE), new WPI_TalonSRX(RobotMap.UPPER_RIGHT_INTAKE));
-		lowerIntake = new Intake(new WPI_TalonSRX(RobotMap.LOWER_LEFT_INTAKE), new WPI_TalonSRX(RobotMap.LOWER_RIGHT_INTAKE));
-		arm = new Arm(new DoubleSolenoid(RobotMap.ARM_PORT_IN, RobotMap.ARM_PORT_OUT));
+		upperIntake = new Intake(new WPI_TalonSRX(RobotMap.UPPER_LEFT_INTAKE),
+				new WPI_TalonSRX(RobotMap.UPPER_RIGHT_INTAKE));
+		lowerIntake = new Intake(new WPI_TalonSRX(RobotMap.LOWER_LEFT_INTAKE),
+				new WPI_TalonSRX(RobotMap.LOWER_RIGHT_INTAKE));
+		arm = new Arm(new DoubleSolenoid(RobotMap.ARM_PORT_IN,
+				RobotMap.ARM_PORT_OUT));
 		launcher = new Launcher();
 		partialIntakeCommand = new IntakeCommand(lowerIntake, arm);
 		fullIntakeCommand = new IntakeCommand(upperIntake, lowerIntake, arm);
 		expelCommand = new ExpelCommand(lowerIntake, arm);
 		climber = new Climber();
 	}
-	
+
 	public void disabledInit() {
-		
+
 	}
-	
+
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
 	}
-	
+
 	public void autonomousInit() {
-		
+
 	}
-	
+
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
 	}
-	
+
 	public void teleopInit() {
-		
+
 	}
 
 	@Override
@@ -81,5 +84,8 @@ public class Robot extends IterativeRobot {
 		tank.tankDrive(oi);
 		launcher.launch(oi);
 		climber.climb(oi);
+		oi.partialIntake.whenPressed(partialIntakeCommand);
+		oi.totalIntake.whenPressed(fullIntakeCommand);
+		oi.expel.whenPressed(expelCommand);
 	}
 }
