@@ -15,12 +15,12 @@ public class IntakeCommand extends CommandGroup {
 		addSequential(new MoveArm(arm, false), 1);
 		addParallel(new TurnWheels(lowerIntake, true), 1.5);
 		addParallel(new TurnWheels(upperIntake, true), 2);
-		addParallel(new MoveArm(arm, true), 1);
+		addSequential(new MoveArm(arm, true), 1);
 	}
 	
 	public IntakeCommand(Intake lowerIntake, Arm arm) {
 		addSequential(new MoveArm(arm, false), 1);
 		addParallel(new TurnWheels(lowerIntake, true), 1.5);
-		addParallel(new MoveArm(arm, true), 1);
+		addSequential(new MoveArm(arm, true), 1);
 	}
 }

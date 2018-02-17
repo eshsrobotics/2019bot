@@ -95,9 +95,9 @@ public class OI {
 			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
 			launchOut = new NetworkButton(inputTable, "J");
 			launchIn = new NetworkButton(inputTable, "K");
-			totalIntake = new NetworkButton(inputTable, "Left Arrow");		//Fix Buttons for Total/Partial/Expel
-			partialIntake = new NetworkButton(inputTable, "Right Arrow");
-			expel = new NetworkButton(inputTable, "Up Arrow");
+			totalIntake = new NetworkButton(inputTable, "Left");
+			partialIntake = new NetworkButton(inputTable, "Right");
+			expel = new NetworkButton(inputTable, "Up");
 			climbUp = new NetworkButton(inputTable, "N");
 			climbDown = new NetworkButton(inputTable, "M");
 			forward = new NetworkButton(inputTable, "W");
