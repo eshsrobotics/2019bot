@@ -43,7 +43,7 @@ public class Robot extends IterativeRobot {
 		intake = new Intake();
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
-		encoder = new Encoder(0, 1);
+		encoder = new Encoder(0, 1);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
 		
 		// TODO
 		//currentPosition = new Vector2(0, 0);

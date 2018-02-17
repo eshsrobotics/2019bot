@@ -25,6 +25,7 @@ public class GoEncoder extends Command {
 	// 5 > 7 ? print(this doesnt run) : print(this does)
 	// speed = something ? value : value
 	public void execute() {
+		encoder.reset();
 		double speed = 1.0;
 		if (distRemaining() < Constants.WAYPOINT_SLOWDOWN_DISTANCE) {
 			double calcSpeed = distRemaining() / Constants.WAYPOINT_SLOWDOWN_DISTANCE;
