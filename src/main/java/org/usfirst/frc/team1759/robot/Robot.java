@@ -7,7 +7,11 @@
 
 package org.usfirst.frc.team1759.robot;
 
-import org.usfirst.frc.team1759.robot.subsystems.*;
+import models.Graph;
+
+import org.usfirst.frc.team1759.robot.subsystems.Intake;
+import org.usfirst.frc.team1759.robot.subsystems.Launcher;
+import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -50,7 +54,8 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void autonomousInit() {
-		
+		Graph graph = new Graph(matchData);
+		FollowPath followPath = new FollowPath(tankDrive, Graph.findPath());
 	}
 	
 	public void autonomousPeriodic() {
