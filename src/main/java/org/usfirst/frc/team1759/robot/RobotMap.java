@@ -25,16 +25,16 @@ public class RobotMap {
 	public static int HIGH_LAUNCH_PORT_IN = 1;
 	
 	// For intake solenoid
-	public static int INTAKE_PORT_OUT = 2;
-	public static int INTAKE_PORT_IN = 3;
+	public static int ARM_PORT_OUT = 2;
+	public static int ARM_PORT_IN = 3;
 	
-	// Intake motors
-	public static int LEFT_IN_PORT = 2;
-	public static int RIGHT_IN_PORT = 7;
+	// Upper intake motors
+	public static int UPPER_LEFT_INTAKE= 2;
+	public static int UPPER_RIGHT_INTAKE = 7;
 	
-	// Intake Wheels
-	public static int LIFT_LEFT_PORT = 4;
-	public static int LIFT_RIGHT_PORT = 9;
+	// Lower intake motors
+	public static int LOWER_LEFT_INTAKE = 4;
+	public static int LOWER_RIGHT_INTAKE = 9;
 	
 	// Climber ports
 	public static int CLIMBER_PORT_1 = 10; 		//Spark, not Talon

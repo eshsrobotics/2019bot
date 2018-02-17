@@ -7,9 +7,18 @@
 
 package org.usfirst.frc.team1759.robot;
 
-import org.usfirst.frc.team1759.robot.subsystems.*;
+import org.usfirst.frc.team1759.commands.ExpelCommand;
+import org.usfirst.frc.team1759.commands.IntakeCommand;
+import org.usfirst.frc.team1759.robot.subsystems.Arm;
+import org.usfirst.frc.team1759.robot.subsystems.Climber;
+import org.usfirst.frc.team1759.robot.subsystems.Intake;
+import org.usfirst.frc.team1759.robot.subsystems.Launcher;
+import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
@@ -20,40 +29,53 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 public class Robot extends IterativeRobot {
 	private TankDrive tank;
 	private Launcher launcher;
-	private Intake intake;
+	private Intake upperIntake;
+	private Intake lowerIntake;
 	private Climber climber;
+	private Arm arm;
+	private IntakeCommand partialIntakeCommand;
+	private IntakeCommand fullIntakeCommand;
+	private ExpelCommand expelCommand;
 	private OI oi;
-	
+
 	@Override
 	public void robotInit() {
-		//Streams usb camera video feed straight to Dashboard.
+		// Streams usb camera video feed straight to Dashboard.
 		CameraServer.getInstance().startAutomaticCapture();
-		//Initialize drive.
+		// Initialize drive.
 		oi = new OI();
 		tank = new TankDrive();
-		intake = new Intake();
+		upperIntake = new Intake(new WPI_TalonSRX(RobotMap.UPPER_LEFT_INTAKE),
+				new WPI_TalonSRX(RobotMap.UPPER_RIGHT_INTAKE));
+		lowerIntake = new Intake(new WPI_TalonSRX(RobotMap.LOWER_LEFT_INTAKE),
+				new WPI_TalonSRX(RobotMap.LOWER_RIGHT_INTAKE));
+		arm = new Arm(new DoubleSolenoid(RobotMap.ARM_PORT_IN,
+				RobotMap.ARM_PORT_OUT));
 		launcher = new Launcher();
+		partialIntakeCommand = new IntakeCommand(lowerIntake, arm);
+		fullIntakeCommand = new IntakeCommand(upperIntake, lowerIntake, arm);
+		expelCommand = new ExpelCommand(lowerIntake, arm);
 		climber = new Climber();
 	}
-	
+
 	public void disabledInit() {
-		
+
 	}
-	
+
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
 	}
-	
+
 	public void autonomousInit() {
-		
+
 	}
-	
+
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
 	}
-	
+
 	public void teleopInit() {
-		
+
 	}
 
 	@Override
@@ -61,7 +83,9 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().run();
 		tank.tankDrive(oi);
 		launcher.launch(oi);
-		intake.intake(oi);
 		climber.climb(oi);
+		oi.partialIntake.whenPressed(partialIntakeCommand);
+		oi.totalIntake.whenPressed(fullIntakeCommand);
+		oi.expel.whenPressed(expelCommand);
 	}
 }
