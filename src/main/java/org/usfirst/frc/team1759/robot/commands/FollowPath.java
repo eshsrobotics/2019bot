@@ -6,18 +6,19 @@ import models.Node;
 
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
 public class FollowPath extends CommandGroup {
 	
-	public FollowPath(TankDrive tankDrive, List<Node> path) {
-		for (Node node : path) {
-			Go go = new Go(tankDrive);
-			go.setDest(node.point);
+	public FollowPath(Encoder encoder, TankDrive tankDrive, Node currentNode, List<Node> path) {
+		for (Node destNode : path) {
+			GoEncoder go = new GoEncoder(encoder, tankDrive, currentNode.point, destNode.point);
 			TurnCommand turnCommand = new TurnCommand(tankDrive);
-			turnCommand.setHeading(go.setHeading());
+			turnCommand.setHeading(currentNode.point.vectorTo(destNode.point));
 			addSequential(turnCommand);
 			addSequential(go);
+			currentNode = destNode;
 		}
 	}
 
