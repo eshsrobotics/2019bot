@@ -42,6 +42,8 @@ public class Robot extends IterativeRobot {
 	private Encoder encoder;
 	private LowerArm lower;
 	private RaiseArm raise;
+	
+	boolean armRising;
 
 	@Override
 	public void robotInit() {
@@ -63,7 +65,7 @@ public class Robot extends IterativeRobot {
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
 		encoder = new Encoder(0, 1);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
-		
+		armRising = false;
 		// TODO
 		//currentPosition = new Vector2(0, 0);
 	}
@@ -106,7 +108,13 @@ public class Robot extends IterativeRobot {
 			upperIntake.stop();
 			lowerIntake.stop();
 		}
-		oi.armIn.whenPressed(raise);
-		oi.armOut.whenPressed(lower);
+		if(oi.armOut.get()) {
+			if(armRising) {
+				arm.lower();
+			} else {
+				arm.raise();
+			}
+			armRising = !armRising;
+		}
 	}
 }
