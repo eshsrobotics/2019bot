@@ -21,9 +21,10 @@ public class OI {
 	
 	public Button launchOut;
 	public Button launchIn;
-	public Button totalIntake;
-	public Button partialIntake;
-	public Button expel;
+	public Button intakeOut;
+	public Button intakeIn;
+	public Button armOut;
+	public Button armIn;
 	public Button forward;
 	public Button back;
 	public Button left;
@@ -43,9 +44,11 @@ public class OI {
 	public static final int LAUNCHING_BUTTON_OUT = 1;
 	public static final int LAUNCHING_BUTTON_IN = 1;
 
-	public static final int PARTIAL_INTAKE_BUTTON = 2;
-	public static final int FULL_INTAKE_BUTTON = 3;
-	public static final int EXPEL_INTAKE_BUTTON = 4;
+	public static final int INTAKE_IN_BUTTON = 3;
+	public static final int INTAKE_OUT_BUTTON = 3;
+	
+	public static final int ARM_OUT_BUTTON = 4;
+	public static final int ARM_IN_BUTTON = 4;
 	
 	public static final int CLIMBER_UP_BUTTON = 7;
 	public static final int CLIMBER_DOWN_BUTTON = 7;
@@ -62,9 +65,10 @@ public class OI {
 			System.out.println("Creating OI with joystick buttons");
 			launchOut = new JoystickButton(rightJoystick, LAUNCHING_BUTTON_OUT);
 			launchIn = new JoystickButton(leftJoystick, LAUNCHING_BUTTON_IN);
-			totalIntake = new JoystickButton(rightJoystick, FULL_INTAKE_BUTTON);
-			partialIntake = new JoystickButton(rightJoystick, PARTIAL_INTAKE_BUTTON);
-			expel = new JoystickButton(rightJoystick, EXPEL_INTAKE_BUTTON);
+			intakeOut = new JoystickButton(rightJoystick, INTAKE_OUT_BUTTON);
+			intakeIn = new JoystickButton(rightJoystick, INTAKE_IN_BUTTON);
+			armOut = new JoystickButton(rightJoystick, ARM_OUT_BUTTON);
+			armIn = new JoystickButton(rightJoystick, ARM_IN_BUTTON);
 			climbUp = new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON);
 			climbDown = new JoystickButton(leftJoystick, CLIMBER_DOWN_BUTTON);
 		} else {
@@ -95,9 +99,10 @@ public class OI {
 			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
 			launchOut = new NetworkButton(inputTable, "J");
 			launchIn = new NetworkButton(inputTable, "K");
-			totalIntake = new NetworkButton(inputTable, "Left");
-			partialIntake = new NetworkButton(inputTable, "Right");
-			expel = new NetworkButton(inputTable, "Up");
+			intakeIn = new NetworkButton(inputTable, "Q");
+			intakeOut = new NetworkButton(inputTable, "E");
+			armIn = new NetworkButton(inputTable, "Up");
+			armOut = new NetworkButton(inputTable, "Down");
 			climbUp = new NetworkButton(inputTable, "N");
 			climbDown = new NetworkButton(inputTable, "M");
 			forward = new NetworkButton(inputTable, "W");

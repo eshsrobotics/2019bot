@@ -7,8 +7,8 @@
 
 package org.usfirst.frc.team1759.robot;
 
-import org.usfirst.frc.team1759.commands.LowerArm;
-import org.usfirst.frc.team1759.commands.RaiseArm;
+import org.usfirst.frc.team1759.robot.commands.LowerArm;
+import org.usfirst.frc.team1759.robot.commands.RaiseArm;
 import org.usfirst.frc.team1759.robot.commands.FollowPath;
 import org.usfirst.frc.team1759.robot.subsystems.Arm;
 import org.usfirst.frc.team1759.robot.subsystems.Climber;
@@ -96,10 +96,10 @@ public class Robot extends IterativeRobot {
 		tank.tankDrive(oi);
 		launcher.launch(oi);
 		climber.climb(oi);
-		if(oi.in.get()) {
+		if(oi.intakeIn.get()) {
 			lowerIntake.takeIn(1.0);
 			upperIntake.takeIn(1.0);
-		} else if(oi.out.get()) {
+		} else if(oi.intakeOut.get()) {
 			lowerIntake.pushOut(1.0);
 			upperIntake.pushOut(1.0);
 		} else {
