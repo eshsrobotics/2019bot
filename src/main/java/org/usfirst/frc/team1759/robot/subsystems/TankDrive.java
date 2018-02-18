@@ -53,7 +53,7 @@ public class TankDrive extends Subsystem {
 
 	public void tankDrive(OI oi) {
 		if (oi.joysticksAttached) {
-			myRobot.tankDrive(oi.leftJoystick.getY(), oi.rightJoystick.getY());
+			myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
 		} else {
 			double left = 0;
 			double right = 0;
@@ -81,11 +81,11 @@ public class TankDrive extends Subsystem {
 				}
 			}
 
-			myRobot.tankDrive(left, right);
+			myRobot.tankDrive(- left, - right);
 		}
 	}
 	
 	public void tankDrive (double leftSpeed, double rightSpeed) {
-		myRobot.tankDrive(leftSpeed, rightSpeed);
+		myRobot.tankDrive(- leftSpeed, - rightSpeed);
 	}
 }

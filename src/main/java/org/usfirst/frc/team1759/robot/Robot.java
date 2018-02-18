@@ -7,8 +7,8 @@
 
 package org.usfirst.frc.team1759.robot;
 
-import org.usfirst.frc.team1759.commands.ExpelCommand;
-import org.usfirst.frc.team1759.commands.IntakeCommand;
+import org.usfirst.frc.team1759.commands.LowerArm;
+import org.usfirst.frc.team1759.commands.RaiseArm;
 import org.usfirst.frc.team1759.robot.commands.FollowPath;
 import org.usfirst.frc.team1759.robot.subsystems.Arm;
 import org.usfirst.frc.team1759.robot.subsystems.Climber;
@@ -37,12 +37,11 @@ public class Robot extends IterativeRobot {
 	private Intake lowerIntake;
 	private Climber climber;
 	private Arm arm;
-	private IntakeCommand partialIntakeCommand;
-	private IntakeCommand fullIntakeCommand;
-	private ExpelCommand expelCommand;
 	private OI oi;
 	private MatchData matchData;
 	private Encoder encoder;
+	private LowerArm lower;
+	private RaiseArm raise;
 
 	@Override
 	public void robotInit() {
@@ -57,10 +56,9 @@ public class Robot extends IterativeRobot {
 				new WPI_TalonSRX(RobotMap.LOWER_RIGHT_INTAKE));
 		arm = new Arm(new DoubleSolenoid(RobotMap.ARM_PORT_IN,
 				RobotMap.ARM_PORT_OUT));
+		lower = new LowerArm(arm);
+		raise = new RaiseArm(arm);
 		launcher = new Launcher();
-		partialIntakeCommand = new IntakeCommand(lowerIntake, arm);
-		fullIntakeCommand = new IntakeCommand(upperIntake, lowerIntake, arm);
-		expelCommand = new ExpelCommand(lowerIntake, arm);
 		climber = new Climber();
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
@@ -98,8 +96,17 @@ public class Robot extends IterativeRobot {
 		tank.tankDrive(oi);
 		launcher.launch(oi);
 		climber.climb(oi);
-		oi.partialIntake.whenPressed(partialIntakeCommand);
-		oi.totalIntake.whenPressed(fullIntakeCommand);
-		oi.expel.whenPressed(expelCommand);
+		if(oi.in.get()) {
+			lowerIntake.takeIn(1.0);
+			upperIntake.takeIn(1.0);
+		} else if(oi.out.get()) {
+			lowerIntake.pushOut(1.0);
+			upperIntake.pushOut(1.0);
+		} else {
+			upperIntake.stop();
+			lowerIntake.stop();
+		}
+		oi.armIn.whenPressed(raise);
+		oi.armOut.whenPressed(lower);
 	}
 }
