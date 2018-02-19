@@ -7,10 +7,16 @@
 
 package org.usfirst.frc.team1759.robot;
 
-import org.usfirst.frc.team1759.robot.subsystems.*;
+import models.Graph;
+
+import org.usfirst.frc.team1759.robot.commands.FollowPath;
+import org.usfirst.frc.team1759.robot.subsystems.Intake;
+import org.usfirst.frc.team1759.robot.subsystems.Launcher;
+import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 
@@ -24,6 +30,7 @@ public class Robot extends IterativeRobot {
 	private Intake intake;
 	private OI oi;
 	private MatchData matchData;
+	private Encoder encoder;
 	
 	@Override
 	public void robotInit() {
@@ -36,6 +43,7 @@ public class Robot extends IterativeRobot {
 		intake = new Intake();
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
+		encoder = new Encoder(0, 1);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
 		
 		// TODO
 		//currentPosition = new Vector2(0, 0);
@@ -50,7 +58,9 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void autonomousInit() {
-		
+		Graph graph = new Graph(matchData);
+		FollowPath followPath = new FollowPath(encoder, tank, graph.currentNode, Graph.findPath(graph.currentNode, graph.target));
+		followPath.start();
 	}
 	
 	public void autonomousPeriodic() {

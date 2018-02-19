@@ -10,6 +10,8 @@ import java.util.Queue;
 
 import org.usfirst.frc.team1759.robot.MatchData;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 public class Graph {
 
 	public List<Node> nodes;
@@ -76,6 +78,15 @@ public class Graph {
 		addEdge(blueSwitchSetupTop, blueStartTop);
 		addEdge(blueStartTop, blueStartCenter);
 		addEdge(blueStartCenter, blueStartBottom);
+		
+		
+		if(matchData.getAlliance() == DriverStation.Alliance.Blue) {
+			currentNode = blueStartBottom;
+			target = redSwitchSetupTop;
+		} else {
+			currentNode = redStartBottom;
+			target = blueSwitchSetupTop;
+		}
 	}
 
 	public void addEdge(Node node1, Node node2) {
