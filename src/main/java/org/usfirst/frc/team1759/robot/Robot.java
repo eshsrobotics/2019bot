@@ -40,6 +40,13 @@ public class Robot extends IterativeRobot {
 	private OI oi;
 	private MatchData matchData;
 	private Encoder encoder;
+	
+	/**
+	 * Used to set the threshold for the throttle. If the throttle is greater than positive threshold, it is up. If it is less 
+	 * than negative threshold, it is down. If it is between positive and negative threshold, it remains in it's current state.
+	 */
+	private static final double THROTTLE_THRESHOLD = 1 / 3.0;	 
+
 
 	@Override
 	public void robotInit() {
@@ -81,7 +88,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopInit() {
-
+		
 	}
 
 	@Override
@@ -100,10 +107,15 @@ public class Robot extends IterativeRobot {
 			upperIntake.stop();
 			lowerIntake.stop();
 		}
-		if(oi.rightJoystick.getThrottle() > 0) {
-			arm.raise();
-		} else {
+		if(oi.rightJoystick.getThrottle() > THROTTLE_THRESHOLD) {
+				arm.raise();
+		} else if(oi.rightJoystick.getThrottle() < -1.0 * THROTTLE_THRESHOLD) {
 			arm.lower();
+		} else {
+			/**
+			 * If neither condition is true, the arm will remain in it's current state. If we utilize the kOff setting for the solenoid, it will move as
+			 * gravity, inertia, etc. dictates. We want the arm to remain in a current position, so it does nothing otherwise.
+			 */
 		}
 	}
 }
