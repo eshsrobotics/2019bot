@@ -3,17 +3,15 @@ package org.usfirst.frc.team1759.robot.subsystems;
 import org.usfirst.frc.team1759.robot.OI;
 import org.usfirst.frc.team1759.robot.RobotMap;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class Launcher extends Subsystem {
 
-	Solenoid launcher;
-	Solenoid lowLauncher;
+	DoubleSolenoid launcher;
 
 	public Launcher() {
-		launcher = new Solenoid(RobotMap.HIGH_LAUNCH);
-		lowLauncher = new Solenoid(RobotMap.LOW_LAUNCH);
+		launcher = new DoubleSolenoid(RobotMap.HIGH_LAUNCH_PORT_OUT, RobotMap.HIGH_LAUNCH_PORT_IN);
 	}
 
 	@Override
@@ -22,15 +20,12 @@ public class Launcher extends Subsystem {
 	}
 
 	public void launch(OI oi) {
-		if (oi.highLaunch.get()) {
-			launcher.set(true);
+		if (oi.launchOut.get()) {
+			launcher.set(DoubleSolenoid.Value.kForward);
+		} else if (oi.launchIn.get()) {
+			launcher.set(DoubleSolenoid.Value.kReverse);
 		} else {
-			launcher.set(false);
-		}
-		if (oi.lowLaunch.get()) {
-			lowLauncher.set(true);
-		} else {
-			lowLauncher.set(false);
+			launcher.set(DoubleSolenoid.Value.kOff);
 		}
 	}
 

@@ -7,16 +7,24 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.NetworkButton;
 
-// @Author Spencer Moore, Andrew McClees, and Aidan Galbreath. Used to set buttons and distinguish between Keyboards and Joytsticks controls
+/**
+ * @Author Spencer Moore, Andrew McClees, and Aidan Galbreath. 
+ * 
+ * Used to set buttons and distinguish between Keyboards and Joytsticks controls. THIS IS NOT FOR PORT
+ * ASSIGNMENTS
+ * 
+ */
 
 public class OI {
 
 	public boolean joysticksAttached;
 	
-	public Button highLaunch;
-	public Button lowLaunch;
-	public Button intakeUp;
-	public Button intakeDown;
+	public Button launchOut;
+	public Button launchIn;
+	public Button intakeOut;
+	public Button intakeIn;
+	public Button armOut;
+	public Button armIn;
 	public Button forward;
 	public Button back;
 	public Button left;
@@ -27,14 +35,23 @@ public class OI {
 
 	public Joystick leftJoystick;
 	public Joystick rightJoystick;
-
-	public static final int HIGH_LAUNCHING = 1;
-	public static final int LOW_LAUNCHING = 1;
-
-	public static final int INTAKE_UP = 2;
-	public static final int INTAKE_DOWN = 2;
 	
 	private NetworkTable inputTable;
+
+	//With the variables below, the high/up option is a button keyed to the right joystick, the 
+	//low/down option is a button keyed to the left joystick.
+	
+	public static final int LAUNCHING_BUTTON_OUT = 1;
+	public static final int LAUNCHING_BUTTON_IN = 1;
+
+	public static final int INTAKE_IN_BUTTON = 3;
+	public static final int INTAKE_OUT_BUTTON = 3;
+	
+	public static final int ARM_OUT_BUTTON = 4;
+	public static final int ARM_IN_BUTTON = 4;
+	
+	public static final int CLIMBER_UP_BUTTON = 7;
+	public static final int CLIMBER_DOWN_BUTTON = 7;
 
 	public OI() {
 
@@ -45,11 +62,15 @@ public class OI {
 		joysticksAttached = leftJoystick != null && rightJoystick != null;
 
 		if (joysticksAttached) {
-		  System.out.println("Creating OI with joystick buttons");
-			highLaunch = new JoystickButton(rightJoystick, HIGH_LAUNCHING);
-			lowLaunch = new JoystickButton(leftJoystick, LOW_LAUNCHING);
-			intakeUp = new JoystickButton(rightJoystick, INTAKE_UP);
-			intakeDown = new JoystickButton(leftJoystick, INTAKE_DOWN);
+			System.out.println("Creating OI with joystick buttons");
+			launchOut = new JoystickButton(rightJoystick, LAUNCHING_BUTTON_OUT);
+			launchIn = new JoystickButton(leftJoystick, LAUNCHING_BUTTON_IN);
+			intakeOut = new JoystickButton(rightJoystick, INTAKE_OUT_BUTTON);
+			intakeIn = new JoystickButton(rightJoystick, INTAKE_IN_BUTTON);
+			armOut = new JoystickButton(rightJoystick, ARM_OUT_BUTTON);
+			armIn = new JoystickButton(rightJoystick, ARM_IN_BUTTON);
+			climbUp = new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON);
+			climbDown = new JoystickButton(leftJoystick, CLIMBER_DOWN_BUTTON);
 		} else {
 			/*
 			 * Network Button key strings (for NetworkButton constructor):
@@ -76,12 +97,14 @@ public class OI {
 		  System.out.println("Creating OI with network buttons");
 			inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
 			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
-			highLaunch = new NetworkButton(inputTable, "U");
-			lowLaunch = new NetworkButton(inputTable, "I");
-			intakeUp = new NetworkButton(inputTable, "O");
-			intakeDown = new NetworkButton(inputTable, "P");
-			climbUp = new NetworkButton(inputTable, "J");
-			climbDown = new NetworkButton(inputTable, "K");
+			launchOut = new NetworkButton(inputTable, "J");
+			launchIn = new NetworkButton(inputTable, "K");
+			intakeIn = new NetworkButton(inputTable, "Q");
+			intakeOut = new NetworkButton(inputTable, "E");
+			armIn = new NetworkButton(inputTable, "Up");
+			armOut = new NetworkButton(inputTable, "Down");
+			climbUp = new NetworkButton(inputTable, "N");
+			climbDown = new NetworkButton(inputTable, "M");
 			forward = new NetworkButton(inputTable, "W");
 			back = new NetworkButton(inputTable, "S");
 			left = new NetworkButton(inputTable, "A");

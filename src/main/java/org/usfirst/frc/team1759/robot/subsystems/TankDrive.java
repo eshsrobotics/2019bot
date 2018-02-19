@@ -30,17 +30,17 @@ public class TankDrive extends Subsystem {
 	SpeedControllerGroup right;
 
 	public TankDrive() {
-		rightFront = new WPI_TalonSRX(RobotMap.RIGHT_FRONT);
-		rightBack = new WPI_TalonSRX(RobotMap.RIGHT_BACK);
-		// rightMid = new WPI_TalonSRX(RobotMap.RIGHT_MID);
-		// leftMid = new WPI_TalonSRX(RobotMap.LEFT_MID);
-		leftFront = new WPI_TalonSRX(RobotMap.LEFT_FRONT);
-		leftBack = new WPI_TalonSRX(RobotMap.LEFT_MID);
+
+		rightFront = new WPI_TalonSRX(RobotMap.RIGHT_FRONT_PORT);
+		rightBack = new WPI_TalonSRX(RobotMap.RIGHT_BACK_PORT);
+		// rightMid = new WPI_TalonSRX(RobotMap.RIGHT_MID_PORT);
+		// leftMid = new WPI_TalonSRX(RobotMap.LEFT_MID_PORT);
+		leftFront = new WPI_TalonSRX(RobotMap.LEFT_FRONT_PORT);
+		leftBack = new WPI_TalonSRX(RobotMap.LEFT_BACK_PORT);
 		left = new SpeedControllerGroup(leftFront, leftBack);
 		right = new SpeedControllerGroup(rightFront, rightBack);
 		myRobot = new DifferentialDrive(left, right);
 	}
-
 	@Override
 	public void setName(String subsystem, String name) {
 
@@ -53,7 +53,7 @@ public class TankDrive extends Subsystem {
 
 	public void tankDrive(OI oi) {
 		if (oi.joysticksAttached) {
-			myRobot.tankDrive(oi.leftJoystick.getY(), oi.rightJoystick.getY());
+			myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
 		} else {
 			double left = 0;
 			double right = 0;
@@ -81,11 +81,11 @@ public class TankDrive extends Subsystem {
 				}
 			}
 
-			myRobot.tankDrive(left, right);
+			myRobot.tankDrive(- left, - right);
 		}
 	}
 	
 	public void tankDrive (double leftSpeed, double rightSpeed) {
-		myRobot.tankDrive(leftSpeed, rightSpeed);
+		myRobot.tankDrive(- leftSpeed, - rightSpeed);
 	}
 }
