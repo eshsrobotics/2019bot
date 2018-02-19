@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1759.robot.subsystems;
 
+import models.TankDriveInterface;
+
 import org.usfirst.frc.team1759.robot.OI;
 import org.usfirst.frc.team1759.robot.RobotMap;
 
@@ -17,7 +19,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * @author Aidan Galbreath
  */
 
-public class TankDrive extends Subsystem {
+public class TankDrive extends Subsystem implements TankDriveInterface {
 
 	DifferentialDrive myRobot;
 	WPI_TalonSRX leftFront;
@@ -84,7 +86,7 @@ public class TankDrive extends Subsystem {
 			myRobot.tankDrive(- left, - right);
 		}
 	}
-	
+	@Override
 	public void tankDrive (double leftSpeed, double rightSpeed) {
 		myRobot.tankDrive(- leftSpeed, - rightSpeed);
 	}
