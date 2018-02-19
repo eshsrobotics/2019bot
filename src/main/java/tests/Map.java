@@ -18,16 +18,17 @@ public class Map {
         /***
          * Should we use ANSI SGR color codes?
          */
-        private boolean useColors = false;
+        private boolean useColors = true;
 
         private static final int BLACK = 0;
+        private static final int BLUE = 1;
         private static final int WHITE = 7;
         private static final int GRAY = 8;
 
         private class ScreenCharacter {
                 public ScreenCharacter() {
-                        color = BLACK;
-                        c = '.';
+                        color = BLUE;
+                        c = 'x';
                 }
                 public ScreenCharacter(int color_, char c_) {
                         color = color_;
@@ -44,16 +45,16 @@ public class Map {
          */
         private String colorSequences[] = {
                         // Dull colors.
-                        "\\e[0;30m", // Black
-                        "\\e[0;31m", // Blue
-                        "\\e[0;32m", // Green
-                        "\\e[0;33m", // Teal
-                        "\\e[0;34m", // Red
-                        "\\e[0;35m", // Magenta
-                        "\\e[0;36m", // Dull Brown/Orange
-                        "\\e[0;37m", // White
+                        "\033[0;30m", // Black
+                        "\033[0;31m", // Blue
+                        "\033[0;32m", // Green
+                        "\033[0;33m", // Teal
+                        "\033[0;34m", // Red
+                        "\033[0;35m", // Magenta
+                        "\033[0;36m", // Dull Brown/Orange
+                        "\033[0;37m", // White
                         // Bright colors.
-                        "\\e1;30m", // Gray.
+                        "\033[1;30m", // Gray.
         };
 
         private double width, height;

@@ -79,7 +79,7 @@ public class Robot extends IterativeRobot {
 
 	public void autonomousInit() {
 		Graph graph = new Graph(matchData);
-		FollowPath followPath = new FollowPath(encoder, tank, graph.currentNode, Graph.findPath(graph.currentNode, graph.target));
+		FollowPath followPath = new FollowPath(encoder, tank, graph.currentNode, graph.findPath(graph.currentNode, graph.target));
 		followPath.start();
 	}
 
