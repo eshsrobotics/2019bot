@@ -1,21 +1,19 @@
 package org.usfirst.frc.team1759.robot.commands;
 
 import models.Constants;
+import models.EncoderInterface;
 import models.Point;
-
-import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
-
-import edu.wpi.first.wpilibj.Encoder;
+import models.TankDriveInterface;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class GoEncoder extends Command {
 
-	Encoder encoder;
-	TankDrive tank;
+	EncoderInterface encoder;
+	TankDriveInterface tank;
 	Point current, dest;
 	double dist;
 	
-	public GoEncoder(Encoder encoder, TankDrive tank, Point current, Point dest) {
+	public GoEncoder(EncoderInterface encoder, TankDriveInterface tank, Point current, Point dest) {
 		this.encoder = encoder;
 		this.tank = tank;
 		this.current = current;
