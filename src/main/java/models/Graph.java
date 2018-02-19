@@ -109,9 +109,9 @@ public class Graph {
                 addEdge(blueStartTop, blueStartBottom);
 
                 // Eases driving to the center.
-                addEdge(redStartTop, TopScale);
-                addEdge(blueStartTop, TopScale);
-                addEdge(redStartBottom, BottomScale);
+                addEdge(redStartTop, topScale);
+                addEdge(blueStartTop, topScale);
+                addEdge(redStartBottom, bottomScale);
                 addEdge(blueStartBottom, bottomScale);
 
                 // Eases driving straight across to enemy switches.
