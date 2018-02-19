@@ -40,10 +40,6 @@ public class Robot extends IterativeRobot {
 	private OI oi;
 	private MatchData matchData;
 	private Encoder encoder;
-	private LowerArm lower;
-	private RaiseArm raise;
-	
-	boolean armRising;
 
 	@Override
 	public void robotInit() {
@@ -58,15 +54,11 @@ public class Robot extends IterativeRobot {
 				new WPI_TalonSRX(RobotMap.LOWER_RIGHT_INTAKE));
 		arm = new Arm(new DoubleSolenoid(RobotMap.ARM_PORT_IN,
 				RobotMap.ARM_PORT_OUT));
-		lower = new LowerArm(arm);
-		raise = new RaiseArm(arm);
 		launcher = new Launcher();
 		climber = new Climber();
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
 		encoder = new Encoder(0, 1);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
-		armRising = false;
-		// TODO
 		//currentPosition = new Vector2(0, 0);
 	}
 
@@ -108,13 +100,10 @@ public class Robot extends IterativeRobot {
 			upperIntake.stop();
 			lowerIntake.stop();
 		}
-		if(oi.armOut.get()) {
-			if(armRising) {
-				arm.lower();
-			} else {
-				arm.raise();
-			}
-			armRising = !armRising;
+		if(oi.rightJoystick.getThrottle() > 0) {
+			arm.raise();
+		} else {
+			arm.lower();
 		}
 	}
 }
