@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1759.commands;
+package org.usfirst.frc.team1759.robot.commands;
 
 import org.usfirst.frc.team1759.robot.subsystems.Arm;
 
