@@ -76,36 +76,46 @@ public class Map {
          * autonomous mode.  For the simulation, we will display the positions of
          * all the actual waypoints that the actual robot will visit -- but
          * rendered in ASCII.
-         * 
+         *
          * This function adds these individual waypoints.  They don't move or
          * change once added.
-         * 
-         * @param waypoint The waypoint Node to register. 
+         *
+         * @param waypoint The waypoint Node to register.
          */
         public void AddWaypoint(Node waypoint) {
-        	waypoints.add(waypoint);
-        	
+                waypoints.add(waypoint);
+
         }
-        
+
+        /***
+         * Got a Graph object?  Di you fill it with waypoints already?  Well,
+         * we can draw them.
+         *
+         * @param current The waypoint from which to begin a recursive walk
+         *                 through the graph.
+         * @param visitedNodeIds A bag of all the IDs for all the nodes that
+         *                        recursion has touched so far.  It should
+         *                        start out empty.
+         */
         public void AddWaypointsFromGraph(Node current, HashSet<Integer> visitedNodeIds) {
-        	/** 
-        	 * This says if the current starting node is already visited, then skip all of the remaining code. 
-        	 */
-        	if (visitedNodeIds.contains(current.id)) {
-        		return;
-        	}
-        	/**
-        	 * then marks as visited
-        	 */
-        	visitedNodeIds.add(current.id);
-        	AddWaypoint(current);
-        	
-        	java.util.List<Node> neighbors = current.neighbors;
-			for (int i = 0; i < neighbors.size(); i++) {
-				Node neighbor = neighbors.get(i);
-				AddWaypointsFromGraph(neighbor, visitedNodeIds);
-			}
-        	
+                /**
+                 * This says if the current starting node is already visited, then skip all of the remaining code.
+                 */
+                if (visitedNodeIds.contains(current.id)) {
+                        return;
+                }
+                /**
+                 * then marks as visited
+                 */
+                visitedNodeIds.add(current.id);
+                AddWaypoint(current);
+
+                java.util.List<Node> neighbors = current.neighbors;
+                        for (int i = 0; i < neighbors.size(); i++) {
+                                Node neighbor = neighbors.get(i);
+                                AddWaypointsFromGraph(neighbor, visitedNodeIds);
+                        }
+
         }
 
         public Map(double widthInFeet, double heightInFeet) {
@@ -113,8 +123,8 @@ public class Map {
                 height = heightInFeet;
                 waypoints = new ArrayList<>();
         }
-        
-        
+
+
 
         // Renders the map and everything in it to standard output.
         public void draw(int screenWidth, int screenHeight) {
@@ -169,19 +179,16 @@ public class Map {
                 drawCharacter(virtualBuffer, screenWidth, screenWidth - 1, 0,                 WHITE, '\\');
                 drawCharacter(virtualBuffer, screenWidth, screenWidth - 1, screenHeight - 1,  WHITE, '/');
 
-                // TODO: Draw waypoints.
-                
+                // Draw the waypoints the robot will be traveling to.
+
                 for (Node waypoint: waypoints) {
-                	
-                	/**
-                	 * creates the screen coordinates based off of the virtual field coordinates
-                	 */
-                	Point screenCoordinate = new Point(waypoint.point.x * scale, waypoint.point.y * scale);
-                	drawCharacter(virtualBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), GREEN, '$');
-                	
+
+                        Point screenCoordinate = virtualCoordinateToScreenCoordinate(waypoint.point, screenWidth, screenHeight, scale);
+                        drawCharacter(virtualBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), GREEN, '$');
+
                 }
 
-                // TODO: Draw "you" (the robot and its direction vector.)
+                // TODO: Draw "you" (that is, draw the robot and its direction vector.)
 
                 // Render the whole buffer.
 
@@ -197,6 +204,33 @@ public class Map {
                         }
                         System.out.print('\n');
                 }
+        }
+
+        /***
+         * Helper function for draw().  Converts an (x, y) coordinate in feet
+         * on the virtual game arena to an integer screen coordinate.
+         * 
+         * (0,0) always maps to the center of the screen; the rest depends on
+         * the scaleFactor.
+         *
+         * @param virtualCoordinateInFeet The position of something on the
+         *                                 virtual game arena, like a robot or
+         *                                 a waypoint.
+         * @param screenWidth             The width of the screen in
+         *                                 characters.  Only needed to that we
+         *                                 can place (0ft, 0ft) at the center
+         *                                 of the screen.
+         * @param screenHeight                     The height of the screen in
+         *                                 characters.  Needed for the same
+         *                                 reasons as screenWidth.
+         * @param scaleFactor             A multiplier that converts virtual
+         *                                 coordinates to screen coordinates.
+         * @return                        A screen position.
+         */
+        private static Point virtualCoordinateToScreenCoordinate(Point virtualCoordinateInFeet, int screenWidth, int screenHeight, double scaleFactor) {
+                Point screenPosition = new Point(virtualCoordinateInFeet.x * scaleFactor + screenWidth/2,
+                                                                                 virtualCoordinateInFeet.y * scaleFactor + screenHeight/2);
+                return screenPosition;
         }
 
         private void drawCharacter(ArrayList<ScreenCharacter> virtualBuffer, int maxX, int x, int y, int color, char c) {
