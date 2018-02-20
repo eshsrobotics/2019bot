@@ -17,8 +17,8 @@ public class WaypointSimulator {
          */
         public static void main(String[] args) throws Exception {
 
-                System.out.println("something different");                
-                testFalseRobotMovementAnimation();                
+                System.out.println("something different");
+                testFalseRobotMovementAnimation();
                 testAddWaypointsFromGraph();
                 testFindShortestPath();
         }
@@ -35,21 +35,21 @@ public class WaypointSimulator {
 
                 double robotData[][] = {
                         // X velocity, Y velocity; transition time stamp (milliseconds)
-                        {  0.1, -0.1, 1000.000 },                        
-                        {  0.1,  0,   2000.000 },
-                        {  0.1,  0.1, 3000.000 },
-                        {  0,    0.1, 4000.000 },
-                        { -0.1,  0.1, 5000.000 },                        
-                        { -0.1,  0,   6000.000 },
-                        { -0.1, -0.1, 7000.000 },                        
-                        {  0,   -0.1, 8000.000 },
-                        {  0,    0,   9000.000 }, // Stop here.
+                        {  0.25, -0.25, 1000.000 },
+                        {  0.25,  0,    2000.000 },
+                        {  0.25,  0.25, 3000.000 },
+                        {  0,     0.25, 4000.000 },
+                        { -0.25,  0.25, 5000.000 },
+                        { -0.25,  0,    6000.000 },
+                        { -0.25, -0.25, 7000.000 },
+                        {  0,    -0.25, 8000.000 },
+                        {  0,     0,    9000.000 }, // Stop here.
                 };
                 Point currentPosition = new Point(0, 0);
                 int robotDataIndex = 0;
                 Vector2 currentVector = new Vector2(0, 0);
 
-                final double FRAMES_PER_SECOND = 10.0;
+                final double FRAMES_PER_SECOND = 20.0;
                 final double MILLISECONDS_PER_FRAME = 1000.0 / FRAMES_PER_SECOND;
                 final double totalSimulationTimeMilliseconds = robotData[robotData.length - 1][2];
                 final double startTimeMilliseconds = System.currentTimeMillis();
@@ -59,7 +59,7 @@ public class WaypointSimulator {
 
                         // Move the robot.
                         currentVector = new Vector2(robotData[robotDataIndex][0], robotData[robotDataIndex][1]);
-                        currentPosition.add(currentVector);
+                        currentPosition = currentPosition.add(currentVector);
                         map.setRobotPosition(currentPosition);
                         map.setRobotVector(currentVector);
 
