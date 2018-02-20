@@ -1,11 +1,11 @@
 package tests;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 import models.Graph;
 import models.Node;
+import models.Vector2;
 
 public class WaypointSimulator {
 
@@ -37,6 +37,7 @@ public class WaypointSimulator {
         	Graph graph = new Graph(null);
         	map.AddWaypointsFromGraph(graph);
         	map.setRobotPosition(graph.getStartingPosition(graph.RIGHT_POSITION, graph.BLUE_ALLIANCE).point);
+        	map.setRobotVector(new Vector2(300, 200));
         	map.draw(120, 40);
         	
         }

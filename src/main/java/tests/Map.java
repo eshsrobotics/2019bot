@@ -1,14 +1,13 @@
 package tests;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Vector;
 
-
 import models.Graph;
 import models.Node;
 import models.Point;
+import models.Vector2;
 /**
  * Draws the game field in beautiful ASCII.
  *
@@ -39,8 +38,16 @@ public class Map {
         private static final int BRIGHT_MAGENTA = 13;
         private static final int BRIGHT_CYAN = 14;
         private static final int BRIGHT_WHITE = 15;
+        private static final String DIRECTION_ARROWS_PER_OCTANT = "-/|\\-/|\\";
 
         private Point robotPosition;
+        private Vector2 robotVector;
+        
+        /**
+         * Octant will return a value between 0 and 7. 0 is anything between 0 and 45 degrees. The octants move in 45 degree increments
+		 * counterclockwise until it reaches 360 degrees.
+         */
+        private int octant;		
 
         private class ScreenCharacter {
                 public ScreenCharacter() {
@@ -153,6 +160,23 @@ public class Map {
                 this.robotPosition = robotPosition;
                 return robotPosition;
         }
+        
+        public Vector2 setRobotVector(Vector2 robotVector) {
+        	this.robotVector = robotVector.normalized();
+        	double thetaRadians = this.robotVector.angleBetween(new Vector2(1,0));
+        	
+        	// Right now, anything between 0 degrees and 45 degrees is quadrant 0 (which maps to "-".)
+        	// Let's displace the quadrants by 45/2 degrees to mke this look more intuitive.
+        	thetaRadians += Math.PI / 8;
+        	if (thetaRadians > 2 * Math.PI) {
+        		thetaRadians -= 2 * Math.PI;
+        	}
+        	
+        	double normalizedTheta = thetaRadians / (2 * Math.PI);
+        	octant = (int) Math.floor(normalizedTheta * 8);
+        	return robotVector;
+        }
+        
 
         // Renders the map and everything in it to standard output.
         public void draw(int screenWidth, int screenHeight) {
@@ -217,6 +241,10 @@ public class Map {
                 
                 Point robotScreenPosition = virtualCoordinateToScreenCoordinate(robotPosition, screenWidth, screenHeight, scale);
                 drawCharacter(virtualBuffer, screenWidth, (int) Math.round(robotScreenPosition.x), (int) Math.round(robotScreenPosition.y), BRIGHT_RED, '&');
+                
+                Point frontOfRobot = robotScreenPosition.add(robotVector);
+                Character arrowCharacter = DIRECTION_ARROWS_PER_OCTANT.charAt(octant);
+                drawCharacter(virtualBuffer, screenWidth, (int) frontOfRobot.x, (int) frontOfRobot.y, YELLOW, arrowCharacter);
 
                 // Render the whole buffer.
 
