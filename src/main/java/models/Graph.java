@@ -128,12 +128,16 @@ public class Graph {
                 addEdge(bottomScale, redSwitchBottom);
                 addEdge(bottomScale, blueSwitchBottom);
 
-                if(matchData.getAlliance() == DriverStation.Alliance.Blue) {
-                        currentNode = blueStartBottom;
-                        target = redSwitchSetupTop;
-                } else {
-                        currentNode = redStartBottom;
-                        target = blueSwitchSetupTop;
+                if (matchData != null) {
+                        // If you have null matchData, you'll have to set the
+                        // start and target nodes yourself!
+                        if(matchData.getAlliance() == DriverStation.Alliance.Blue) {
+                                currentNode = blueStartBottom;
+                                target = redSwitchSetupTop;
+                        } else {
+                                currentNode = redStartBottom;
+                                target = blueSwitchSetupTop;
+                        }
                 }
         }
 
@@ -188,7 +192,7 @@ public class Graph {
          *
          * @param start The node to start our search from.
          * @param target The node we are trying to reach.
-         * @return A LinkedList<Node>.  If the linked list is empty, the start
+         * @return A LinkedList<Node>.  If the linked list has one element, the start
          *          IS the target; if the linked list is null, there is no path
          *          from the start to the target.
          */
@@ -215,7 +219,9 @@ public class Graph {
 
                 if (current.id == target.id) {
                         // Direct hit.
-                        return new LinkedList<Node>();
+                        LinkedList<Node> result = new LinkedList<Node>();
+                        result.addFirst(current);
+                        return result;
                 }
 
                 // *This* node has been visited.
@@ -226,10 +232,15 @@ public class Graph {
                 for (Node neighbor : current.neighbors) {
                         if (!visitedNodeIds.contains(neighbor.id)) {
                                 LinkedList<Node> path = findShortestPathRecursive(neighbor, target, visitedNodeIds);
-                                path.addFirst(current);
+                                if (path != null) {
+                                        // A route was found to the target.
+                                        path.addFirst(current);
 
-                                if (shortestPath == null || (path != null && path.size() < shortestPath.size())) {
+                                    if (shortestPath == null || path.size() < shortestPath.size()) {
                                         shortestPath = path;
+                                    }
+                                } else {
+                                        // No route to target from current neighbor.
                                 }
                         }
                 }
