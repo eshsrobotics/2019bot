@@ -54,18 +54,19 @@ public class Map {
          * it's "the robot."
          */
         private Point robotPosition;
-        
+
         /***
          * The Map can indicate "the robot's" current direction vector --
-         * somewhat curdely, though, given that this is ASCII. 
+         * somewhat curdely, though, given that this is ASCII.
          */
         private Vector2 robotVector;
-        
+
         /**
-         * Octant will return a value between 0 and 7. 0 is anything between 0 and 45 degrees. The octants move in 45 degree increments
-		 * counterclockwise until it reaches 360 degrees.
+         * Octant will return a value between 0 and 7. 0 is anything between 0
+         * and 45 degrees. The octants move in 45 degree increments
+         * counterclockwise until it reaches 360 degrees.
          */
-        private int octant;		
+        private int octant;
 
         /***
          * A ScreenCharacter is a struct with a color code and a character.
@@ -208,41 +209,58 @@ public class Map {
                 this.robotPosition = robotPosition;
                 return robotPosition;
         }
-        
+
+        /***
+         * Changes the direction in which our imaginary robot points.
+         * 
+         * @param robotVector The new direction to face.
+         * @return The normalized version of the vector we were given, just in
+         *         case you need it for something.
+         */
         public Vector2 setRobotVector(Vector2 robotVector) {
-        	this.robotVector = robotVector.normalized();
-        	double thetaRadians = this.robotVector.angleBetween(new Vector2(1,0));
-        	
-        	// Right now, anything between 0 degrees and 45 degrees is quadrant 0 (which maps to "-".)
-        	// Let's displace the quadrants by 45/2 degrees to mke this look more intuitive.
-        	thetaRadians += Math.PI / 8;
-        	if (thetaRadians > 2 * Math.PI) {
-        		thetaRadians -= 2 * Math.PI;
-        	}
-        	
-        	double normalizedTheta = thetaRadians / (2 * Math.PI);
-        	octant = (int) Math.floor(normalizedTheta * 8);
-        	return robotVector;
+                this.robotVector = robotVector.normalized();
+                
+                // The angle between the X axis and the normalized vector will
+                // be a value between 0 and 2*Pi radians.                                
+                double thetaRadians = -Math.atan2(this.robotVector.y, this.robotVector.x);
+                if (thetaRadians < 0) {
+                    thetaRadians += 2 * Math.PI;
+                }               
+
+                // Right now, anything between 0 degrees and 45 degrees is
+                // quadrant 0 (which maps to "-".)
+                //
+                // Let's displace the quadrants by 45/2 degrees to make this
+                // look more intuitive.
+                thetaRadians += Math.PI / 8;
+                if (thetaRadians > 2 * Math.PI) {
+                        thetaRadians -= 2 * Math.PI;
+                }
+
+                double normalizedTheta = thetaRadians / (2 * Math.PI);
+                // System.out.printf("%s: %.2fπ radians      ", this.robotVector.toString(), thetaRadians/Math.PI);
+                this.octant = (int) Math.floor(normalizedTheta * 8);
+                return this.robotVector;
         }
-        
+
 
         /***
          * Clears the screen in a roughly terminal-independent way and calls
          * resetCursor() on your behalf.
          */
-    	public void clearScreen() {
-    		System.out.printf("\033[2J"); // Clear screen.
-    		resetCursor();
-    	}
-    	
-    	/***
-    	 * Returns the cursor to a home position in a roughly 
-    	 * terminal-independent way.
-    	 */
-    	public void resetCursor() {
-    	    System.out.printf("\033[H");
-    	}
-        
+        public void clearScreen() {
+                System.out.printf("\033[2J"); // Clear screen.
+                resetCursor();
+        }
+
+        /***
+         * Returns the cursor to a home position in a roughly
+         * terminal-independent way.
+         */
+        public void resetCursor() {
+            System.out.printf("\033[H");
+        }
+
         // Renders the map and everything in it to standard output.
         public void draw(int screenWidth, int screenHeight) {
 
@@ -308,8 +326,9 @@ public class Map {
                 drawCharacter(virtualBuffer, screenWidth, (int) Math.round(robotScreenPosition.x), (int) Math.round(robotScreenPosition.y), BRIGHT_RED, '&');
                 
                 Point frontOfRobot = robotScreenPosition.add(robotVector);
+                // Character arrowCharacter = new Integer(octant).toString().charAt(0); 
                 Character arrowCharacter = DIRECTION_ARROWS_PER_OCTANT.charAt(octant);
-                drawCharacter(virtualBuffer, screenWidth, (int) frontOfRobot.x, (int) frontOfRobot.y, YELLOW, arrowCharacter);
+                drawCharacter(screenBuffer, screenWidth, (int)Math.round(frontOfRobot.x), (int)Math.round(frontOfRobot.y), YELLOW, arrowCharacter);
 
                 // Render the whole buffer.
 

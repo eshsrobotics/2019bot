@@ -51,4 +51,11 @@ public class Point {
         public double dist(Point other) {
                 return vectorTo(other).length();
         }
+
+        /***
+         * Converts this point to a string.
+         */
+        public String toString() {
+            return String.format("Point(%.3f, %.3f)", x, y);
+        }
 }

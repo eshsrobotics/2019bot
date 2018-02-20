@@ -17,10 +17,10 @@ public class WaypointSimulator {
          */
         public static void main(String[] args) throws Exception {
 
-                System.out.println("something different");
-                //testFindShortestPath();
+                System.out.println("something different");                
+                testFalseRobotMovementAnimation();                
                 testAddWaypointsFromGraph();
-                testFalseRobotMovementAnimation();
+                testFindShortestPath();
         }
 
 
@@ -35,11 +35,15 @@ public class WaypointSimulator {
 
                 double robotData[][] = {
                         // X velocity, Y velocity; transition time stamp (milliseconds)
-                        {  0.1,  0,   2000.000  },
-                        {  0,    0.1, 4000.000  },
-                        { -0.1,  0,   6000.000  },
-                        {  0,   -0.1, 8000.000  },
-                        {  0,    0,   10000.000 }, // Stop here.
+                        {  0.1, -0.1, 1000.000 },                        
+                        {  0.1,  0,   2000.000 },
+                        {  0.1,  0.1, 3000.000 },
+                        {  0,    0.1, 4000.000 },
+                        { -0.1,  0.1, 5000.000 },                        
+                        { -0.1,  0,   6000.000 },
+                        { -0.1, -0.1, 7000.000 },                        
+                        {  0,   -0.1, 8000.000 },
+                        {  0,    0,   9000.000 }, // Stop here.
                 };
                 Point currentPosition = new Point(0, 0);
                 int robotDataIndex = 0;

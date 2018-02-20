@@ -95,7 +95,13 @@ public class Vector2 {
          */
         public double angleBetween(Vector2 other) {
                 // a • b = |a| |b| cos θ
-                return Math.acos(this.length() * other.length()) / this.dot(other);
+                return Math.acos(this.dot(other) / (this.length() * other.length()));
         }
 
+        /***
+         * Converts this vector to a string.
+         */
+        public String toString() {
+            return String.format("Vector(%.3f, %.3f)", x, y);
+        }
 }
