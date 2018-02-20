@@ -21,8 +21,10 @@ public class OI {
 	
 	public Button launchOut;
 	public Button launchIn;
-	public Button intakeOut;
-	public Button intakeIn;
+	public Button intakeOutJoystick;
+	public Button intakeInJoystick;
+	public Button intakeOutNetwork;
+	public Button intakeInNetwork;
 	public Button armOut;
 	public Button armIn;
 	public Button forward;
@@ -60,13 +62,18 @@ public class OI {
 
 		// Can set to false to force keyboard controls
 		joysticksAttached = leftJoystick != null && rightJoystick != null;
+		
 
+		
+		intakeOutJoystick = new JoystickButton(rightJoystick, INTAKE_OUT_BUTTON);
+		intakeInJoystick = new JoystickButton(rightJoystick, INTAKE_IN_BUTTON)
+		;intakeInNetwork = new NetworkButton(inputTable, "Q");
+		intakeOutNetwork = new NetworkButton(inputTable, "E");
+		
 		if (joysticksAttached) {
 			System.out.println("Creating OI with joystick buttons");
 			launchOut = new JoystickButton(rightJoystick, LAUNCHING_BUTTON_OUT);
 			launchIn = new JoystickButton(leftJoystick, LAUNCHING_BUTTON_IN);
-			intakeOut = new JoystickButton(rightJoystick, INTAKE_OUT_BUTTON);
-			intakeIn = new JoystickButton(rightJoystick, INTAKE_IN_BUTTON);
 			armOut = new JoystickButton(rightJoystick, ARM_OUT_BUTTON);
 			armIn = new JoystickButton(rightJoystick, ARM_IN_BUTTON);
 			climbUp = new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON);
@@ -99,8 +106,6 @@ public class OI {
 			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
 			launchOut = new NetworkButton(inputTable, "J");
 			launchIn = new NetworkButton(inputTable, "K");
-			intakeIn = new NetworkButton(inputTable, "Q");
-			intakeOut = new NetworkButton(inputTable, "E");
 			armIn = new NetworkButton(inputTable, "Up");
 			armOut = new NetworkButton(inputTable, "Down");
 			climbUp = new NetworkButton(inputTable, "N");
