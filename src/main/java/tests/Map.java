@@ -121,7 +121,7 @@ public class Map {
 
         /**
          * The width and height of the game field in *feet*.  (FRC likes
-         * imperial meassurements.)
+         * imperial measurements.)
          */
         private double width, height;
         private ArrayList<Node> waypoints;
@@ -162,12 +162,12 @@ public class Map {
          */
         public void AddWaypoint(Node waypoint) {
                 waypoints.add(waypoint);
-
         }
+
         /**
-         *
          * Got a Graph object?  Did you fill it with waypoints already?  Well,
          * we can draw them.
+
          * @param graph: The graph whose nodes need to be drawn.
          */
         public void AddWaypointsFromGraph(Graph graph) {
@@ -323,14 +323,14 @@ public class Map {
                 drawCharacter(screenBuffer, screenWidth, screenWidth - 1, 0,                 WHITE, '\\');
                 drawCharacter(screenBuffer, screenWidth, screenWidth - 1, screenHeight - 1,  WHITE, '/');
 
-                // Draw the waypoints the robot will be traveling to.
+                // Draws the waypoints the robot will be traveling to.
 
                 for (Node waypoint: waypoints) {
                         Point screenCoordinate = virtualCoordinateToScreenCoordinate(waypoint.point, screenWidth, screenHeight, scale);
                         drawCharacter(screenBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), BRIGHT_GREEN, '$');
                 }
 
-                // Draw "you" (that is, draw the robot and its direction vector.)
+                // Draws "you" (that is, draws the robot and its direction vector.)
 
                 Point robotScreenPosition = virtualCoordinateToScreenCoordinate(robotPosition, screenWidth, screenHeight, scale);
                 drawCharacter(screenBuffer, screenWidth, (int) Math.round(robotScreenPosition.x), (int) Math.round(robotScreenPosition.y), BRIGHT_RED, '&');
@@ -340,7 +340,7 @@ public class Map {
                 Character arrowCharacter = DIRECTION_ARROWS_PER_OCTANT.charAt(octant);
                 drawCharacter(screenBuffer, screenWidth, (int)Math.round(frontOfRobot.x), (int)Math.round(frontOfRobot.y), YELLOW, arrowCharacter);
 
-                // Render the whole buffer.
+                // Render the whole screen buffer.
 
                 for (int offset = 0, row = 0; row < screenHeight; ++row) {
                         for (int column = 0; column < screenWidth; ++column, ++offset) {
@@ -361,17 +361,17 @@ public class Map {
          * the scaleFactor.
          *
          * @param virtualCoordinateInFeet The position of something on the
-         *                                 virtual game arena, like a robot or
-         *                                 a waypoint.
+         *                                virtual game arena, like a robot or
+         *                                a waypoint.
          * @param screenWidth             The width of the screen in
-         *                                 characters.  Only needed to that we
-         *                                 can place (0ft, 0ft) at the center
-         *                                 of the screen.
-         * @param screenHeight                     The height of the screen in
-         *                                 characters.  Needed for the same
-         *                                 reasons as screenWidth.
+         *                                characters.  Only needed to that we
+         *                                can place (0ft, 0ft) at the center
+         *                                of the screen.
+         * @param screenHeight            The height of the screen in
+         *                                characters.  Needed for the same
+         *                                reasons as screenWidth.
          * @param scaleFactor             A multiplier that converts virtual
-         *                                 coordinates to screen coordinates.
+         *                                coordinates to screen coordinates.
          * @return                        A screen position.
          */
         private static Point virtualCoordinateToScreenCoordinate(Point virtualCoordinateInFeet, int screenWidth, int screenHeight, double scaleFactor) {
