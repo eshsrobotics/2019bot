@@ -33,6 +33,8 @@ public class Map {
         private static final int WHITE = 7;
         private static final int GRAY = 8;
 
+        private Point robotPosition;
+
         private class ScreenCharacter {
                 public ScreenCharacter() {
                         color = BLUE;
@@ -122,9 +124,13 @@ public class Map {
                 width = widthInFeet;
                 height = heightInFeet;
                 waypoints = new ArrayList<>();
+                setRobotPosition(new Point(10.6, 17.2));
         }
 
-
+        public Point setRobotPosition(Point robotPosition) {
+                this.robotPosition = robotPosition;
+                return robotPosition;
+        }
 
         // Renders the map and everything in it to standard output.
         public void draw(int screenWidth, int screenHeight) {
@@ -189,6 +195,7 @@ public class Map {
                 }
 
                 // TODO: Draw "you" (that is, draw the robot and its direction vector.)
+                drawCharacter(virtualBuffer, screenWidth, (int) Math.round(robotPosition.x * scale), (int) Math.round(robotPosition.y * scale), 1, '&');
 
                 // Render the whole buffer.
 
@@ -209,7 +216,7 @@ public class Map {
         /***
          * Helper function for draw().  Converts an (x, y) coordinate in feet
          * on the virtual game arena to an integer screen coordinate.
-         * 
+         *
          * (0,0) always maps to the center of the screen; the rest depends on
          * the scaleFactor.
          *
