@@ -2,9 +2,11 @@ package tests;
 
 import java.awt.List;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Vector;
 
 
+import models.Graph;
 import models.Node;
 import models.Point;
 /**
@@ -82,6 +84,27 @@ public class Map {
          */
         public void AddWaypoint(Node waypoint) {
         	waypoints.add(waypoint);
+        	
+        }
+        
+        public void AddWaypointsFromGraph(Node current, HashSet<Integer> visitedNodeIds) {
+        	/** 
+        	 * This says if the current starting node is already visited, then skip all of the remaining code. 
+        	 */
+        	if (visitedNodeIds.contains(current.id)) {
+        		return;
+        	}
+        	/**
+        	 * then marks as visited
+        	 */
+        	visitedNodeIds.add(current.id);
+        	AddWaypoint(current);
+        	
+        	java.util.List<Node> neighbors = current.neighbors;
+			for (int i = 0; i < neighbors.size(); i++) {
+				Node neighbor = neighbors.get(i);
+				AddWaypointsFromGraph(neighbor, visitedNodeIds);
+			}
         	
         }
 

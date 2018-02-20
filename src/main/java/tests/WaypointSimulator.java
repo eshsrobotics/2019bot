@@ -1,5 +1,6 @@
 package tests;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.AbstractMap;
 
@@ -20,18 +21,27 @@ public class WaypointSimulator {
                 map.draw(40, 20);
                 System.out.println("something different");
                 testFindShortestPath();
+                testAddWaypointsFromGraph();
         }
-        private static void testFindShortestPath() {
-        	Node a = new Node(0, 11); 
-        	Node b = new Node(0, 12); 
-        	Node c = new Node(0, 13); 
-        	Node d = new Node(0, 14); 
-        	Node e = new Node(0, 15); 
-        	Node f = new Node(0, 16); 
-        	Node g = new Node(0, 17);
-        	
-        	// Let's take those nodes and give them names.
+        
+        private static final void testAddWaypointsFromGraph() {
+        	Map foo = new Map(59, 8);
         	HashMap<Integer, String> nameToIdTable = new HashMap<Integer, String>();
+        	Graph graph = createSampleGraph(nameToIdTable);
+        	HashSet<Integer> bar = new HashSet<Integer>();
+        	foo.AddWaypointsFromGraph(graph.currentNode, bar);
+        	foo.draw(40, 50);
+        }
+        
+        private static final Graph createSampleGraph(HashMap<Integer, String> nameToIdTable) {
+        	Node a = new Node(2, 1); 
+        	Node b = new Node(18, 2); 
+        	Node c = new Node(28, 5); 
+        	Node d = new Node(9, 6); 
+        	Node e = new Node(31, 3); 
+        	Node f = new Node(52, 4); 
+        	Node g = new Node(42, 7);
+        	
         	nameToIdTable.put(a.id, "A");
         	nameToIdTable.put(b.id, "B");
         	nameToIdTable.put(c.id, "C");
@@ -53,8 +63,17 @@ public class WaypointSimulator {
            	graph.addEdge(f, g);
            	graph.addEdge(e, d);
            	
-           	LinkedList <Node> findPathResult = graph.findPath(a, d);
-           	LinkedList <Node> findShortestPathResult = graph.findShortestPath(a, d);
+           	return graph;
+        }
+        
+        private static void testFindShortestPath() {
+    
+        	// Let's take those nodes and give them names.
+        	HashMap<Integer, String> nameToIdTable = new HashMap<Integer, String>();
+        	Graph graph = createSampleGraph(nameToIdTable);
+           	
+           	LinkedList <Node> findPathResult = graph.findPath(graph.currentNode, graph.target);
+           	LinkedList <Node> findShortestPathResult = graph.findShortestPath(graph.currentNode, graph.target);
            	System.out.printf("find path result = %s\n", printPath(findPathResult, nameToIdTable));
            	System.out.printf("findShortestPath() result = %s\n", printPath(findShortestPathResult, nameToIdTable));
         }
