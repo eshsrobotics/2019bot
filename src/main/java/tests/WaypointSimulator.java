@@ -94,7 +94,7 @@ public class WaypointSimulator {
                 Map map = new Map();
                 Graph graph = new Graph(null);
                 map.AddWaypointsFromGraph(graph);
-                map.setRobotPosition(graph.getStartingPosition(graph.RIGHT_POSITION, graph.BLUE_ALLIANCE).point);
+                map.setRobotPosition(graph.getStartingPosition(Graph.RIGHT_POSITION, Graph.BLUE_ALLIANCE).point);
                 map.setRobotVector(new Vector2(300, 200));
                 map.draw(120, 40);
         }

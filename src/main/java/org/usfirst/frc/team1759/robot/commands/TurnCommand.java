@@ -1,7 +1,6 @@
 package org.usfirst.frc.team1759.robot.commands;
 
 import models.Constants;
-import models.Point;
 import models.Vector2;
 
 import org.usfirst.frc.team1759.robot.Sensors;

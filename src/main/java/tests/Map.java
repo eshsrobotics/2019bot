@@ -2,7 +2,6 @@ package tests;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Vector;
 
 import models.Graph;
 import models.Node;
@@ -24,7 +23,7 @@ public class Map {
 
         // We support the 16 standard ANSI colors by default.  We could support
         // up to 256, but that would require me to care more than I currently
-        // do. 
+        // do.
         private static final int BLACK = 0;
         private static final int RED = 1;
         private static final int GREEN = 2;
@@ -41,7 +40,7 @@ public class Map {
         private static final int BRIGHT_MAGENTA = 13;
         private static final int BRIGHT_CYAN = 14;
         private static final int BRIGHT_WHITE = 15;
-        
+
         /**
          * The "arrow character" to use for each octant, starting
          * counterclockwise with octant 0 (between the positive X and positive
@@ -90,34 +89,34 @@ public class Map {
          *
          *  You can sample the sequences yourself from an ANSI terminal running
          *  the Bash shell using:
-         *  
+         *
          *    echo "$(tput setaf N)Testing"
-         *     
+         *
          *  for the dull colors, and
-         *  
+         *
          *    echo "$(tput bold)$(tput setaf N)Testing brightly"
-         *    
+         *
          *  for the bright ones.  N ranges from 0 to 7 here.
          */
         private String colorSequences[] = {
-                        // Dull colors.
-                        "\033[0;30m", // Black
-                        "\033[0;31m", // Blue
-                        "\033[0;32m", // Green
-                        "\033[0;33m", // Teal
-                        "\033[0;34m", // Red
-                        "\033[0;35m", // Magenta
-                        "\033[0;36m", // Dull Brown/Orange
-                        "\033[0;37m", // White
-                        // Bright colors.
-                        "\033[1;30m", // Gray
-                        "\033[1;31m", // Bright Red
-                        "\033[1;32m", // Bright Green
-                        "\033[1;33m", // Bright Cyan
-                        "\033[1;34m", // Bright Blue
-                        "\033[1;35m", // Bright Magenta
-                        "\033[1;36m", // Yellow
-                        "\033[1;37m", // Bright White
+                // Dull colors.
+                "\033[0;30m", // Black
+                "\033[0;31m", // Blue
+                "\033[0;32m", // Green
+                "\033[0;33m", // Teal
+                "\033[0;34m", // Red
+                "\033[0;35m", // Magenta
+                "\033[0;36m", // Dull Brown/Orange
+                "\033[0;37m", // White
+                // Bright colors.
+                "\033[1;30m", // Gray
+                "\033[1;31m", // Bright Red
+                "\033[1;32m", // Bright Green
+                "\033[1;33m", // Bright Cyan
+                "\033[1;34m", // Bright Blue
+                "\033[1;35m", // Bright Magenta
+                "\033[1;36m", // Yellow
+                "\033[1;37m", // Bright White
         };
 
         /**
@@ -130,7 +129,7 @@ public class Map {
         /***
          * Constructs a virtual field as wide and high as the real thing.  It
          * will start with no waypoints (either add them one by one yourself or
-         * add a Graph with the correct waypoints in it.) 
+         * add a Graph with the correct waypoints in it.)
          */
         public Map() {
                 this(56.0, 27.0);
@@ -139,8 +138,8 @@ public class Map {
         /***
          * Constructs a Map with arbitrary dimensions and an empty set of
          * waypoints.
-         * 
-         * @param widthInFeet *Virtual* width of the game arena, in feet. 
+         *
+         * @param widthInFeet *Virtual* width of the game arena, in feet.
          * @param heightInFeet *Virtual* height of the game area, in feet.
          */
         public Map(double widthInFeet, double heightInFeet) {
@@ -149,7 +148,7 @@ public class Map {
                 waypoints = new ArrayList<>();
                 setRobotPosition(new Point(10.6, 17.2));
         }
-        
+
         /**
          * "Waypoints" are the positions that our robot must visit during
          * autonomous mode.  For the simulation, we will display the positions of
@@ -166,17 +165,17 @@ public class Map {
 
         }
         /**
-         * 
+         *
          * Got a Graph object?  Did you fill it with waypoints already?  Well,
          * we can draw them.
          * @param graph: The graph whose nodes need to be drawn.
          */
         public void AddWaypointsFromGraph(Graph graph) {
-        	AddWaypointsFromGraph(graph.currentNode, new HashSet<Integer>());
+                AddWaypointsFromGraph(graph.currentNode, new HashSet<Integer>());
         }
 
         /***
-         * Underlying implementation of the public AddWaypointsFromGraph 
+         * Underlying implementation of the public AddWaypointsFromGraph
          * function.
          *
          * @param current The waypoint from which to begin a recursive walk
@@ -191,7 +190,7 @@ public class Map {
                 if (visitedNodeIds.contains(current.id)) {
                         return;
                 }
-                
+
                 // The current node is officially visited.
                 visitedNodeIds.add(current.id);
                 AddWaypoint(current);
@@ -212,20 +211,20 @@ public class Map {
 
         /***
          * Changes the direction in which our imaginary robot points.
-         * 
+         *
          * @param robotVector The new direction to face.
          * @return The normalized version of the vector we were given, just in
          *         case you need it for something.
          */
         public Vector2 setRobotVector(Vector2 robotVector) {
                 this.robotVector = robotVector.normalized();
-                
+
                 // The angle between the X axis and the normalized vector will
-                // be a value between 0 and 2*Pi radians.                                
+                // be a value between 0 and 2*Pi radians.
                 double thetaRadians = -Math.atan2(this.robotVector.y, this.robotVector.x);
                 if (thetaRadians < 0) {
                     thetaRadians += 2 * Math.PI;
-                }               
+                }
 
                 // Right now, anything between 0 degrees and 45 degrees is
                 // quadrant 0 (which maps to "-".)
@@ -269,11 +268,18 @@ public class Map {
                 double smallestPhysicalDimension = Math.min(screenWidth, screenHeight);
                 double smallestVirtualDimension = Math.min(width,  height);
 
-                // Got an 80x25 screen:
-                // - A 200x75 board would have a scaleFactor of 25/75 = 1/3.
-                //   That would map the board to 66.6x25.
-                // - A 40x90 board would have a scaleFactor of 25/40 = 5/8.
-                //   That would map the board to 25x56.25.
+                // Calculate a scaling factor that can convert the virtual
+                // coordinates (in feet) to screen coordinates (in characters.)
+                //
+                // Let's test our assumptions with a thought exercise, shall
+                // we?  If we have an 80x25 screen, then, using the formula
+                // below:
+                //   - A 200x75 board would have a scale of 25/75 = 1/3.
+                //     That would map the board to 66.6x25.  That's correct!
+                //   - A 40x90 board would have a scaleFactor of 25/40 = 5/8.
+                //     That would map the board to 25x56.25.  That's correct,
+                //     too!
+
                 double scale = smallestPhysicalDimension / smallestVirtualDimension;
 
                 // But:
@@ -282,51 +288,55 @@ public class Map {
                 //   still pathological!
                 //
                 //   The real scale factor should have been 80/10000 = 1/125, mapping
-                //   the board to 80x0.2.
+                //   the board to 80x0.2.  We had better catch that.
                 double largestVirtualDimension = Math.max(width,  height);
                 double largestPhysicalDimension = Math.max(screenWidth, screenHeight);
                 if (scale * largestVirtualDimension > largestPhysicalDimension) {
                         scale = largestPhysicalDimension / largestVirtualDimension;
                 }
 
-                // Allocate a virtual screen buffer to hold the stuff we're drawing.
-                ArrayList<ScreenCharacter> virtualBuffer = new ArrayList<ScreenCharacter>();
+                // Allocate a virtual screen buffer to hold the stuff we're
+                // drawing.
+                //
+                // I suppose we could draw directly on the screen, but that
+                // might look choppier.
+                ArrayList<ScreenCharacter> screenBuffer = new ArrayList<ScreenCharacter>();
                 for (int i = 0; i < screenWidth * screenHeight; ++i) {
-                        virtualBuffer.add(new ScreenCharacter());
+                        screenBuffer.add(new ScreenCharacter());
                 }
 
                 // Draw the borders first.
                 //
                 // The borders are drawn on the edges, so it's possible for
-                // things to be drawn on top of them. 
+                // things to be drawn on top of them.
                 for (int row = 0; row < screenHeight; ++row) {
                         // Left and right walls.
-                        drawCharacter(virtualBuffer, screenWidth, 0,               row, WHITE, '|');
-                        drawCharacter(virtualBuffer, screenWidth, screenWidth - 1, row, WHITE, '|');
+                        drawCharacter(screenBuffer, screenWidth, 0,               row, WHITE, '|');
+                        drawCharacter(screenBuffer, screenWidth, screenWidth - 1, row, WHITE, '|');
                 }
                 for (int column = 0; column < screenWidth; ++column) {
-                        drawCharacter(virtualBuffer, screenWidth, column, 0,                WHITE, '-');
-                        drawCharacter(virtualBuffer, screenWidth, column, screenHeight - 1, WHITE, '-');
+                        drawCharacter(screenBuffer, screenWidth, column, 0,                WHITE, '-');
+                        drawCharacter(screenBuffer, screenWidth, column, screenHeight - 1, WHITE, '-');
                 }
-                drawCharacter(virtualBuffer, screenWidth, 0,                0,                WHITE, '/');
-                drawCharacter(virtualBuffer, screenWidth, 0,                screenHeight - 1, WHITE, '\\');
-                drawCharacter(virtualBuffer, screenWidth, screenWidth - 1, 0,                 WHITE, '\\');
-                drawCharacter(virtualBuffer, screenWidth, screenWidth - 1, screenHeight - 1,  WHITE, '/');
-                
+                drawCharacter(screenBuffer, screenWidth, 0,                0,                WHITE, '/');
+                drawCharacter(screenBuffer, screenWidth, 0,                screenHeight - 1, WHITE, '\\');
+                drawCharacter(screenBuffer, screenWidth, screenWidth - 1, 0,                 WHITE, '\\');
+                drawCharacter(screenBuffer, screenWidth, screenWidth - 1, screenHeight - 1,  WHITE, '/');
+
                 // Draw the waypoints the robot will be traveling to.
 
                 for (Node waypoint: waypoints) {
                         Point screenCoordinate = virtualCoordinateToScreenCoordinate(waypoint.point, screenWidth, screenHeight, scale);
-                        drawCharacter(virtualBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), BRIGHT_GREEN, '$');
+                        drawCharacter(screenBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), BRIGHT_GREEN, '$');
                 }
 
                 // Draw "you" (that is, draw the robot and its direction vector.)
-                
+
                 Point robotScreenPosition = virtualCoordinateToScreenCoordinate(robotPosition, screenWidth, screenHeight, scale);
-                drawCharacter(virtualBuffer, screenWidth, (int) Math.round(robotScreenPosition.x), (int) Math.round(robotScreenPosition.y), BRIGHT_RED, '&');
-                
+                drawCharacter(screenBuffer, screenWidth, (int) Math.round(robotScreenPosition.x), (int) Math.round(robotScreenPosition.y), BRIGHT_RED, '&');
+
                 Point frontOfRobot = robotScreenPosition.add(robotVector);
-                // Character arrowCharacter = new Integer(octant).toString().charAt(0); 
+                // Character arrowCharacter = new Integer(octant).toString().charAt(0);
                 Character arrowCharacter = DIRECTION_ARROWS_PER_OCTANT.charAt(octant);
                 drawCharacter(screenBuffer, screenWidth, (int)Math.round(frontOfRobot.x), (int)Math.round(frontOfRobot.y), YELLOW, arrowCharacter);
 
@@ -335,11 +345,9 @@ public class Map {
                 for (int offset = 0, row = 0; row < screenHeight; ++row) {
                         for (int column = 0; column < screenWidth; ++column, ++offset) {
                                 if (useColors) {
-                                        System.out.print(colorSequences[virtualBuffer.get(offset).color]);
-                                        System.out.print(virtualBuffer.get(offset).c);
-                                } else {
-                                        System.out.print(virtualBuffer.get(offset).c);
+                                        System.out.print(colorSequences[screenBuffer.get(offset).color]);
                                 }
+                                System.out.print(screenBuffer.get(offset).c);
                         }
                         System.out.print('\n');
                 }
@@ -367,20 +375,22 @@ public class Map {
          * @return                        A screen position.
          */
         private static Point virtualCoordinateToScreenCoordinate(Point virtualCoordinateInFeet, int screenWidth, int screenHeight, double scaleFactor) {
-        		//We have inverted y because of how screen coordinates work. With screen coordinates, positive y goes toward the bottom of the screen.
-        		//Virtual coordinates, which is human standard coordinates, have y going up.
-        		//Because of this, we must invert y so that it behaves the way we expect it to.
-        	    Point screenPosition = new Point(virtualCoordinateInFeet.x * scaleFactor + screenWidth/2,
+                // We have inverted y because of how screen coordinates
+                // work. With screen coordinates, positive y goes toward the
+                // bottom of the screen.  Virtual coordinates, which are human
+                // standard coordinates, have y going up.  Because of this, we
+                // must invert y so that it behaves the way we humans expect
+                // it to.
+                Point screenPosition = new Point(virtualCoordinateInFeet.x * scaleFactor + screenWidth/2,
                                                  -virtualCoordinateInFeet.y * scaleFactor + screenHeight/2);
                 return screenPosition;
         }
 
-        private void drawCharacter(ArrayList<ScreenCharacter> virtualBuffer, int maxX, int x, int y, int color, char c) {
+        private void drawCharacter(ArrayList<ScreenCharacter> screenBuffer, int maxX, int x, int y, int color, char c) {
                 int offset = maxX * y + x;
-                if (offset < 0 || offset > virtualBuffer.size()) {
+                if (offset < 0 || offset > screenBuffer.size()) {
                         return;
                 }
-                virtualBuffer.set(offset, new ScreenCharacter(color, c));
+                screenBuffer.set(offset, new ScreenCharacter(color, c));
         }
 }
-
