@@ -15,6 +15,8 @@ public class WaypointSimulator {
         public static void main(String[] args) {
 
                 Map map = new Map();
+                Node h = new Node(40, 10);
+                map.AddWaypoint(h);
                 map.draw(40, 20);
                 System.out.println("something different");
                 testFindShortestPath();

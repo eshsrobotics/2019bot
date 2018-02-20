@@ -4,8 +4,9 @@ import java.awt.List;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import models.Node;
 
+import models.Node;
+import models.Point;
 /**
  * Draws the game field in beautiful ASCII.
  *
@@ -21,7 +22,12 @@ public class Map {
         private boolean useColors = true;
 
         private static final int BLACK = 0;
-        private static final int BLUE = 1;
+        private static final int RED = 1;
+        private static final int GREEN = 2;
+        private static final int ORANGE = 3;
+        private static final int BLUE = 4;
+        private static final int PINK = 5;
+        private static final int TEAL = 6;
         private static final int WHITE = 7;
         private static final int GRAY = 8;
 
@@ -63,14 +69,31 @@ public class Map {
         public Map() {
                 this(56.0, 27.0);
         }
+        /**
+         * "Waypoints" are the positions that our robot must visit during
+         * autonomous mode.  For the simulation, we will display the positions of
+         * all the actual waypoints that the actual robot will visit -- but
+         * rendered in ASCII.
+         * 
+         * This function adds these individual waypoints.  They don't move or
+         * change once added.
+         * 
+         * @param waypoint The waypoint Node to register. 
+         */
+        public void AddWaypoint(Node waypoint) {
+        	waypoints.add(waypoint);
+        	
+        }
 
         public Map(double widthInFeet, double heightInFeet) {
                 width = widthInFeet;
                 height = heightInFeet;
                 waypoints = new ArrayList<>();
         }
+        
+        
 
-        // Renders the map and everyhting in it to standard output.
+        // Renders the map and everything in it to standard output.
         public void draw(int screenWidth, int screenHeight) {
 
                 // Scale so that we take up the full width or height that we are
@@ -124,6 +147,16 @@ public class Map {
                 drawCharacter(virtualBuffer, screenWidth, screenWidth - 1, screenHeight - 1,  WHITE, '/');
 
                 // TODO: Draw waypoints.
+                
+                for (Node waypoint: waypoints) {
+                	
+                	/**
+                	 * creates the screen coordinates based off of the virtual field coordinates
+                	 */
+                	Point screenCoordinate = new Point(waypoint.point.x * scale, waypoint.point.y * scale);
+                	drawCharacter(virtualBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), GREEN, '$');
+                	
+                }
 
                 // TODO: Draw "you" (the robot and its direction vector.)
 
