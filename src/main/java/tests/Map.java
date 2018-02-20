@@ -32,13 +32,20 @@ public class Map {
         private static final int TEAL = 6;
         private static final int WHITE = 7;
         private static final int GRAY = 8;
+        private static final int BRIGHT_RED = 9;
+        private static final int BRIGHT_GREEN = 10;
+        private static final int YELLOW = 11;
+        private static final int BRIGHT_BLUE = 12;
+        private static final int BRIGHT_MAGENTA = 13;
+        private static final int BRIGHT_CYAN = 14;
+        private static final int BRIGHT_WHITE = 15;
 
         private Point robotPosition;
 
         private class ScreenCharacter {
                 public ScreenCharacter() {
                         color = BLUE;
-                        c = 'x';
+                        c = '.';
                 }
                 public ScreenCharacter(int color_, char c_) {
                         color = color_;
@@ -64,7 +71,14 @@ public class Map {
                         "\033[0;36m", // Dull Brown/Orange
                         "\033[0;37m", // White
                         // Bright colors.
-                        "\033[1;30m", // Gray.
+                        "\033[1;30m", // Gray
+                        "\033[1;31m", // Bright Red
+                        "\033[1;32m", // Bright Green
+                        "\033[1;33m", // Bright Cyan
+                        "\033[1;34m", // Bright Blue
+                        "\033[1;35m", // Bright Magenta
+                        "\033[1;36m", // Yellow
+                        "\033[1;37m", // Bright White
         };
 
         private double width, height;
@@ -88,10 +102,18 @@ public class Map {
                 waypoints.add(waypoint);
 
         }
+        /**
+         * 
+         * Got a Graph object?  Did you fill it with waypoints already?  Well,
+         * we can draw them.
+         * @param graph " The graph whoose nodes need to be drawn.
+         */
+        public void AddWaypointsFromGraph(Graph graph) {
+        	AddWaypointsFromGraph(graph.currentNode, new HashSet<Integer>());
+        }
 
         /***
-         * Got a Graph object?  Di you fill it with waypoints already?  Well,
-         * we can draw them.
+         * Underlying implementation of the public function.
          *
          * @param current The waypoint from which to begin a recursive walk
          *                 through the graph.
@@ -99,7 +121,7 @@ public class Map {
          *                        recursion has touched so far.  It should
          *                        start out empty.
          */
-        public void AddWaypointsFromGraph(Node current, HashSet<Integer> visitedNodeIds) {
+        private void AddWaypointsFromGraph(Node current, HashSet<Integer> visitedNodeIds) {
                 /**
                  * This says if the current starting node is already visited, then skip all of the remaining code.
                  */
@@ -166,11 +188,10 @@ public class Map {
                         virtualBuffer.add(new ScreenCharacter());
                 }
 
-                // The real screen dimensions have to account for borders.
-                int realScreenWidth = screenWidth - 2;
-                int realScreenHeight = screenHeight - 2;
-
                 // Draw the borders first.
+                //
+                // The borders are drawn on the edges, so it's possible for
+                // things to be drawn on top of them. 
                 for (int row = 0; row < screenHeight; ++row) {
                         // Left and right walls.
                         drawCharacter(virtualBuffer, screenWidth, 0,               row, WHITE, '|');
@@ -184,25 +205,24 @@ public class Map {
                 drawCharacter(virtualBuffer, screenWidth, 0,                screenHeight - 1, WHITE, '\\');
                 drawCharacter(virtualBuffer, screenWidth, screenWidth - 1, 0,                 WHITE, '\\');
                 drawCharacter(virtualBuffer, screenWidth, screenWidth - 1, screenHeight - 1,  WHITE, '/');
-
+                
                 // Draw the waypoints the robot will be traveling to.
 
                 for (Node waypoint: waypoints) {
-
                         Point screenCoordinate = virtualCoordinateToScreenCoordinate(waypoint.point, screenWidth, screenHeight, scale);
-                        drawCharacter(virtualBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), GREEN, '$');
-
+                        drawCharacter(virtualBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), BRIGHT_GREEN, '$');
                 }
 
-                // TODO: Draw "you" (that is, draw the robot and its direction vector.)
-                drawCharacter(virtualBuffer, screenWidth, (int) Math.round(robotPosition.x * scale), (int) Math.round(robotPosition.y * scale), 1, '&');
+                // Draw "you" (that is, draw the robot and its direction vector.)
+                
+                Point robotScreenPosition = virtualCoordinateToScreenCoordinate(robotPosition, screenWidth, screenHeight, scale);
+                drawCharacter(virtualBuffer, screenWidth, (int) Math.round(robotScreenPosition.x), (int) Math.round(robotScreenPosition.y), BRIGHT_RED, '&');
 
                 // Render the whole buffer.
 
                 for (int offset = 0, row = 0; row < screenHeight; ++row) {
                         for (int column = 0; column < screenWidth; ++column, ++offset) {
                                 if (useColors) {
-                                        int color = virtualBuffer.get(offset).color;
                                         System.out.print(colorSequences[virtualBuffer.get(offset).color]);
                                         System.out.print(virtualBuffer.get(offset).c);
                                 } else {
@@ -235,8 +255,11 @@ public class Map {
          * @return                        A screen position.
          */
         private static Point virtualCoordinateToScreenCoordinate(Point virtualCoordinateInFeet, int screenWidth, int screenHeight, double scaleFactor) {
-                Point screenPosition = new Point(virtualCoordinateInFeet.x * scaleFactor + screenWidth/2,
-                                                                                 virtualCoordinateInFeet.y * scaleFactor + screenHeight/2);
+        		//We have inverted y because of how screen coordinates work. With screen coordinates, positive y goes toward the bottom of the screen.
+        		//Virtual coordinates, which is human standard coordinates, have y going up.
+        		//Because of this, we must invert y so that it behaves the way we expect it to.
+        	    Point screenPosition = new Point(virtualCoordinateInFeet.x * scaleFactor + screenWidth/2,
+                                                 -virtualCoordinateInFeet.y * scaleFactor + screenHeight/2);
                 return screenPosition;
         }
 
@@ -248,3 +271,4 @@ public class Map {
                 virtualBuffer.set(offset, new ScreenCharacter(color, c));
         }
 }
+

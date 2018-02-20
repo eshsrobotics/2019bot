@@ -12,28 +12,33 @@ public class WaypointSimulator {
         /**
          * Runs the Waypoint Simulator. Also prints Hello World!
          * @param args
+         * @throws Exception 
          */
-        public static void main(String[] args) {
+        public static void main(String[] args) throws Exception {
 
-                Map map = new Map();
-                Node h = new Node(40, 10);
-                map.AddWaypoint(h);
-                map.draw(40, 20);
                 System.out.println("something different");
-                testFindShortestPath();
+                //testFindShortestPath();
                 testAddWaypointsFromGraph();
         }
 
         /**
          * Tests the Map.addWaypointsFRomGraph() function.
          */
-        private static final void testAddWaypointsFromGraph() {
+        private static final void testAddWaypointsFromFakeGraph() {
                 Map map = new Map(200, 100);
                 HashMap<Integer, String> nameToIdTable = new HashMap<Integer, String>();
                 Graph graph = createSampleGraph(nameToIdTable);
-                HashSet<Integer> visitedNodeIds = new HashSet<Integer>();
-                map.AddWaypointsFromGraph(graph.currentNode, visitedNodeIds);
+                map.AddWaypointsFromGraph(graph);
                 map.draw(120, 40);
+        }
+        
+        public static final void testAddWaypointsFromGraph() throws Exception {
+        	Map map = new Map();
+        	Graph graph = new Graph(null);
+        	map.AddWaypointsFromGraph(graph);
+        	map.setRobotPosition(graph.getStartingPosition(graph.RIGHT_POSITION, graph.BLUE_ALLIANCE).point);
+        	map.draw(120, 40);
+        	
         }
 
         /***
@@ -57,6 +62,7 @@ public class WaypointSimulator {
                 Node e = new Node(40, 35);
                 Node f = new Node(10, 5);
                 Node g = new Node(-21, 30);
+                Node h = new Node(10.6, 17.2);
 
                 nameToIdTable.put(a.id, "A");
                 nameToIdTable.put(b.id, "B");
@@ -65,9 +71,10 @@ public class WaypointSimulator {
                 nameToIdTable.put(e.id, "E");
                 nameToIdTable.put(f.id, "F");
                 nameToIdTable.put(g.id, "G");
+                nameToIdTable.put(h.id, "H");
 
                 Graph graph = new Graph(null);
-                graph.currentNode = a;
+                graph.currentNode = h;
                 graph.target = d;
                 graph.addEdge(a, e);
                 graph.addEdge(a, b);
@@ -78,6 +85,7 @@ public class WaypointSimulator {
                 graph.addEdge(g, b);
                 graph.addEdge(f, g);
                 graph.addEdge(e, d);
+                graph.addEdge(h, c);
 
                 return graph;
         }
@@ -91,10 +99,8 @@ public class WaypointSimulator {
                 // Let's take those nodes and give them names.
                 HashMap<Integer, String> nameToIdTable = new HashMap<Integer, String>();
                 Graph graph = createSampleGraph(nameToIdTable);
-
-                LinkedList <Node> findPathResult = graph.findPath(graph.currentNode, graph.target);
+                
                 LinkedList <Node> findShortestPathResult = graph.findShortestPath(graph.currentNode, graph.target);
-                System.out.printf("find path result = %s\n", printPath(findPathResult, nameToIdTable));
                 System.out.printf("findShortestPath() result = %s\n", printPath(findShortestPathResult, nameToIdTable));
         }
 

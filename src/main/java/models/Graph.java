@@ -18,6 +18,15 @@ public class Graph {
 
         public Node target;
         public Node currentNode;
+        private ArrayList<Node> redStartingPositions;
+        private ArrayList<Node> blueStartingPositions;
+        
+        public static final int RED_ALLIANCE = 0;
+        public static final int BLUE_ALLIANCE = 1;
+        
+        public static final int LEFT_POSITION = 0;
+        public static final int CENTER_POSITION = 1;
+        public static final int RIGHT_POSITION = 2;
 
         /**
          *
@@ -54,7 +63,7 @@ public class Graph {
                 // Red (left) side starting positions.
                 Node redStartTop = new Node(-24.53, 11.28);
                 Node redStartCenter = new Node(-24.53, 0);
-                Node redStartBottom = new Node(-24.53, -11.28);
+                Node redStartBottom = new Node(-24.53, -11.28);                
 
                 Node redSwitchSetupTop = new Node(-13, 11.28);      // Far above the left switch
                 Node redSwitchTop = new Node(-13, 6);               // Just above the left switch: scoring position.
@@ -128,6 +137,16 @@ public class Graph {
                 addEdge(bottomScale, redSwitchBottom);
                 addEdge(bottomScale, blueSwitchBottom);
 
+                redStartingPositions = new ArrayList<Node>();
+                redStartingPositions.add(redStartTop);
+                redStartingPositions.add(redStartCenter);
+                redStartingPositions.add(redStartBottom);
+                
+                blueStartingPositions = new ArrayList<Node>();
+                blueStartingPositions.add(blueStartTop);
+                blueStartingPositions.add(blueStartCenter);
+                blueStartingPositions.add(blueStartBottom);
+                
                 if (matchData != null) {
                         // If you have null matchData, you'll have to set the
                         // start and target nodes yourself!
@@ -138,52 +157,42 @@ public class Graph {
                                 currentNode = redStartBottom;
                                 target = blueSwitchSetupTop;
                         }
+                } else {
+                	currentNode = redStartTop;
+                	target = blueSwitchTop;
                 }
+        }
+        
+        /**
+         * This is meant to return the starting position of the robot. If you are standing in your alliance station and are looking onto the field, 0
+         * is to the left, 1 is directly ahead, and 2 is to the right.
+         * @param position
+         * @param alliance
+         * @return
+         * @throws Exception
+         */
+        public Node getStartingPosition(int position, int alliance) throws Exception {
+        	switch ((3 * alliance) + position) {
+        	case 0:
+        		return redStartingPositions.get(0);		//Red Top
+        	case 1:
+        		return redStartingPositions.get(1);		//Red Center
+        	case 2:
+        		return redStartingPositions.get(2);		//Red Bottom
+        	case 3:
+        		return blueStartingPositions.get(2);	//Blue Bottom
+        	case 4:
+        		return blueStartingPositions.get(1);	//Blue Center
+        	case 5:
+        		return blueStartingPositions.get(0);	//Blue Top
+        	default:
+        		throw new Exception("Error: Invalid Alliance Station");
+        	}
         }
 
         public void addEdge(Node node1, Node node2) {
                 node1.neighbors.add(node2);
                 node2.neighbors.add(node1);
-        }
-
-        /**
-         * Finds a path from the start node to the target node.
-         *
-         * @param start The node that you're at right now.
-         * @param target The node you want to visit.
-         * @return A linked list of nodes representing a path from start to target.
-         */
-        public LinkedList<Node> findPath(Node start, Node target) {
-
-                // If previousNode[foo] == bar, then foo is a "child" of
-                        // bar (starting at bar, we can walk to foo in one hop.)
-                Map<Node, Node> previousNode = new HashMap<>();
-
-                Queue<Node> toVisit = new LinkedList<>();
-                toVisit.add(start);
-
-                while (!toVisit.isEmpty()) {
-                        Node currentNode = toVisit.poll();
-
-                        for (Node neighbor : currentNode.neighbors) {
-                                if (previousNode.containsKey(neighbor)) {
-                                        continue;
-                                }
-                                previousNode.put(neighbor, currentNode);
-                                toVisit.add(neighbor);
-                        }
-                }
-
-                LinkedList<Node> path = new LinkedList<>();
-
-                Node currentNode = target;
-                while (currentNode != start) {
-                        path.add(currentNode);
-                        currentNode = previousNode.get(currentNode);
-                }
-                Collections.reverse(path);
-
-                return path;
         }
 
         /***
