@@ -6,23 +6,76 @@ import java.util.LinkedList;
 import models.Graph;
 import models.Node;
 import models.Vector2;
+import models.Point;
 
 public class WaypointSimulator {
 
         /**
          * Runs the Waypoint Simulator. Also prints Hello World!
          * @param args
-         * @throws Exception 
+         * @throws Exception
          */
         public static void main(String[] args) throws Exception {
 
                 System.out.println("something different");
                 //testFindShortestPath();
                 testAddWaypointsFromGraph();
+                testFalseRobotMovementAnimation();
+        }
+
+
+        private static final void testFalseRobotMovementAnimation() throws Exception {
+
+                Map map = new Map();
+                Graph graph = new Graph(null);
+                map.AddWaypointsFromGraph(graph);
+                final int screenWidth = 120;
+                final int screenHeight = 40;
+
+                double robotData[][] = {
+                        // X direction, Y direction; transition time stamp (milliseconds)
+                        {  0.1,  0,   2000.000  },
+                        {  0,    0.1, 4000.000  },
+                        { -0.1,  0,   6000.000  },
+                        {  0,   -0.1, 8000.000  },
+                        {  0,    0,   10000.000 }, // Stop here.
+                };
+                Point currentPosition = new Point(0, 0);
+                int robotDataIndex = 0;
+                Vector2 currentVector = new Vector2(0, 0);
+
+                final double FRAMES_PER_SECOND = 10.0;
+                final double MILLISECONDS_PER_FRAME = 1000.0 / FRAMES_PER_SECOND;
+                final double totalSimulationTimeMilliseconds = robotData[robotData.length - 1][2];
+                final double startTimeMilliseconds = System.currentTimeMillis();
+                double elapsedTimeMilliseconds = System.currentTimeMillis() - startTimeMilliseconds;
+
+                while (elapsedTimeMilliseconds < totalSimulationTimeMilliseconds) {
+
+                        // Move the robot.
+                                currentVector = new Vector2(robotData[robotDataIndex][0], robotData[robotDataIndex][1]);
+                                currentPosition.add(currentVector);
+                                map.setRobotPosition(currentPosition);
+                                map.setRobotVector(currentVector);
+
+                        // Is it time to change the robot's direction?  (This is independent of
+                        // the framerate.)
+                                double nextMovementTimeMilliseconds = robotData[robotDataIndex][2];
+                        if (elapsedTimeMilliseconds > nextMovementTimeMilliseconds) {
+                                robotDataIndex++;
+                        }
+
+                        // Draw the current frame, then wait until it's time to draw the next one.
+                        map.clearScreen();
+                        map.draw(screenWidth, screenHeight);
+                        Thread.sleep((long)MILLISECONDS_PER_FRAME);
+
+                        elapsedTimeMilliseconds = System.currentTimeMillis() - startTimeMilliseconds;
+                }
         }
 
         /**
-         * Tests the Map.addWaypointsFRomGraph() function.
+         * Tests the Map.addWaypointsFromGraph() function.
          */
         private static final void testAddWaypointsFromFakeGraph() {
                 Map map = new Map(200, 100);
@@ -31,15 +84,14 @@ public class WaypointSimulator {
                 map.AddWaypointsFromGraph(graph);
                 map.draw(120, 40);
         }
-        
+
         public static final void testAddWaypointsFromGraph() throws Exception {
-        	Map map = new Map();
-        	Graph graph = new Graph(null);
-        	map.AddWaypointsFromGraph(graph);
-        	map.setRobotPosition(graph.getStartingPosition(graph.RIGHT_POSITION, graph.BLUE_ALLIANCE).point);
-        	map.setRobotVector(new Vector2(300, 200));
-        	map.draw(120, 40);
-        	
+                Map map = new Map();
+                Graph graph = new Graph(null);
+                map.AddWaypointsFromGraph(graph);
+                map.setRobotPosition(graph.getStartingPosition(graph.RIGHT_POSITION, graph.BLUE_ALLIANCE).point);
+                map.setRobotVector(new Vector2(300, 200));
+                map.draw(120, 40);
         }
 
         /***
@@ -75,7 +127,7 @@ public class WaypointSimulator {
                 nameToIdTable.put(h.id, "H");
 
                 Graph graph = new Graph(null);
-                graph.currentNode = h;
+                graph.currentNode = h; // This disconnects all the real nodes in the graph!
                 graph.target = d;
                 graph.addEdge(a, e);
                 graph.addEdge(a, b);
@@ -100,7 +152,7 @@ public class WaypointSimulator {
                 // Let's take those nodes and give them names.
                 HashMap<Integer, String> nameToIdTable = new HashMap<Integer, String>();
                 Graph graph = createSampleGraph(nameToIdTable);
-                
+
                 LinkedList <Node> findShortestPathResult = graph.findShortestPath(graph.currentNode, graph.target);
                 System.out.printf("findShortestPath() result = %s\n", printPath(findShortestPathResult, nameToIdTable));
         }

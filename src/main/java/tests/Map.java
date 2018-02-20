@@ -178,6 +178,14 @@ public class Map {
         }
         
 
+        /***
+         * Clears the screen in a roughly terminal-independent way. 
+         */
+    	public void clearScreen() {
+    		System.out.printf("\033[2J"); // Clear screen.
+    		System.out.printf("\033[H");  // Return cursor to home position.
+    	}
+        
         // Renders the map and everything in it to standard output.
         public void draw(int screenWidth, int screenHeight) {
 
