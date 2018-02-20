@@ -27,13 +27,14 @@ public class WaypointSimulator {
         private static final void testFalseRobotMovementAnimation() throws Exception {
 
                 Map map = new Map();
+                map.clearScreen();
                 Graph graph = new Graph(null);
                 map.AddWaypointsFromGraph(graph);
                 final int screenWidth = 120;
                 final int screenHeight = 40;
 
                 double robotData[][] = {
-                        // X direction, Y direction; transition time stamp (milliseconds)
+                        // X velocity, Y velocity; transition time stamp (milliseconds)
                         {  0.1,  0,   2000.000  },
                         {  0,    0.1, 4000.000  },
                         { -0.1,  0,   6000.000  },
@@ -53,10 +54,10 @@ public class WaypointSimulator {
                 while (elapsedTimeMilliseconds < totalSimulationTimeMilliseconds) {
 
                         // Move the robot.
-                                currentVector = new Vector2(robotData[robotDataIndex][0], robotData[robotDataIndex][1]);
-                                currentPosition.add(currentVector);
-                                map.setRobotPosition(currentPosition);
-                                map.setRobotVector(currentVector);
+                        currentVector = new Vector2(robotData[robotDataIndex][0], robotData[robotDataIndex][1]);
+                        currentPosition.add(currentVector);
+                        map.setRobotPosition(currentPosition);
+                        map.setRobotVector(currentVector);
 
                         // Is it time to change the robot's direction?  (This is independent of
                         // the framerate.)
@@ -66,7 +67,7 @@ public class WaypointSimulator {
                         }
 
                         // Draw the current frame, then wait until it's time to draw the next one.
-                        map.clearScreen();
+                        map.resetCursor();
                         map.draw(screenWidth, screenHeight);
                         Thread.sleep((long)MILLISECONDS_PER_FRAME);
 

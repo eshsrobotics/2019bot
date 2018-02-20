@@ -22,6 +22,9 @@ public class Map {
          */
         private boolean useColors = true;
 
+        // We support the 16 standard ANSI colors by default.  We could support
+        // up to 256, but that would require me to care more than I currently
+        // do. 
         private static final int BLACK = 0;
         private static final int RED = 1;
         private static final int GREEN = 2;
@@ -38,9 +41,24 @@ public class Map {
         private static final int BRIGHT_MAGENTA = 13;
         private static final int BRIGHT_CYAN = 14;
         private static final int BRIGHT_WHITE = 15;
+        
+        /**
+         * The "arrow character" to use for each octant, starting
+         * counterclockwise with octant 0 (between the positive X and positive
+         * Y axes, with -22.5 < theta <= 22.5 degrees.)
+         */
         private static final String DIRECTION_ARROWS_PER_OCTANT = "-/|\\-/|\\";
 
+        /***
+         * The Map can plot a point in space in a special color and pretend
+         * it's "the robot."
+         */
         private Point robotPosition;
+        
+        /***
+         * The Map can indicate "the robot's" current direction vector --
+         * somewhat curdely, though, given that this is ASCII. 
+         */
         private Vector2 robotVector;
         
         /**
@@ -49,6 +67,10 @@ public class Map {
          */
         private int octant;		
 
+        /***
+         * A ScreenCharacter is a struct with a color code and a character.
+         * @author uakotaobi
+         */
         private class ScreenCharacter {
                 public ScreenCharacter() {
                         color = BLUE;
@@ -65,7 +87,16 @@ public class Map {
         /***
          * This maps the 16 standard ANSI colors to color code strings.
          *
-         *  You can generate the sequences yourself using tput.
+         *  You can sample the sequences yourself from an ANSI terminal running
+         *  the Bash shell using:
+         *  
+         *    echo "$(tput setaf N)Testing"
+         *     
+         *  for the dull colors, and
+         *  
+         *    echo "$(tput bold)$(tput setaf N)Testing brightly"
+         *    
+         *  for the bright ones.  N ranges from 0 to 7 here.
          */
         private String colorSequences[] = {
                         // Dull colors.
@@ -88,12 +119,36 @@ public class Map {
                         "\033[1;37m", // Bright White
         };
 
+        /**
+         * The width and height of the game field in *feet*.  (FRC likes
+         * imperial meassurements.)
+         */
         private double width, height;
         private ArrayList<Node> waypoints;
 
+        /***
+         * Constructs a virtual field as wide and high as the real thing.  It
+         * will start with no waypoints (either add them one by one yourself or
+         * add a Graph with the correct waypoints in it.) 
+         */
         public Map() {
                 this(56.0, 27.0);
         }
+
+        /***
+         * Constructs a Map with arbitrary dimensions and an empty set of
+         * waypoints.
+         * 
+         * @param widthInFeet *Virtual* width of the game arena, in feet. 
+         * @param heightInFeet *Virtual* height of the game area, in feet.
+         */
+        public Map(double widthInFeet, double heightInFeet) {
+                width = widthInFeet;
+                height = heightInFeet;
+                waypoints = new ArrayList<>();
+                setRobotPosition(new Point(10.6, 17.2));
+        }
+        
         /**
          * "Waypoints" are the positions that our robot must visit during
          * autonomous mode.  For the simulation, we will display the positions of
@@ -113,14 +168,15 @@ public class Map {
          * 
          * Got a Graph object?  Did you fill it with waypoints already?  Well,
          * we can draw them.
-         * @param graph " The graph whoose nodes need to be drawn.
+         * @param graph: The graph whose nodes need to be drawn.
          */
         public void AddWaypointsFromGraph(Graph graph) {
         	AddWaypointsFromGraph(graph.currentNode, new HashSet<Integer>());
         }
 
         /***
-         * Underlying implementation of the public function.
+         * Underlying implementation of the public AddWaypointsFromGraph 
+         * function.
          *
          * @param current The waypoint from which to begin a recursive walk
          *                 through the graph.
@@ -129,31 +185,23 @@ public class Map {
          *                        start out empty.
          */
         private void AddWaypointsFromGraph(Node current, HashSet<Integer> visitedNodeIds) {
-                /**
-                 * This says if the current starting node is already visited, then skip all of the remaining code.
-                 */
+                // If the current node is already visited, there's nothing more
+                // to do.
                 if (visitedNodeIds.contains(current.id)) {
                         return;
                 }
-                /**
-                 * then marks as visited
-                 */
+                
+                // The current node is officially visited.
                 visitedNodeIds.add(current.id);
                 AddWaypoint(current);
 
+                // Walk to the neighbors in turn and add them if they haven't
+                // been visited.
                 java.util.List<Node> neighbors = current.neighbors;
-                        for (int i = 0; i < neighbors.size(); i++) {
-                                Node neighbor = neighbors.get(i);
-                                AddWaypointsFromGraph(neighbor, visitedNodeIds);
-                        }
-
-        }
-
-        public Map(double widthInFeet, double heightInFeet) {
-                width = widthInFeet;
-                height = heightInFeet;
-                waypoints = new ArrayList<>();
-                setRobotPosition(new Point(10.6, 17.2));
+                for (int i = 0; i < neighbors.size(); i++) {
+                        Node neighbor = neighbors.get(i);
+                        AddWaypointsFromGraph(neighbor, visitedNodeIds);
+                }
         }
 
         public Point setRobotPosition(Point robotPosition) {
@@ -179,11 +227,20 @@ public class Map {
         
 
         /***
-         * Clears the screen in a roughly terminal-independent way. 
+         * Clears the screen in a roughly terminal-independent way and calls
+         * resetCursor() on your behalf.
          */
     	public void clearScreen() {
     		System.out.printf("\033[2J"); // Clear screen.
-    		System.out.printf("\033[H");  // Return cursor to home position.
+    		resetCursor();
+    	}
+    	
+    	/***
+    	 * Returns the cursor to a home position in a roughly 
+    	 * terminal-independent way.
+    	 */
+    	public void resetCursor() {
+    	    System.out.printf("\033[H");
     	}
         
         // Renders the map and everything in it to standard output.
