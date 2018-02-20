@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="2018bot/build/WaypointSimulator.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/2018bot/WaypointSimulator.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=2018bot/src\/main\/java&lt;tests{WaypointSimulator.java[WaypointSimulator" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <file path="/2018bot/WaypointSimulator.jardesc"/>
+        <file path="/2018bot/build.xml"/>
+        <file path="/2018bot/vision-todo.md~"/>
+        <file path="/2018bot/.classpath~"/>
+        <file path="/2018bot/gradlew.bat"/>
+        <file path="/2018bot/.project"/>
+        <file path="/2018bot/.classpath"/>
+        <file path="/2018bot/gradlew"/>
+        <file path="/2018bot/networktables-input.jar"/>
+        <file path="/2018bot/build.properties"/>
+        <javaElement handleIdentifier="=2018bot/src\/main\/java"/>
+        <file path="/2018bot/DriverStationClientCodeBuild.xml"/>
+        <file path="/2018bot/.gitignore"/>
+        <file path="/2018bot/README.md"/>
+        <file path="/2018bot/CMakeLists.txt~"/>
+        <file path="/2018bot/build.gradle"/>
+        <file path="/2018bot/WaypointSimulator.launch"/>
+    </selectedElements>
+</jardesc>

@@ -3,10 +3,12 @@ package models;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import org.usfirst.frc.team1759.robot.MatchData;
 
@@ -14,7 +16,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Graph {
 
-        public List<Node> nodes;
         public Node target;
         public Node currentNode;
 
@@ -47,8 +48,6 @@ public class Graph {
          *                  where to go.
          */
         public Graph(MatchData matchData) {
-                nodes = new ArrayList<Node>();
-
                 // All of these values are in feet, with (0, 0)
                 // representing the center of the game field.
 
@@ -129,12 +128,16 @@ public class Graph {
                 addEdge(bottomScale, redSwitchBottom);
                 addEdge(bottomScale, blueSwitchBottom);
 
-                if(matchData.getAlliance() == DriverStation.Alliance.Blue) {
-                        currentNode = blueStartBottom;
-                        target = redSwitchSetupTop;
-                } else {
-                        currentNode = redStartBottom;
-                        target = blueSwitchSetupTop;
+                if (matchData != null) {
+                        // If you have null matchData, you'll have to set the
+                        // start and target nodes yourself!
+                        if(matchData.getAlliance() == DriverStation.Alliance.Blue) {
+                                currentNode = blueStartBottom;
+                                target = redSwitchSetupTop;
+                        } else {
+                                currentNode = redStartBottom;
+                                target = blueSwitchSetupTop;
+                        }
                 }
         }
 
@@ -143,7 +146,17 @@ public class Graph {
                 node2.neighbors.add(node1);
         }
 
-        public static LinkedList<Node> findPath(Node start, Node target) {
+        /**
+         * Finds a path from the start node to the target node.
+         *
+         * @param start The node that you're at right now.
+         * @param target The node you want to visit.
+         * @return A linked list of nodes representing a path from start to target.
+         */
+        public LinkedList<Node> findPath(Node start, Node target) {
+
+                // If previousNode[foo] == bar, then foo is a "child" of
+                        // bar (starting at bar, we can walk to foo in one hop.)
                 Map<Node, Node> previousNode = new HashMap<>();
 
                 Queue<Node> toVisit = new LinkedList<>();
@@ -173,4 +186,69 @@ public class Graph {
                 return path;
         }
 
+        /***
+         * Returns a linked list consisting of the shortest path from start to
+         * target.
+         *
+         * @param start The node to start our search from.
+         * @param target The node we are trying to reach.
+         * @return A LinkedList<Node>.  If the linked list has one element, the start
+         *          IS the target; if the linked list is null, there is no path
+         *          from the start to the target.
+         */
+        public LinkedList<Node> findShortestPath(Node start, Node target) {
+                Set<Integer> visitedNodeIds = new HashSet<Integer>();
+                return findShortestPathRecursive(start, target, visitedNodeIds);
+        }
+
+        /***
+         * A recursive flood-fill algorithm that implements the actual
+         * findShortestPathRecursive() algorithm.
+         *
+         * Preconditions:
+         * - The current node should not already be in the visitedNodeIds set.
+         *
+         * Postconditions:
+         * - The current node will be in the visitedNodeIds set.
+         *
+         * @param current
+         * @param target
+         * @return
+         */
+        private LinkedList<Node> findShortestPathRecursive(Node current, Node target, Set<Integer> visitedNodeIds) {
+
+                if (current.id == target.id) {
+                        // Direct hit.
+                        LinkedList<Node> result = new LinkedList<Node>();
+                        result.addFirst(current);
+                        return result;
+                }
+
+                // *This* node has been visited.
+                visitedNodeIds.add(current.id);
+                LinkedList<Node> shortestPath = null;
+
+                // Visit all the neighbors in turn.
+                for (Node neighbor : current.neighbors) {
+                        if (!visitedNodeIds.contains(neighbor.id)) {
+                                LinkedList<Node> path = findShortestPathRecursive(neighbor, target, visitedNodeIds);
+                                if (path != null) {
+                                        // A route was found to the target.
+                                        path.addFirst(current);
+
+                                    if (shortestPath == null || path.size() < shortestPath.size()) {
+                                        shortestPath = path;
+                                    }
+                                } else {
+                                        // No route to target from current neighbor.
+                                }
+                        }
+                }
+
+                if (shortestPath == null) {
+                        // No route to target.
+                }
+
+                return shortestPath;
+        }
 }
