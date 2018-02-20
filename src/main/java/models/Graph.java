@@ -146,46 +146,6 @@ public class Graph {
                 node2.neighbors.add(node1);
         }
 
-        /**
-         * Finds a path from the start node to the target node.
-         *
-         * @param start The node that you're at right now.
-         * @param target The node you want to visit.
-         * @return A linked list of nodes representing a path from start to target.
-         */
-        public LinkedList<Node> findPath(Node start, Node target) {
-
-                // If previousNode[foo] == bar, then foo is a "child" of
-                        // bar (starting at bar, we can walk to foo in one hop.)
-                Map<Node, Node> previousNode = new HashMap<>();
-
-                Queue<Node> toVisit = new LinkedList<>();
-                toVisit.add(start);
-
-                while (!toVisit.isEmpty()) {
-                        Node currentNode = toVisit.poll();
-
-                        for (Node neighbor : currentNode.neighbors) {
-                                if (previousNode.containsKey(neighbor)) {
-                                        continue;
-                                }
-                                previousNode.put(neighbor, currentNode);
-                                toVisit.add(neighbor);
-                        }
-                }
-
-                LinkedList<Node> path = new LinkedList<>();
-
-                Node currentNode = target;
-                while (currentNode != start) {
-                        path.add(currentNode);
-                        currentNode = previousNode.get(currentNode);
-                }
-                Collections.reverse(path);
-
-                return path;
-        }
-
         /***
          * Returns a linked list consisting of the shortest path from start to
          * target.

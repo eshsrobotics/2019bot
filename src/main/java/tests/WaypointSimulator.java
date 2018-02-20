@@ -15,10 +15,6 @@ public class WaypointSimulator {
          */
         public static void main(String[] args) {
 
-                Map map = new Map();
-                Node h = new Node(40, 10);
-                map.AddWaypoint(h);
-                map.draw(40, 20);
                 System.out.println("something different");
                 testFindShortestPath();
                 testAddWaypointsFromGraph();
@@ -91,10 +87,8 @@ public class WaypointSimulator {
                 // Let's take those nodes and give them names.
                 HashMap<Integer, String> nameToIdTable = new HashMap<Integer, String>();
                 Graph graph = createSampleGraph(nameToIdTable);
-
-                LinkedList <Node> findPathResult = graph.findPath(graph.currentNode, graph.target);
+                
                 LinkedList <Node> findShortestPathResult = graph.findShortestPath(graph.currentNode, graph.target);
-                System.out.printf("find path result = %s\n", printPath(findPathResult, nameToIdTable));
                 System.out.printf("findShortestPath() result = %s\n", printPath(findShortestPathResult, nameToIdTable));
         }
 
