@@ -89,8 +89,8 @@ public class Graph {
             addEdge(redStartCenter, redStartBottom);
             addEdge(redStartBottom, redSwitchSetupBottom);
             addEdge(redStartTop, redSwitchSetupTop);
-            addEdge(redSwitchSetupTop, redSwitchTop);       // Move to the nearest scoring position.
-            addEdge(redSwitchSetupBottom, redSwitchBottom); // Move to the nearest scoring position.
+            addEdge(redSwitchSetupTop, redSwitchTop);         // Move to the nearest scoring position.
+            addEdge(redSwitchSetupBottom, redSwitchBottom);   // Move to the nearest scoring position.
             addEdge(redSwitchSetupBottom, bottomScale);
             addEdge(redSwitchSetupTop, topScale);
             addEdge(topScale, blueSwitchSetupTop);
@@ -268,17 +268,22 @@ public class Graph {
          * A recursive flood-fill algorithm that implements the actual
          * findShortestPathRecursive() algorithm.
          *
-         * Preconditions: - The current node should not already be in the
-         * visitedNodeIds set.
+         * Preconditions:
+         * - The current node should not already be in the visitedNodeIds set.
+         * - Current and target should not be null.
          *
-         * Postconditions: - The current node will be in the visitedNodeIds set.
+         * Postconditions:
+         * - The current node will be in the visitedNodeIds set.
          *
-         * @param current
-         * @param target
-         * @return
+         * @param current The node that is currently being flooded.
+         * @param target The node that, if reached, will terminate the flood early.
+         * @return A LinkedList<Node> consisting of the shortest path that
+         *         reached the target, if any path was found from current to
+         *         target; null otherwise.
          */
         private LinkedList<Node> findShortestPathRecursive(Node current,
-                                                           Node target, Set<Integer> visitedNodeIds) {
+                                                           Node target,
+                                                           Set<Integer> visitedNodeIds) {
 
             if (current.id == target.id) {
                 // Direct hit.
@@ -295,13 +300,14 @@ public class Graph {
             for (Node neighbor : current.neighbors) {
                 if (!visitedNodeIds.contains(neighbor.id)) {
                     LinkedList<Node> path = findShortestPathRecursive(neighbor,
-                                                                      target, visitedNodeIds);
+                                                                      target,
+                                                                      visitedNodeIds);
                     if (path != null) {
-                        // A route was found to the target.
+                        // A route was found to the target, and this node is
+                        // now part of it.
                         path.addFirst(current);
 
-                        if (shortestPath == null
-                            || path.size() < shortestPath.size()) {
+                        if (shortestPath == null || path.size() < shortestPath.size()) {
                             shortestPath = path;
                         }
                     } else {
@@ -311,7 +317,7 @@ public class Graph {
             }
 
             if (shortestPath == null) {
-                // No route to target.
+                // No route to target from any neighbor.
             }
 
             return shortestPath;
