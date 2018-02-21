@@ -3,6 +3,7 @@ package tests;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import models.Constants;
 import models.Graph;
 import models.Node;
 import models.Point;
@@ -46,7 +47,7 @@ public class Map {
          * counterclockwise with octant 0 (between the positive X and positive
          * Y axes, with -22.5 < theta <= 22.5 degrees.)
          */
-        private static final String DIRECTION_ARROWS_PER_OCTANT = "-/|\\-/|\\";
+        private static final String DIRECTION_ARROWS_PER_OCTANT = "-\\|/-\\|/";
 
         /***
          * The Map can plot a point in space in a special color and pretend
@@ -335,10 +336,13 @@ public class Map {
                 Point robotScreenPosition = virtualCoordinateToScreenCoordinate(robotPosition, screenWidth, screenHeight, scale);
                 drawCharacter(screenBuffer, screenWidth, (int) Math.round(robotScreenPosition.x), (int) Math.round(robotScreenPosition.y), BRIGHT_RED, '&');
 
-                Point frontOfRobot = robotScreenPosition.add(robotVector);
-                // Character arrowCharacter = new Integer(octant).toString().charAt(0);
-                Character arrowCharacter = DIRECTION_ARROWS_PER_OCTANT.charAt(octant);
-                drawCharacter(screenBuffer, screenWidth, (int)Math.round(frontOfRobot.x), (int)Math.round(frontOfRobot.y), YELLOW, arrowCharacter);
+                if (robotVector.length() > Constants.EPSILON) {
+                    Vector2 screenVector = new Vector2(robotVector.x, -robotVector.y); // Positive Y needs to point up.
+                    Point frontOfRobot = robotScreenPosition.add(screenVector);
+                    // Character arrowCharacter = new Integer(octant).toString().charAt(0);
+                    Character arrowCharacter = DIRECTION_ARROWS_PER_OCTANT.charAt(octant);
+                    drawCharacter(screenBuffer, screenWidth, (int)Math.round(frontOfRobot.x), (int)Math.round(frontOfRobot.y), YELLOW, arrowCharacter);
+                }
 
                 // Render the whole screen buffer.
 
