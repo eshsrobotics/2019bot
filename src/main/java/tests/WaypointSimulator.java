@@ -5,8 +5,8 @@ import java.util.LinkedList;
 
 import models.Graph;
 import models.Node;
-import models.Vector2;
 import models.Point;
+import models.Vector2;
 
 public class WaypointSimulator {
 
@@ -24,7 +24,20 @@ public class WaypointSimulator {
         }
 
 
-        private static final void testFalseRobotMovementAnimation() throws Exception {
+        /***
+         * Tests several different aspects of the autonomous code:
+         *
+         * 1) The ability to use the Map for animations;
+         * 2) The ability to add waypoints from the default graph;
+         * 3) The ability to set the robot position and display it correctly;
+         * 4) The ability to set hte robot direction and display it correctly;
+         * 5) Showing where the default waypoints are.
+         *
+         * @throws InterruptedException Thrown if the current thread is
+         *                              interrupted during Thread.sleep()
+         *                              (this is exceedingly unlikely.)
+         */
+        private static final void testFalseRobotMovementAnimation() throws InterruptedException {
 
                 Map map = new Map();
                 map.clearScreen();
@@ -65,14 +78,15 @@ public class WaypointSimulator {
                         map.setRobotPosition(currentPosition);
                         map.setRobotVector(currentVector);
 
-                        // Is it time to change the robot's direction?  (This is independent of
-                        // the framerate.)
-                                double nextMovementTimeMilliseconds = robotData[robotDataIndex][2];
+                        // Is it time to change the robot's direction?  (This
+                        // is independent of the framerate.)
+                        double nextMovementTimeMilliseconds = robotData[robotDataIndex][2];
                         if (elapsedTimeMilliseconds > nextMovementTimeMilliseconds) {
                                 robotDataIndex++;
                         }
 
-                        // Draw the current frame, then wait until it's time to draw the next one.
+                        // Draw the current frame, then wait until it's time to
+                        // draw the next one.
                         map.resetCursor();
                         map.draw(screenWidth, screenHeight);
                         Thread.sleep((long)MILLISECONDS_PER_FRAME);
