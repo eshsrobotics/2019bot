@@ -7,7 +7,11 @@
 
 package org.usfirst.frc.team1759.robot;
 
+import models.Graph;
+
+import org.usfirst.frc.team1759.robot.commands.ExpelCommand;
 import org.usfirst.frc.team1759.robot.commands.FollowPath;
+import org.usfirst.frc.team1759.robot.commands.ShootCommand;
 import org.usfirst.frc.team1759.robot.subsystems.Arm;
 import org.usfirst.frc.team1759.robot.subsystems.Climber;
 import org.usfirst.frc.team1759.robot.subsystems.Intake;
@@ -21,8 +25,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import models.Graph;
 
 /**
  * This is a demo program showing the use of the RobotDrive class, specifically
@@ -77,7 +81,8 @@ public class Robot extends IterativeRobot {
 
 	public void autonomousInit() {
 		Graph graph = new Graph(matchData);
-		FollowPath followPath = new FollowPath(encoder, tank, graph.currentNode, graph.findShortestPath(graph.currentNode, graph.target));
+		Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
+		FollowPath followPath = new FollowPath(encoder, tank, graph.currentNode, graph.findShortestPath(graph.currentNode, graph.target), endCommand);
 		followPath.start();
 	}
 

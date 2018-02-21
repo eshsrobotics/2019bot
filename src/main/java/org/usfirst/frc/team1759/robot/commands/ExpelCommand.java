@@ -8,10 +8,8 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 public class ExpelCommand extends CommandGroup {
 	
 	Intake lowerIntake;
-	Arm arm;
 	
-	public ExpelCommand(Intake lowerIntake, Arm arm) {
-		addSequential(new MoveArm(arm, false), 1);
+	public ExpelCommand(Intake lowerIntake) {
 		addSequential(new TurnWheels(lowerIntake, true), 1.5);
 	}
 }

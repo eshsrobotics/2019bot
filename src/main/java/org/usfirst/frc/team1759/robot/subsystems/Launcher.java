@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Launcher extends Subsystem {
 
-	DoubleSolenoid launcher;
+	public DoubleSolenoid launcher;
 
 	public Launcher() {
 		launcher = new DoubleSolenoid(RobotMap.HIGH_LAUNCH_PORT_OUT, RobotMap.HIGH_LAUNCH_PORT_IN);
@@ -22,11 +22,9 @@ public class Launcher extends Subsystem {
 	public void launch(OI oi) {
 		if (oi.launchOut.get()) {
 			launcher.set(DoubleSolenoid.Value.kForward);
-		} else if (oi.launchIn.get()) {
-			launcher.set(DoubleSolenoid.Value.kReverse);
 		} else {
-			launcher.set(DoubleSolenoid.Value.kOff);
-		}
+			launcher.set(DoubleSolenoid.Value.kReverse);
+		} 
 	}
 
 	@Override
