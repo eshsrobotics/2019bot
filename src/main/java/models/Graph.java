@@ -11,248 +11,297 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Graph {
 
-        public Node target;
-        public Node currentNode;
-        private ArrayList<Node> redStartingPositions;
-        private ArrayList<Node> blueStartingPositions;
-        
-        public static final int RED_ALLIANCE = 0;
-        public static final int BLUE_ALLIANCE = 1;
-        
-        public static final int LEFT_POSITION = 0;
-        public static final int CENTER_POSITION = 1;
-        public static final int RIGHT_POSITION = 2;
+	public Node target;
+	public Node currentNode;
+	private ArrayList<Node> redStartingPositions;
+	private ArrayList<Node> blueStartingPositions;
 
-        /**
-         *
-         *Naming Convention: Assume you are viewing the field from the side. Red is to your left, Blue is to your right. The far side of the field is the top,
-         *the near side of the field is the bottom.
-         *R: Red
-         *B: Blue
-         *S: Switch
-         *SC: Scale
-         *
-         *                                                     Top
-         *                              -------------------------------------------------
-         *                              |                                               |
-         *                      R       |       RS              SC              BS      |       B
-         *                              |                                               |
-         *                              -------------------------------------------------
-         *                                                    Bottom
-         * Example of use for declaration of nodes and the points between them.
-         *
-         * Node redNode3 = new Node(0, 3);
-         * Node redNode32 = new Node(0, 2.5);
-         *
-         * addEdge(redNode3, redNode32);
-         *
-         * @param matchData Since the scales that can score for our
-         *                  alliance are randomized at the start of
-         *                  the match, we need this object to tell us
-         *                  where to go.
-         */
-        public Graph(MatchData matchData) {
-                // All of these values are in feet, with (0, 0)
-                // representing the center of the game field.
+	public static final int RED_ALLIANCE = 0;
+	public static final int BLUE_ALLIANCE = 1;
 
-                // Red (left) side starting positions.
-                Node redStartTop = new Node(-24.53, 11.28);
-                Node redStartCenter = new Node(-24.53, 0);
-                Node redStartBottom = new Node(-24.53, -11.28);                
+	public static final int LEFT_POSITION = 0;
+	public static final int CENTER_POSITION = 1;
+	public static final int RIGHT_POSITION = 2;
 
-                Node redSwitchSetupTop = new Node(-13, 11.28);      // Far above the left switch
-                Node redSwitchTop = new Node(-13, 6);               // Just above the left switch: scoring position.
-                Node redSwitchBottom = new Node(-13, -6);           // Just below the left switch: scoring position.
-                Node redSwitchSetupBottom = new Node(-13, -11.28);  // Far below the left switch.
+	/**
+	 * 
+	 * Naming Convention: Assume you are viewing the field from the side. Red is
+	 * to your left, Blue is to your right. The far side of the field is the
+	 * top, the near side of the field is the bottom. R: Red B: Blue S: Switch
+	 * SC: Scale
+	 * 
+	 * Top ------------------------------------------------- | | R | RS SC BS |
+	 * B | | ------------------------------------------------- Bottom Example of
+	 * use for declaration of nodes and the points between them.
+	 * 
+	 * Node redNode3 = new Node(0, 3); Node redNode32 = new Node(0, 2.5);
+	 * 
+	 * addEdge(redNode3, redNode32);
+	 * 
+	 * @param matchData
+	 *            Since the scales that can score for our alliance are
+	 *            randomized at the start of the match, we need this object to
+	 *            tell us where to go.
+	 */
+	public Graph(MatchData matchData) {
+		// All of these values are in feet, with (0, 0)
+		// representing the center of the game field.
 
-                // Neutral zone positions -- above and below the giant scale, and
-                // between the red and blue SwitchSetup{Top,Bottom} positions.
-                Node topScale = new Node(0, 11.28);
-                Node bottomScale = new Node(0, -11.28);
+		// Red (left) side starting positions.
+		Node redStartTop = new Node(-24.53, 11.28);
+		Node redStartCenter = new Node(-24.53, 0);
+		Node redStartBottom = new Node(-24.53, -11.28);
 
+		Node redSwitchSetupTop = new Node(-13, 11.28); // Far above the left
+														// switch
+		Node redSwitchTop = new Node(-13, 6); // Just above the left switch:
+												// scoring position.
+		Node redSwitchBottom = new Node(-13, -6); // Just below the left switch:
+													// scoring position.
+		Node redSwitchSetupBottom = new Node(-13, -11.28); // Far below the left
+															// switch.
 
-                Node blueSwitchSetupTop = new Node(13, 11.28);     // Far above the right switch
-                Node blueSwitchTop = new Node(13, 6);              // Just above the right switch: scoring position.
-                Node blueSwitchBottom = new Node(13, -6);          // Just below the right switch: scoring position.
-                Node blueSwitchSetupBottom = new Node(13, -11.28); // Far below the right switch.
+		// Neutral zone positions -- above and below the giant scale, and
+		// between the red and blue SwitchSetup{Top,Bottom} positions.
+		Node topScale = new Node(0, 11.28);
+		Node bottomScale = new Node(0, -11.28);
 
-                // Blue (right) side starting positions.
-                Node blueStartTop = new Node(24.53, 11.28);
-                Node blueStartCenter = new Node(24.53, 0);
-                Node blueStartBottom = new Node(24.53, -11.28);
+		Node blueSwitchSetupTop = new Node(13, 11.28); // Far above the right
+														// switch
+		Node blueSwitchTop = new Node(13, 6); // Just above the right switch:
+												// scoring position.
+		Node blueSwitchBottom = new Node(13, -6); // Just below the right
+													// switch: scoring position.
+		Node blueSwitchSetupBottom = new Node(13, -11.28); // Far below the
+															// right switch.
 
-                // The primary node network connects all the starting
-                // positions, the top and bottom scale positions, and
-                // the top and bottom switch setup positions in a
-                // giant rectangle.
-                addEdge(redStartTop, redStartCenter);
-                addEdge(redStartCenter, redStartBottom);
-                addEdge(redStartBottom, redSwitchSetupBottom);
-                addEdge(redStartTop, redSwitchSetupTop);
-                addEdge(redSwitchSetupTop, redSwitchTop);         // Move to the nearest scoring position.
-                addEdge(redSwitchSetupBottom, redSwitchBottom);   // Move to the nearest scoring position.
-                addEdge(redSwitchSetupBottom, bottomScale);
-                addEdge(redSwitchSetupTop, topScale);
-                addEdge(topScale, blueSwitchSetupTop);
-                addEdge(bottomScale, blueSwitchSetupBottom);
-                addEdge(blueSwitchSetupTop, blueSwitchTop);       // Move to the nearest scoring position.
-                addEdge(blueSwitchSetupBottom, blueSwitchBottom); // Move to the nearest scoring position.
-                addEdge(blueSwitchSetupBottom, blueStartBottom);
-                addEdge(blueSwitchSetupTop, blueStartTop);
-                addEdge(blueStartTop, blueStartCenter);
-                addEdge(blueStartCenter, blueStartBottom);
+		// Blue (right) side starting positions.
+		Node blueStartTop = new Node(24.53, 11.28);
+		Node blueStartCenter = new Node(24.53, 0);
+		Node blueStartBottom = new Node(24.53, -11.28);
 
-                // Bypass positions: These make it easier to go from
-                // one node to a "far" one without an
-                // accelerate/decelerate cycle for the nodes
-                // inbetween.
+		// The primary node network connects all the starting
+		// positions, the top and bottom scale positions, and
+		// the top and bottom switch setup positions in a
+		// giant rectangle.
+		addEdge(redStartTop, redStartCenter);
+		addEdge(redStartCenter, redStartBottom);
+		addEdge(redStartBottom, redSwitchSetupBottom);
+		addEdge(redStartTop, redSwitchSetupTop);
+		addEdge(redSwitchSetupTop, redSwitchTop); // Move to the nearest scoring
+													// position.
+		addEdge(redSwitchSetupBottom, redSwitchBottom); // Move to the nearest
+														// scoring position.
+		addEdge(redSwitchSetupBottom, bottomScale);
+		addEdge(redSwitchSetupTop, topScale);
+		addEdge(topScale, blueSwitchSetupTop);
+		addEdge(bottomScale, blueSwitchSetupBottom);
+		addEdge(blueSwitchSetupTop, blueSwitchTop); // Move to the nearest
+													// scoring position.
+		addEdge(blueSwitchSetupBottom, blueSwitchBottom); // Move to the nearest
+															// scoring position.
+		addEdge(blueSwitchSetupBottom, blueStartBottom);
+		addEdge(blueSwitchSetupTop, blueStartTop);
+		addEdge(blueStartTop, blueStartCenter);
+		addEdge(blueStartCenter, blueStartBottom);
 
-                // Eases driving from top to bottom.
-                addEdge(redStartTop, redStartBottom);
-                addEdge(blueStartTop, blueStartBottom);
+		// Bypass positions: These make it easier to go from
+		// one node to a "far" one without an
+		// accelerate/decelerate cycle for the nodes
+		// inbetween.
 
-                // Eases driving to the center.
-                addEdge(redStartTop, topScale);
-                addEdge(blueStartTop, topScale);
-                addEdge(redStartBottom, bottomScale);
-                addEdge(blueStartBottom, bottomScale);
+		// Eases driving from top to bottom.
+		addEdge(redStartTop, redStartBottom);
+		addEdge(blueStartTop, blueStartBottom);
 
-                // Eases driving straight across to enemy switches.
-                addEdge(redStartTop, blueSwitchSetupTop);
-                addEdge(blueStartTop, redSwitchSetupTop);
-                addEdge(redStartBottom, blueSwitchSetupBottom);
-                addEdge(blueStartBottom, redSwitchSetupBottom);
+		// Eases driving to the center.
+		addEdge(redStartTop, topScale);
+		addEdge(blueStartTop, topScale);
+		addEdge(redStartBottom, bottomScale);
+		addEdge(blueStartBottom, bottomScale);
 
-                // Eases getting from the center straight to the
-                // switch scoring positions.  (We're not so sure about
-                // these last ones, as they mandate diagonal
-                // movement.)
-                addEdge(topScale, redSwitchTop);
-                addEdge(topScale, blueSwitchTop);
-                addEdge(bottomScale, redSwitchBottom);
-                addEdge(bottomScale, blueSwitchBottom);
+		// Eases driving straight across to enemy switches.
+		addEdge(redStartTop, blueSwitchSetupTop);
+		addEdge(blueStartTop, redSwitchSetupTop);
+		addEdge(redStartBottom, blueSwitchSetupBottom);
+		addEdge(blueStartBottom, redSwitchSetupBottom);
 
-                redStartingPositions = new ArrayList<Node>();
-                redStartingPositions.add(redStartTop);
-                redStartingPositions.add(redStartCenter);
-                redStartingPositions.add(redStartBottom);
-                
-                blueStartingPositions = new ArrayList<Node>();
-                blueStartingPositions.add(blueStartTop);
-                blueStartingPositions.add(blueStartCenter);
-                blueStartingPositions.add(blueStartBottom);
-                
-                if (matchData != null) {
-                        // If you have null matchData, you'll have to set the
-                        // start and target nodes yourself!
-                        if(matchData.getAlliance() == DriverStation.Alliance.Blue) {
-                                currentNode = blueStartBottom;
-                                target = redSwitchSetupTop;
-                        } else {
-                                currentNode = redStartBottom;
-                                target = blueSwitchSetupTop;
-                        }
-                } else {
-                	currentNode = redStartTop;
-                	target = blueSwitchTop;
-                }
-        }
-        
-        /**
-         * This is meant to return the starting position of the robot. If you are standing in your alliance station and are looking onto the field, 0
-         * is to the left, 1 is directly ahead, and 2 is to the right.
-         * @param position
-         * @param alliance
-         * @return
-         * @throws Exception
-         */
-        public Node getStartingPosition(int position, int alliance) throws Exception {
-        	switch ((3 * alliance) + position) {
-        	case 0:
-        		return redStartingPositions.get(0);		//Red Top
-        	case 1:
-        		return redStartingPositions.get(1);		//Red Center
-        	case 2:
-        		return redStartingPositions.get(2);		//Red Bottom
-        	case 3:
-        		return blueStartingPositions.get(2);	//Blue Bottom
-        	case 4:
-        		return blueStartingPositions.get(1);	//Blue Center
-        	case 5:
-        		return blueStartingPositions.get(0);	//Blue Top
-        	default:
-        		throw new Exception("Error: Invalid Alliance Station");
-        	}
-        }
+		// Eases getting from the center straight to the
+		// switch scoring positions. (We're not so sure about
+		// these last ones, as they mandate diagonal
+		// movement.)
+		addEdge(topScale, redSwitchTop);
+		addEdge(topScale, blueSwitchTop);
+		addEdge(bottomScale, redSwitchBottom);
+		addEdge(bottomScale, blueSwitchBottom);
 
-        public void addEdge(Node node1, Node node2) {
-                node1.neighbors.add(node2);
-                node2.neighbors.add(node1);
-        }
+		redStartingPositions = new ArrayList<Node>();
+		redStartingPositions.add(redStartTop);
+		redStartingPositions.add(redStartCenter);
+		redStartingPositions.add(redStartBottom);
 
-        /***
-         * Returns a linked list consisting of the shortest path from start to
-         * target.
-         *
-         * @param start The node to start our search from.
-         * @param target The node we are trying to reach.
-         * @return A LinkedList<Node>.  If the linked list has one element, the start
-         *          IS the target; if the linked list is null, there is no path
-         *          from the start to the target.
-         */
-        public LinkedList<Node> findShortestPath(Node start, Node target) {
-                Set<Integer> visitedNodeIds = new HashSet<Integer>();
-                return findShortestPathRecursive(start, target, visitedNodeIds);
-        }
+		blueStartingPositions = new ArrayList<Node>();
+		blueStartingPositions.add(blueStartTop);
+		blueStartingPositions.add(blueStartCenter);
+		blueStartingPositions.add(blueStartBottom);
+		
+		this.currentNode = getStartingNode(matchData);
+		
+		if (matchData.getAlliance() ==  DriverStation.Alliance.Red) {
+			switch (matchData.getTarget()) {
+			case CLOSE_SWITCH:
+				target = matchData.getSwitch1Position() == MatchData.Position.LEFT ? redSwitchTop : redSwitchBottom;
+				break;
+			case SCALE:
+				target = matchData.getScalePosition() == MatchData.Position.LEFT ? topScale : bottomScale;
+				break;
+			case FAR_SWITCH:
+				target = matchData.getSwitch2Position() == MatchData.Position.LEFT ? blueSwitchTop : blueSwitchBottom;
+				break;
+				
+			}
+		} else {
+			switch (matchData.getTarget()) {
+			case CLOSE_SWITCH:
+				target = matchData.getSwitch1Position() == MatchData.Position.LEFT ? blueSwitchBottom : blueSwitchTop;
+				break;
+			case SCALE:
+				target = matchData.getScalePosition() == MatchData.Position.LEFT ? bottomScale : topScale;
+				break;
+			case FAR_SWITCH:
+				target = matchData.getSwitch2Position() == MatchData.Position.LEFT ? redSwitchBottom : redSwitchTop;
+				break;
+				
+			}
+		}
+		
+		if (this.currentNode == null) {
+			System.out.println("Current node is null. Check match data config");
+			
+		} 
+		
+		if (this.target == null) {
+			System.out.println("Target node is null. Check match data config");
+		} 
+		
+		
+	}
+	
 
-        /***
-         * A recursive flood-fill algorithm that implements the actual
-         * findShortestPathRecursive() algorithm.
-         *
-         * Preconditions:
-         * - The current node should not already be in the visitedNodeIds set.
-         *
-         * Postconditions:
-         * - The current node will be in the visitedNodeIds set.
-         *
-         * @param current
-         * @param target
-         * @return
-         */
-        private LinkedList<Node> findShortestPathRecursive(Node current, Node target, Set<Integer> visitedNodeIds) {
+	/**
+	 * This is meant to return the starting position of the robot. If you are
+	 * standing in your alliance station and are looking onto the field, 0 is to
+	 * the left, 1 is directly ahead, and 2 is to the right.
+	 * 
+	 * @param position
+	 * @param alliance
+	 * @return
+	 * @throws Exception
+	 */
+	public Node getStartingNode(MatchData matchData) {
+		int alliance = matchData.getAlliance() == DriverStation.Alliance.Red ? 0 : 1;
+		int position = -1;
+		switch (matchData.getOwnStartPosition()) {
+		case LEFT: 
+			position = 0;
+			break;
+		case CENTER: 
+			position = 1;
+			break;
+		case RIGHT: 
+			position = 2;
+			break;
+		}
+		switch ((3 * alliance) + position) {
+		case 0:
+			return redStartingPositions.get(0); // Red Top
+		case 1:
+			return redStartingPositions.get(1); // Red Center
+		case 2:
+			return redStartingPositions.get(2); // Red Bottom
+		case 3:
+			return blueStartingPositions.get(2); // Blue Bottom
+		case 4:
+			return blueStartingPositions.get(1); // Blue Center
+		case 5:
+			return blueStartingPositions.get(0); // Blue Top
+		default:
+			return null;
+		}
+	}
 
-                if (current.id == target.id) {
-                        // Direct hit.
-                        LinkedList<Node> result = new LinkedList<Node>();
-                        result.addFirst(current);
-                        return result;
-                }
+	public void addEdge(Node node1, Node node2) {
+		node1.neighbors.add(node2);
+		node2.neighbors.add(node1);
+	}
 
-                // *This* node has been visited.
-                visitedNodeIds.add(current.id);
-                LinkedList<Node> shortestPath = null;
+	/***
+	 * Returns a linked list consisting of the shortest path from start to
+	 * target.
+	 * 
+	 * @param start
+	 *            The node to start our search from.
+	 * @param target
+	 *            The node we are trying to reach.
+	 * @return A LinkedList<Node>. If the linked list has one element, the start
+	 *         IS the target; if the linked list is null, there is no path from
+	 *         the start to the target.
+	 */
+	public LinkedList<Node> findShortestPath(Node start, Node target) {
+		Set<Integer> visitedNodeIds = new HashSet<Integer>();
+		return findShortestPathRecursive(start, target, visitedNodeIds);
+	}
 
-                // Visit all the neighbors in turn.
-                for (Node neighbor : current.neighbors) {
-                        if (!visitedNodeIds.contains(neighbor.id)) {
-                                LinkedList<Node> path = findShortestPathRecursive(neighbor, target, visitedNodeIds);
-                                if (path != null) {
-                                        // A route was found to the target.
-                                        path.addFirst(current);
+	/***
+	 * A recursive flood-fill algorithm that implements the actual
+	 * findShortestPathRecursive() algorithm.
+	 * 
+	 * Preconditions: - The current node should not already be in the
+	 * visitedNodeIds set.
+	 * 
+	 * Postconditions: - The current node will be in the visitedNodeIds set.
+	 * 
+	 * @param current
+	 * @param target
+	 * @return
+	 */
+	private LinkedList<Node> findShortestPathRecursive(Node current,
+			Node target, Set<Integer> visitedNodeIds) {
 
-                                    if (shortestPath == null || path.size() < shortestPath.size()) {
-                                        shortestPath = path;
-                                    }
-                                } else {
-                                        // No route to target from current neighbor.
-                                }
-                        }
-                }
+		if (current.id == target.id) {
+			// Direct hit.
+			LinkedList<Node> result = new LinkedList<Node>();
+			result.addFirst(current);
+			return result;
+		}
 
-                if (shortestPath == null) {
-                        // No route to target.
-                }
+		// *This* node has been visited.
+		visitedNodeIds.add(current.id);
+		LinkedList<Node> shortestPath = null;
 
-                return shortestPath;
-        }
+		// Visit all the neighbors in turn.
+		for (Node neighbor : current.neighbors) {
+			if (!visitedNodeIds.contains(neighbor.id)) {
+				LinkedList<Node> path = findShortestPathRecursive(neighbor,
+						target, visitedNodeIds);
+				if (path != null) {
+					// A route was found to the target.
+					path.addFirst(current);
+
+					if (shortestPath == null
+							|| path.size() < shortestPath.size()) {
+						shortestPath = path;
+					}
+				} else {
+					// No route to target from current neighbor.
+				}
+			}
+		}
+
+		if (shortestPath == null) {
+			// No route to target.
+		}
+
+		return shortestPath;
+	}
 }

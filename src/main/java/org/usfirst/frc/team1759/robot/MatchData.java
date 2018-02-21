@@ -35,6 +35,12 @@ public class MatchData {
     CENTER
   };
   
+  public enum Target {
+	  CLOSE_SWITCH,
+	  FAR_SWITCH,
+	  SCALE
+  };
+  
   private DriverStation driverStation;
   
   // The position of our side of the switch closest to us
@@ -81,6 +87,10 @@ public class MatchData {
   public Position getOwnStartPosition() {
 	  // Hardcoded temporarily, should read from a switch in the final version
 	  return Position.LEFT;
+  }
+  
+  public Target getTarget() {
+	  return Target.CLOSE_SWITCH;
   }
   
   private Position getPosition(char leftRightChar) {
