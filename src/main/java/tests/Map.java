@@ -345,16 +345,17 @@ public class Map {
                 }
 
                 // Render the whole screen buffer.
-
+                StringBuilder s = new StringBuilder();
                 for (int offset = 0, row = 0; row < screenHeight; ++row) {
                         for (int column = 0; column < screenWidth; ++column, ++offset) {
                                 if (useColors) {
-                                        System.out.print(colorSequences[screenBuffer.get(offset).color]);
+                                        s.append(colorSequences[screenBuffer.get(offset).color]);
                                 }
-                                System.out.print(screenBuffer.get(offset).c);
+                                s.append(screenBuffer.get(offset).c);
                         }
-                        System.out.print('\n');
+                        s.append('\n');
                 }
+                System.out.print(s.toString());
         }
 
         /***

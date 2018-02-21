@@ -43,8 +43,8 @@ public class WaypointSimulator {
                 map.clearScreen();
                 Graph graph = new Graph(null);
                 map.AddWaypointsFromGraph(graph);
-                final int screenWidth = 120;
-                final int screenHeight = 40;
+                final int screenWidth = 170;//120;
+                final int screenHeight = 50;//40;
 
                 double robotData[][] = {
                         // X velocity, Y velocity; transition time stamp (milliseconds)
@@ -108,6 +108,7 @@ public class WaypointSimulator {
 
         public static final void testAddWaypointsFromGraph() throws Exception {
                 Map map = new Map();
+                map.clearScreen();
                 Graph graph = new Graph(null);
                 map.AddWaypointsFromGraph(graph);
                 // commented out to remove build error, will fix later
