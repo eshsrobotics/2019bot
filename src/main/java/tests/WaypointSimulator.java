@@ -11,16 +11,16 @@ import models.Vector2;
 public class WaypointSimulator {
 
         /**
-         * Runs the Waypoint Simulator. Also prints Hello World!
-         * @param args
-         * @throws Exception
+         * Runs the Waypoint Simulator. Also prints something different.
+         * @param args Command-line arguments (which we do not process right now.)
+         * @throws Exception Forwarded unadorned if an individual test throws an exception.
          */
         public static void main(String[] args) throws Exception {
 
-                System.out.println("something different");
                 testFalseRobotMovementAnimation();
                 testAddWaypointsFromGraph();
                 testFindShortestPath();
+                System.out.println("something different");
         }
 
 
@@ -46,8 +46,8 @@ public class WaypointSimulator {
                 final int screenWidth = 170;//120;
                 final int screenHeight = 50;//40;
 
-                double robotData[][] = {
-                        // X velocity, Y velocity; transition time stamp (milliseconds)
+                final double robotData[][] = {
+                        // X velocity (feet/frame), Y velocity(feet/frame), transition time stamp (milliseconds)
                         { -0.75,  0,    2000.000  },
                         {  0.45, -0.45, 3000.000  },
                         {  0.45,  0,    4000.000  },

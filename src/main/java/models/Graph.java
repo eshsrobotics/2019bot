@@ -266,7 +266,7 @@ public class Graph {
 
         /***
          * A recursive flood-fill algorithm that implements the actual
-         * findShortestPathRecursive() algorithm.
+         * findShortestPath() algorithm.
          *
          * Preconditions:
          * - The current node should not already be in the visitedNodeIds set.
