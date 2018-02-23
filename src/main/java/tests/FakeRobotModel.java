@@ -102,7 +102,7 @@ public class FakeRobotModel {
             //
             // The angle of rotation, θ, is r - l, scaled appropriately to
             // translate the linear velocities into acceptable rotational
-            // velocities.  Calculate A' and B' by rotating A and B θ degrees
+            // velocities.  Calculate R' and L' by rotating R and L θ degrees
             // around point C.
             //
             // As for the final velocity V', its magnitude is clearly:
@@ -121,7 +121,7 @@ public class FakeRobotModel {
             // by 90 degrees (or, equivalently, the vector from R to L rotated
             // counterclockwise by 90 degrees), leading to a final velocity of:
             //
-            //   V' = m * Vector2((R - L).y, -(R - L).x)
+            //   V' = m * Vector2((R' - L').y, -(R' - L').x)
             //
             // If V's magnitude is greater than the maximum speed, we clip it; if it is
             // less than the minimum epsilon threshold, we zero it.
@@ -135,7 +135,13 @@ public class FakeRobotModel {
             //   l = 1.0
             //   C = O + (1.5/-0.5) * (L - O) = O - 3(L-O) [= O + 3(R-O)]
             //   (Note that C lies outside of line segment LR.)
-            //   θ = (r - l) * LINEAR_VELOCITY_TO_RADIANS = 0.075
+            //   θ = (r - l) * LINEAR_VELOCITY_TO_RADIANS = -0.3925
+            //   m = 0.5 * 1.0 * (1.0 + 0.5) = 0.75
+            //
+            // The remaining quantities are points and vectors that depend on
+            // the original values of R and L.  But the robot is clearly
+            // rotating clockwise at around 22.5 degrees per second as it
+            // moves forward.
         }
 
     }
