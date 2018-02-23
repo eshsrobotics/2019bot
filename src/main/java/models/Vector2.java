@@ -1,8 +1,5 @@
 package models;
 
-import java.lang.Math;
-import models.Point;
-
 /**
  * A simple class for waypoint vector math.
  */
@@ -99,8 +96,34 @@ public class Vector2 {
         }
 
         /***
+         * Rotates this vector counterclockwise around the origin by the given
+         * angle.
+         * @param theta The rotation angle in radians.
+         */
+        public void rotate(double theta) {
+            double rx = x * Math.cos(theta) - y * Math.sin(theta);
+            double ry = x * Math.sin(theta) + y * Math.cos(theta);
+            x = rx;
+            y = ry;
+        }
+
+        /***
+         * Returns a vector that represents the value this vector would have if
+         * it were rotated by the given angle around the origin.
+         *
+         * @param theta The rotation angle in radians.
+         * @return The rotated vector.
+         */
+        public Vector2 rotatedBy(double theta) {
+            Vector2 v = new Vector2(this);
+            v.rotate(theta);
+            return v;
+        }
+
+        /***
          * Converts this vector to a string.
          */
+        @Override
         public String toString() {
             return String.format("Vector(%.3f, %.3f)", x, y);
         }

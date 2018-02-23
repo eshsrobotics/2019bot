@@ -1,7 +1,5 @@
 package models;
 
-import models.Vector2;
-
 public class Point {
 
         public double x;
@@ -53,8 +51,37 @@ public class Point {
         }
 
         /***
+         * Rotates this point by the given angle around the given point.
+         * @param center The center of rotation.
+         * @param theta The rotation angle in radians.
+         */
+        public void rotateAround(Point center, double theta) {
+            Point p = new Point(this);
+            Vector2 v = new Vector2(center);
+            p = p.add(v.mult(-1));                        // Translate.
+            Vector2 vr = new Vector2(p).rotatedBy(theta); // Rotate.
+            p = new Point(vr).add(v);                     // Translate back.
+            x = p.x;
+            y = p.y;
+        }
+
+        /***
+         * Returns the value this point would have if it were rotated by the
+         * given angle around the given point.
+         * @param center The center of rotation.
+         * @param theta The rotation angle in radians.
+         * @return The rotated point.
+         */
+        public Point rotatedAround(Point center, double theta) {
+            Point p = this;
+            p.rotateAround(center, theta);
+            return p;
+        }
+
+        /***
          * Converts this point to a string.
          */
+        @Override
         public String toString() {
             return String.format("Point(%.3f, %.3f)", x, y);
         }
