@@ -69,6 +69,7 @@ public class WaypointSimulator {
                 final double totalSimulationTimeMilliseconds = robotData[robotData.length - 1][2];
                 final double startTimeMilliseconds = System.currentTimeMillis();
                 double elapsedTimeMilliseconds = System.currentTimeMillis() - startTimeMilliseconds;
+                int frames = 0;
 
                 while (elapsedTimeMilliseconds < totalSimulationTimeMilliseconds) {
 
@@ -89,9 +90,11 @@ public class WaypointSimulator {
                         // draw the next one.
                         map.resetCursor();
                         map.draw(screenWidth, screenHeight);
+                        frames++;
                         Thread.sleep((long)MILLISECONDS_PER_FRAME);
 
                         elapsedTimeMilliseconds = System.currentTimeMillis() - startTimeMilliseconds;
+                        System.out.printf("%.2f frames per second", frames * 1000.0 / elapsedTimeMilliseconds);
                 }
         }
 

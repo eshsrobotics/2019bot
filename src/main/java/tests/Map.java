@@ -125,6 +125,10 @@ public class Map {
          * imperial measurements.)
          */
         private double width, height;
+
+        /**
+         * The list of waypoints we've been asked to render during draw().
+         */
         private ArrayList<Node> waypoints;
 
         /***
@@ -205,6 +209,13 @@ public class Map {
                 }
         }
 
+        /**
+         * Allows you to change the position of the robot marker that we render
+         * on the map.
+         *  
+         * @param robotPosition The virtual position of the robot, in feet.
+         * @return Aforesaid position, jsut in case you need it for something.
+         */
         public Point setRobotPosition(Point robotPosition) {
                 this.robotPosition = robotPosition;
                 return robotPosition;
@@ -249,7 +260,7 @@ public class Map {
          * resetCursor() on your behalf.
          */
         public void clearScreen() {
-                System.out.printf("\033[2J"); // Clear screen.
+                System.out.printf("\033[2J"); 
                 resetCursor();
         }
 
@@ -266,7 +277,7 @@ public class Map {
 
                 // Scale so that we take up the full width or height that we are
                 // allotted, preserving aspect ratio.
-                double smallestPhysicalDimension = Math.min(screenWidth, screenHeight);
+                double smallestScreenDimension = Math.min(screenWidth, screenHeight);
                 double smallestVirtualDimension = Math.min(width,  height);
 
                 // Calculate a scaling factor that can convert the virtual
@@ -281,19 +292,20 @@ public class Map {
                 //     That would map the board to 25x56.25.  That's correct,
                 //     too!
 
-                double scale = smallestPhysicalDimension / smallestVirtualDimension;
+                double scale = smallestScreenDimension / smallestVirtualDimension;
 
                 // But:
-                // - A pathological 10,000x1000 board.in the above regime would have a
-                //   scaleFactor of 25/1000 = 1/40, mapping the board to 250x25 --
-                //   still pathological!
+                // - A pathological 10,000x1000 board in the above
+                //   regime would have a scaleFactor of 25/1000 =
+                //   1/40, mapping the board to 250x25 -- still
+                //   pathological!
                 //
                 //   The real scale factor should have been 80/10000 = 1/125, mapping
                 //   the board to 80x0.2.  We had better catch that.
                 double largestVirtualDimension = Math.max(width,  height);
-                double largestPhysicalDimension = Math.max(screenWidth, screenHeight);
-                if (scale * largestVirtualDimension > largestPhysicalDimension) {
-                        scale = largestPhysicalDimension / largestVirtualDimension;
+                double largestScreenDimension = Math.max(screenWidth, screenHeight);
+                if (scale * largestVirtualDimension > largestScreenDimension) {
+                        scale = largestScreenDimension / largestVirtualDimension;
                 }
 
                 // Allocate a virtual screen buffer to hold the stuff we're
@@ -319,8 +331,8 @@ public class Map {
                         drawCharacter(screenBuffer, screenWidth, column, 0,                WHITE, '-');
                         drawCharacter(screenBuffer, screenWidth, column, screenHeight - 1, WHITE, '-');
                 }
-                drawCharacter(screenBuffer, screenWidth, 0,                0,                WHITE, '/');
-                drawCharacter(screenBuffer, screenWidth, 0,                screenHeight - 1, WHITE, '\\');
+                drawCharacter(screenBuffer, screenWidth, 0,               0,                WHITE, '/');
+                drawCharacter(screenBuffer, screenWidth, 0,               screenHeight - 1, WHITE, '\\');
                 drawCharacter(screenBuffer, screenWidth, screenWidth - 1, 0,                 WHITE, '\\');
                 drawCharacter(screenBuffer, screenWidth, screenWidth - 1, screenHeight - 1,  WHITE, '/');
 
