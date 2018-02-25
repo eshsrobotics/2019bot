@@ -41,7 +41,7 @@ public class WaypointSimulator {
          * Tests the FakeRobotDrive by actually allowing the user to drive it.
          *
          * This test relies on the ability to read characters from the console
-         * without the IO blocking until the ENTER key is pressed -- this is
+         * without the I/O blocking until the ENTER key is pressed -- this is
          * known as "raw mode."  Java does not provide a means to do this
          * portably, so as a result, this function will not work on the
          * following non-Unix terminals:

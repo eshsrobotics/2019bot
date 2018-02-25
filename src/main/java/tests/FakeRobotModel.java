@@ -285,7 +285,7 @@ public class FakeRobotModel {
                         // rotated clockwise by 90 degrees), leading to a final
                         // velocity of:
                         //
-                        //   V' = m * Vector2((R' - L').y, -(R' - L').x)
+                        //   V' = m * Vector2(-(R' - L').y, (R' - L').x)
                         //
                         // If V's magnitude is greater than the
                         // maximum speed, we clip it; if it is less
