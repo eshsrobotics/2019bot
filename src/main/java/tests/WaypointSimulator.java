@@ -62,6 +62,7 @@ public class WaypointSimulator {
                         Runtime.getRuntime().exec(rawModeCommand).waitFor();
 
                         Map map = new Map();
+                        map.enableRawMode();
                         map.clearScreen();
                         FakeRobotModel robot = new FakeRobotModel();
                         robot.getDrive().setPosition(new Point(0, 0));
@@ -136,6 +137,7 @@ public class WaypointSimulator {
 
                         } // end (while the simulation is not complete)
 
+                        map.clearScreen();
                 } catch (InterruptedException e) {
                         System.out.printf("Caught an %s while trying to put console in raw mode: \"%s\"\n", e.getClass().getCanonicalName());
                         e.printStackTrace();
@@ -143,7 +145,6 @@ public class WaypointSimulator {
                         System.out.printf("Caught an %s while trying to put console in raw mode: \"%s\"\n", e.getClass().getCanonicalName());
                         e.printStackTrace();
                 } finally {
-
                         // Return to cooked mode.  It's important to do this before
                         // the program exits!
                         try {

@@ -69,6 +69,12 @@ public class Map {
         private int octant;
 
         /***
+         * If set to true by enableRawMode(), every newline emitted during
+         * draw() will be preceded by a carriage return.
+         */
+        private boolean addCarriageReturns;
+
+        /***
          * A ScreenCharacter is a struct with a color code and a character.
          * @author uakotaobi
          */
@@ -285,7 +291,29 @@ public class Map {
             System.out.printf("\033[H");
         }
 
-        // Renders the map and everything in it to standard output.
+        /**
+         * If the terminal is in raw mode, printing newlines ('\n') does not
+         * work in the way you'd expect: the cursor is advanced by one line,
+         * but it is not returned to the beginning of the line.  So the Map
+         * object needs to know to emit carriage returns before newlines when
+         * rendering.
+         */
+        public void enableRawMode() {
+            addCarriageReturns = true;
+        }
+
+        /***
+         * Renders the map and everything in it to standard output.
+         *
+         * Right now, the screen will be rendered from the cursor's current
+         * position.  (Should you want that to be at the upper left corner,
+         * call resetCursor() first.)
+         *
+         * @param screenWidth  The desired width of the rendered screen, in
+         *                     characters.
+         * @param screenHeight The desired height of the rendered screen, in
+         *                     characters.
+         */
         public void draw(int screenWidth, int screenHeight) {
 
                 // Scale so that we take up the full width or height that we are
@@ -335,19 +363,26 @@ public class Map {
                 //
                 // The borders are drawn on the edges, so it's possible for
                 // things to be drawn on top of them.
-                for (int row = 0; row < screenHeight; ++row) {
+                Point upperLeft  = virtualCoordinateToScreenCoordinate(new Point(-width/2, -height/2), screenWidth, screenHeight, scale);
+                Point lowerRight = virtualCoordinateToScreenCoordinate(new Point(width/2, height/2), screenWidth, screenHeight, scale);
+                int   bottom     = Math.min(screenHeight - 1, (int) Math.floor(upperLeft.y));  // -y is _down_ on the screen
+                int   top        = Math.max(0,                (int) Math.ceil(lowerRight.y));  // +y is _up_ on the screen
+                int   left       = Math.max(0,                (int) Math.ceil(upperLeft.x));
+                int   right      = Math.min(screenWidth - 1,  (int) Math.floor(lowerRight.x));
+                System.out.printf("width: %d, height: %d; scale: %.3f; rect: (%.1f, %.1f)-(%.1f, %.1f)\r\n",screenWidth, screenHeight, scale, upperLeft.x, lowerRight.y, lowerRight.x, upperLeft.y);
+                for (int row = top; row < bottom; ++row) {
                         // Left and right walls.
-                        drawCharacter(screenBuffer, screenWidth, 0,               row, WHITE, '|');
-                        drawCharacter(screenBuffer, screenWidth, screenWidth - 1, row, WHITE, '|');
+                        drawCharacter(screenBuffer, screenWidth, left,  row, WHITE, '|');
+                        drawCharacter(screenBuffer, screenWidth, right, row, WHITE, '|');
                 }
-                for (int column = 0; column < screenWidth; ++column) {
-                        drawCharacter(screenBuffer, screenWidth, column, 0,                WHITE, '-');
-                        drawCharacter(screenBuffer, screenWidth, column, screenHeight - 1, WHITE, '-');
+                for (int column = left; column < right; ++column) {
+                        drawCharacter(screenBuffer, screenWidth, column, top,    WHITE, '-');
+                        drawCharacter(screenBuffer, screenWidth, column, bottom, WHITE, '-');
                 }
-                drawCharacter(screenBuffer, screenWidth, 0,               0,                WHITE, '/');
-                drawCharacter(screenBuffer, screenWidth, 0,               screenHeight - 1, WHITE, '\\');
-                drawCharacter(screenBuffer, screenWidth, screenWidth - 1, 0,                 WHITE, '\\');
-                drawCharacter(screenBuffer, screenWidth, screenWidth - 1, screenHeight - 1,  WHITE, '/');
+                drawCharacter(screenBuffer, screenWidth, left,  top,    WHITE, '/');
+                drawCharacter(screenBuffer, screenWidth, left,  bottom, WHITE, '\\');
+                drawCharacter(screenBuffer, screenWidth, right, top,    WHITE, '\\');
+                drawCharacter(screenBuffer, screenWidth, right, bottom, WHITE, '/');
 
                 // Draws the waypoints the robot will be traveling to.
 
@@ -378,10 +413,13 @@ public class Map {
                                 }
                                 s.append(screenBuffer.get(offset).c);
                         }
-                        s.append('\r'); // Only needed in raw mode.
+                        if (addCarriageReturns) {
+                            s.append('\r');
+                        }
                         s.append('\n');
                 }
                 System.out.print(s.toString());
+                System.out.print(colorSequences[WHITE]);
         }
 
         /***
