@@ -64,8 +64,7 @@ public class WaypointSimulator {
                         Map map = new Map();
                         map.clearScreen();
                         FakeRobotModel robot = new FakeRobotModel();
-                        robot.getDrive().setPosition(new Point(map.getWidth()/2,
-                                                               map.getHeight()/2));
+                        robot.getDrive().setPosition(new Point(0, 0));
 
                         final double startTimeMilliseconds = System.currentTimeMillis();
                         final double totalSimulationTimeMilliseconds = 1000 * 100;
@@ -109,8 +108,8 @@ public class WaypointSimulator {
                                 Point position = robot.getDrive().getPosition();
                                 double w = map.getWidth();
                                 double h = map.getHeight();
-                                position.x = Math.max(0, Math.min(position.x, w));
-                                position.y = Math.max(0, Math.min(position.y, h));
+                                position.x = Math.max(-w/2, Math.min(position.x, w/2));
+                                position.y = Math.max(-h/2, Math.min(position.y, h/2));
                                 robot.getDrive().setPosition(position);
 
                                 map.setRobotPosition(robot.getDrive().getPosition());
