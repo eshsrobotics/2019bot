@@ -24,7 +24,7 @@ public class FakeRobotModel {
          * position, direction, and velocity.
          */
         public FakeTankDrive getDrive() {
-        	return drive;
+                return drive;
         }
 
         /**
@@ -69,19 +69,21 @@ public class FakeRobotModel {
                 private static final double MIN_TANK_LINEAR_SPEED = -1.0;
 
                 /***
-                 * Translates a linear velocity, in feet per second,
-                 * to a sensible rotational velocity in radians per
-                 * second.
+                 * Translates a linear velocity, in unit-less left- and
+                 * right-speeds, to a sensible instantaneous rotational
+                 * velocity in radians.
                  *
-                 * This constant is arbitrary and designed just to
-                 * make the simulation look decent.  The maximum
-                 * linear rotation speed is 2.0 (representing full
-                 * throttle in opposite directions for the tank
-                 * drive), and I wanted that to correspond to 90
-                 * degrees per second.
+                 * This constant is arbitrary and designed just to make the
+                 * simulation look decent.  The maximum linear rotation speed
+                 * is 2.0 (representing full throttle in opposite directions
+                 * for the tank drive), and I wanted that to correspond to a
+                 * rotation by 90 degrees.
                  *
-                 * If you want the robot to rotate faster, change the
-                 * 90 to something higher.
+                 * This does mean that rotating by (+1, -1) will spin you
+                 * around very, VERY quickly -- 5 times per second if
+                 * tankDrive() is called at a reasonable framerate of 20 Hz!
+                 * If you want the robot to rotate more slowly, change the 90
+                 * to something lower.
                  */
                 private static final double LINEAR_VELOCITY_TO_RADIANS =
                         90 * Constants.DEGREES_TO_RADIANS / (MAX_TANK_LINEAR_SPEED - MIN_TANK_LINEAR_SPEED);
@@ -112,7 +114,7 @@ public class FakeRobotModel {
                  * Returns the position of the drive (in feet.)
                  */
                 public Point getPosition() {
-                        return position;
+                        return new Point(position); // Prevents "getPosition().x += 100".
                 }
 
                 /**
@@ -144,7 +146,7 @@ public class FakeRobotModel {
                  * equal to getDirection() * getSpeed().
                  */
                 public Vector2 getDirection() {
-                        return direction;
+                        return new Vector2(direction); // Prevents "getDirection().y = 9999".
                 }
 
                 /**
@@ -218,6 +220,7 @@ public class FakeRobotModel {
                         Vector2 right = new Vector2(direction.y, -direction.x);
                         Point L = O.add(left.mult(width/2));
                         Point R = O.add(right.mult(width/2));
+                        // System.out.printf("[L =%s, R =%s]\n", L, R);
 
                         // Now we can power the tank drive with speeds
                         // l and r by treating these speeds as angular
@@ -239,8 +242,9 @@ public class FakeRobotModel {
                         //         \  O,                     when r = l
                         //
 
-                		double r = Math.max(-1, Math.min(1, rightSpeed));
-                    	double l = Math.max(-1, Math.min(1, leftSpeed));
+                        double r = Math.max(-1, Math.min(1, rightSpeed));
+                        double l = Math.max(-1, Math.min(1, leftSpeed));
+                        // System.out.printf("[l =%.3f, r =%.3f]\n", l, r);
                         Point C = O;
                         if (Math.abs(r - l) > Constants.EPSILON) {
                                 C = O.add(O.vectorTo(L).mult((r + l)/(r - l)));
@@ -258,6 +262,7 @@ public class FakeRobotModel {
 
                         Point newR = R.rotatedAround(C, theta);
                         Point newL = L.rotatedAround(C, theta);
+                        // System.out.printf("[L'=%s, R'=%s]\n", newL, newR);
 
                         // As for the final velocity V', its magnitude
                         // is clearly:
@@ -277,8 +282,8 @@ public class FakeRobotModel {
                         // The direction is simply the vector from L'
                         // to R' rotated counterclockwise by 90 degrees
                         // (or, equivalently, the vector from R' to L'
-                        // rotated counterclockwise by 90 degrees),
-                        // leading to a final velocity of:
+                        // rotated clockwise by 90 degrees), leading to a final
+                        // velocity of:
                         //
                         //   V' = m * Vector2((R' - L').y, -(R' - L').x)
                         //
@@ -288,8 +293,8 @@ public class FakeRobotModel {
                         // it.
 
                         Vector2 newSegmentVector = newL.vectorTo(newR);
-                        Vector2 velocity = new Vector2(newSegmentVector.y, -newSegmentVector.x);
-
+                        Vector2 velocity = new Vector2(-newSegmentVector.y, newSegmentVector.x);
+                        //System.out.printf("[C=%s, newSegmentVector=%s, velocity=%s]\n", C, newSegmentVector, velocity);
                         this.speed = Math.min(m, MAX_TANK_LINEAR_SPEED);
                         this.setDirection(velocity);
 
@@ -301,7 +306,7 @@ public class FakeRobotModel {
                         //   l = 1.0
                         //   C = O + (1.5/-0.5) * (L - O) = O - 3(L-O) [= O + 3(R-O)]
                         //   (Note that C lies outside of line segment LR.)
-                     //   θ = (r - l) * LINEAR_VELOCITY_TO_RADIANS = -0.3925
+                        //   θ = (r - l) * LINEAR_VELOCITY_TO_RADIANS = -0.3925
                         //   m = 0.5 * 1.0 * (1.0 + 0.5) = 0.75
                         //
                         // The remaining quantities are points and vectors that depend on
@@ -310,15 +315,17 @@ public class FakeRobotModel {
                         // moves forward.
                         //
                         // Speaking of which, move forward.
-                        this.position = this.position.add(this.direction.mult(this.speed));
+                        Point newCenterAfterRotation = new Point((newL.x + newR.x)/2,
+                                                                 (newL.y + newR.y)/2);
+                        this.position = newCenterAfterRotation.add(this.direction.mult(this.speed));
                 }
 
                 /**
                  * Returns a string representation of this object.
                  */
                 @Override
-				public String toString() {
-                	return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f", position.toString(), direction.toString(), speed);
+                public String toString() {
+                    return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f", position.toString(), direction.toString(), speed);
                 }
         }
 }

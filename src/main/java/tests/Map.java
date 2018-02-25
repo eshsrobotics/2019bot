@@ -158,14 +158,14 @@ public class Map {
          * Returns the virtual width of the map, in feet.
          */
         public double getWidth() {
-        	return width;
+                return width;
         }
 
         /**
          * Returns the virtual height of the map, in feet.
          */
         public double getHeight() {
-        	return height;
+                return height;
         }
 
         /**
@@ -246,9 +246,10 @@ public class Map {
                 this.robotVector = robotVector.normalized();
 
                 // The angle between the X axis and the normalized vector will
-                // be a value between 0 and 2*Pi radians.
+                // be a value between 0 and 2π radians.
                 double thetaRadians = -Math.atan2(this.robotVector.y, this.robotVector.x);
                 if (thetaRadians < 0) {
+                    // Shift the range of atan2() from [-π, π] to [0, 2π].
                     thetaRadians += 2 * Math.PI;
                 }
 
@@ -257,10 +258,8 @@ public class Map {
                 //
                 // Let's displace the quadrants by 45/2 degrees to make this
                 // look more intuitive.
-                thetaRadians += Math.PI / 8;
-                if (thetaRadians > 2 * Math.PI) {
-                        thetaRadians -= 2 * Math.PI;
-                }
+
+                thetaRadians = (thetaRadians + Math.PI / 8) % (2 * Math.PI); // Java does floating-point modulus, a la fmod().  Who knew?
 
                 double normalizedTheta = thetaRadians / (2 * Math.PI);
                 // System.out.printf("%s: %.2fπ radians      ", this.robotVector.toString(), thetaRadians/Math.PI);
@@ -413,6 +412,7 @@ public class Map {
                 // standard coordinates, have y going up.  Because of this, we
                 // must invert y so that it behaves the way we humans expect
                 // it to.
+
                 Point screenPosition = new Point(virtualCoordinateInFeet.x * scaleFactor + screenWidth/2,
                                                  -virtualCoordinateInFeet.y * scaleFactor + screenHeight/2);
                 return screenPosition;
