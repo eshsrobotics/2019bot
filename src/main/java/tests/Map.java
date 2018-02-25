@@ -155,6 +155,20 @@ public class Map {
         }
 
         /**
+         * Returns the virtual width of the map, in feet.
+         */
+        public double getWidth() {
+        	return width;
+        }
+
+        /**
+         * Returns the virtual height of the map, in feet.
+         */
+        public double getHeight() {
+        	return height;
+        }
+
+        /**
          * "Waypoints" are the positions that our robot must visit during
          * autonomous mode.  For the simulation, we will display the positions of
          * all the actual waypoints that the actual robot will visit -- but
@@ -212,7 +226,7 @@ public class Map {
         /**
          * Allows you to change the position of the robot marker that we render
          * on the map.
-         *  
+         *
          * @param robotPosition The virtual position of the robot, in feet.
          * @return Aforesaid position, jsut in case you need it for something.
          */
@@ -260,7 +274,7 @@ public class Map {
          * resetCursor() on your behalf.
          */
         public void clearScreen() {
-                System.out.printf("\033[2J"); 
+                System.out.printf("\033[2J");
                 resetCursor();
         }
 
@@ -365,6 +379,7 @@ public class Map {
                                 }
                                 s.append(screenBuffer.get(offset).c);
                         }
+                        s.append('\r'); // Only needed in raw mode.
                         s.append('\n');
                 }
                 System.out.print(s.toString());

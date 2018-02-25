@@ -1,14 +1,25 @@
 package tests;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import models.Constants;
 import models.Graph;
 import models.Node;
 import models.Point;
 import models.Vector2;
+import tests.FakeRobotModel.FakeTankDrive;
 
 public class WaypointSimulator {
+
+
+		/**
+		 * The speed of animations used during some tests.
+		 */
+		private static final double FRAMES_PER_SECOND = 20.0;
+        private static final double MILLISECONDS_PER_FRAME = 1000.0 / FRAMES_PER_SECOND;
+
 
         /**
          * Runs the Waypoint Simulator. Also prints something different.
@@ -17,12 +28,153 @@ public class WaypointSimulator {
          */
         public static void main(String[] args) throws Exception {
 
-                testFalseRobotMovementAnimation();
-                testAddWaypointsFromGraph();
+
+            	//testAddWaypointsFromGraph();        // Superseded by testFalseRobotMovementAnimation
+        		//testFalseRobotMovementAnimation();  // Superseded by testInteractiveFakeRobotDrive
+        	    //testInteractiveFakeRobotDrive();
+        		testTankDrive();
                 testFindShortestPath();
                 System.out.println("something different");
         }
 
+        /***
+         * A test used to isolate the behavior of FakeTankDrive.tankDrive() by
+         * itself.
+         */
+        public static final void testTankDrive() {
+        	// Test rotation.
+    		Point o = new Point(2, 2);
+    		Point p = new Point(5, 2);
+    		double theta = 90;
+    		Point q = p.rotatedAround(o, theta * Constants.DEGREES_TO_RADIANS);
+    		System.out.printf("Rotating %s %.3f degrees around %s yields %s.\n",
+    				p, theta, o, q);
+
+        	// Now test the drive.
+    		FakeTankDrive drive = new FakeRobotModel().new FakeTankDrive(Constants.ORIGIN, 1.5);
+    		drive.setDirection(new Vector2(0, 1));
+
+    		final double leftSpeed = 1.0;
+    		final double rightSpeed = 1.0;
+
+    		System.out.printf("Before moving the drive:\n  %s\n", drive.toString());
+    		drive.tankDrive(leftSpeed, rightSpeed);
+    		System.out.printf("After calling tankDrive(%.2f, %.2f):\n  %s\n", leftSpeed, rightSpeed, drive.toString());
+        }
+
+
+        /**
+         * Tests the FakeRobotDrive by actually allowing the user to drive it.
+         *
+         * This test relies on the ability to read characters from the console
+         * without the IO blocking until the ENTER key is pressed -- this is
+         * known as "raw mode."  Java does not provide a means to do this
+         * portably, so as a result, this function will not work on the
+         * following non-Unix terminals:
+         *
+         * - cmd.exe
+         * - powershell.exe
+         *
+         * If you're on Windows, use Cmder or Cygwin's MinTTY instead.
+         */
+        private static final void testInteractiveFakeRobotDrive() {
+        	final String[] rawModeCommand    = { "/bin/sh", "-c", "stty raw </dev/tty" };
+        	final String[] cookedModeCommand = { "/bin/sh", "-c", "stty cooked </dev/tty" };
+            final int screenWidth = 120;
+            final int screenHeight = 40;
+
+        	try {
+        		// Enter raw mode.
+        		Runtime.getRuntime().exec(rawModeCommand).waitFor();
+
+                Map map = new Map();
+                map.clearScreen();
+        		FakeRobotModel robot = new FakeRobotModel();
+        		final double startTimeMilliseconds = System.currentTimeMillis();
+        		final double totalSimulationTimeMilliseconds = 1000 * 100;
+        		double leftSpeed = 0;
+        		double rightSpeed = 0;
+                double elapsedTimeMilliseconds = System.currentTimeMillis() - startTimeMilliseconds;
+                int frames = 0;
+                boolean quit = false;
+
+                while (!quit && elapsedTimeMilliseconds < totalSimulationTimeMilliseconds) {
+
+                    // Move the robot.
+                	while (System.in.available() > 0) {
+	                	int c = System.in.read();
+	                	switch(c) {
+	                		case 'a': case 'A': case '7':
+	                			leftSpeed += 0.1;
+	                			break;
+	                		case 's': case 'S': case '9':
+	                			rightSpeed += 0.1;
+	                			break;
+	                		case 'z': case 'Z': case '1':
+	                			leftSpeed -= 0.1;
+	                			break;
+	                		case 'x': case 'X': case '3':
+	                			rightSpeed -= 0.1;
+	                			break;
+	                		case 'q': case 'Q':
+	                			quit = true;
+	                			break;
+	                	}
+	                }
+
+                	// Move the robot.
+                	leftSpeed = Math.max(-1, Math.min(1, leftSpeed));   // Clamp to the interval [-1, 1].
+                	rightSpeed = Math.max(-1, Math.min(1, rightSpeed)); // Clamp to the interval [-1, 1].
+                	robot.getDrive().tankDrive(leftSpeed, rightSpeed);
+
+                	// Don't leave the map.
+                	Point position = robot.getDrive().getPosition();
+                	position.x = Math.max(0, Math.min(position.x, map.getWidth()));
+                	position.y = Math.max(0, Math.min(position.y, map.getHeight()));
+                	robot.getDrive().setPosition(position);
+
+                	map.setRobotPosition(robot.getDrive().getPosition());
+                	map.setRobotVector(robot.getDrive().getDirection());
+
+                    // Draw the current frame, then wait until it's time to
+                    // draw the next one.
+                    map.resetCursor();
+                    map.draw(screenWidth, screenHeight);
+                    frames++;
+                    Thread.sleep((long)MILLISECONDS_PER_FRAME);
+
+                    elapsedTimeMilliseconds = System.currentTimeMillis() - startTimeMilliseconds;
+                    System.out.printf("Tank controls: A   S      7   9   Speeds:    %.2f/%.2f     \r\n",
+                    		leftSpeed,
+                    		rightSpeed);
+                    System.out.printf("  Press 'Q'    |---|  or  |---|   FPS:       %.1f    \r\n",
+                    		frames * 1000.0 / elapsedTimeMilliseconds);
+                    System.out.printf("   to quit     Z   X      1   3   Time left: %.1f    ",
+                    		(totalSimulationTimeMilliseconds - elapsedTimeMilliseconds)/1000);
+
+                } // end (while the simulation is not complete)
+
+        	} catch (InterruptedException e) {
+        		System.out.printf("Caught an %s while trying to put console in raw mode: \"%s\"\n", e.getClass().getCanonicalName());
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.printf("Caught an %s while trying to put console in raw mode: \"%s\"\n", e.getClass().getCanonicalName());
+				e.printStackTrace();
+			} finally {
+
+        		// Return to cooked mode.  It's important to do this before
+        		// the program exits!
+        		try {
+					Runtime.getRuntime().exec(cookedModeCommand).waitFor();
+				} catch (InterruptedException e) {
+	        		System.out.printf("Caught an %s while trying to return console to cooked mode: \"%s\"\n", e.getClass().getCanonicalName());
+					e.printStackTrace();
+				} catch (IOException e) {
+					System.out.printf("Caught an %s while trying to return console to cooked mode: \"%s\"\n", e.getClass().getCanonicalName());
+					e.printStackTrace();
+				}
+        	}
+        }
 
         /***
          * Tests several different aspects of the autonomous code:
@@ -64,8 +216,6 @@ public class WaypointSimulator {
                 int robotDataIndex = 0;
                 Vector2 currentVector = new Vector2(0, 0);
 
-                final double FRAMES_PER_SECOND = 20.0;
-                final double MILLISECONDS_PER_FRAME = 1000.0 / FRAMES_PER_SECOND;
                 final double totalSimulationTimeMilliseconds = robotData[robotData.length - 1][2];
                 final double startTimeMilliseconds = System.currentTimeMillis();
                 double elapsedTimeMilliseconds = System.currentTimeMillis() - startTimeMilliseconds;

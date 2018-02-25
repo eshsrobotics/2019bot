@@ -308,7 +308,17 @@ public class FakeRobotModel {
                         // the original values of R and L.  But the robot is clearly
                         // rotating clockwise at around 22.5 degrees per second as it
                         // moves forward.
+                        //
+                        // Speaking of which, move forward.
+                        this.position = this.position.add(this.direction.mult(this.speed));
                 }
 
+                /**
+                 * Returns a string representation of this object.
+                 */
+                @Override
+				public String toString() {
+                	return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f", position.toString(), direction.toString(), speed);
+                }
         }
 }

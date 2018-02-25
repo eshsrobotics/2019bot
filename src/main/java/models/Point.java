@@ -73,7 +73,7 @@ public class Point {
          * @return The rotated point.
          */
         public Point rotatedAround(Point center, double theta) {
-            Point p = this;
+            Point p = new Point(x, y);
             p.rotateAround(center, theta);
             return p;
         }
