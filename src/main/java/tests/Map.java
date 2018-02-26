@@ -369,7 +369,6 @@ public class Map {
                 int   top        = Math.max(0,                (int) Math.ceil(lowerRight.y));  // +y is _up_ on the screen
                 int   left       = Math.max(0,                (int) Math.ceil(upperLeft.x));
                 int   right      = Math.min(screenWidth - 1,  (int) Math.floor(lowerRight.x));
-                System.out.printf("width: %d, height: %d; scale: %.3f; rect: (%.1f, %.1f)-(%.1f, %.1f)\r\n",screenWidth, screenHeight, scale, upperLeft.x, lowerRight.y, lowerRight.x, upperLeft.y);
                 for (int row = top; row < bottom; ++row) {
                         // Left and right walls.
                         drawCharacter(screenBuffer, screenWidth, left,  row, WHITE, '|');

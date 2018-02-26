@@ -55,7 +55,7 @@ public class WaypointSimulator {
                 final String[] rawModeCommand    = { "/bin/sh", "-c", "stty raw </dev/tty" };
                 final String[] cookedModeCommand = { "/bin/sh", "-c", "stty cooked </dev/tty" };
                 final int screenWidth = 120;
-                final int screenHeight = 40;
+                final int screenHeight = 45;
 
                 try {
                         // Enter raw mode.
@@ -82,16 +82,32 @@ public class WaypointSimulator {
                                         final double increment = 0.05;
                                         int c = System.in.read();
                                         switch(c) {
-                                                case 'a': case 'A': case '7':
-                                                        leftSpeed += increment;
-                                                        break;
-                                                case 's': case 'S': case '9':
+                                                case 'a': case 'A':
+                                                        leftSpeed -= increment;
                                                         rightSpeed += increment;
                                                         break;
-                                                case 'z': case 'Z': case '1':
+                                                case 's': case 'S':
+                                                        leftSpeed -= increment;
+                                                        rightSpeed -= increment;
+                                                        break;
+                                                case 'd': case 'D':
+                                                        leftSpeed += increment;
+                                                        rightSpeed -= increment;
+                                                        break;
+                                                case 'w': case 'W':
+                                                        leftSpeed += increment;
+                                                        rightSpeed += increment;
+                                                        break;
+                                                case '7':
+                                                        leftSpeed += increment;
+                                                        break;
+                                                case '9':
+                                                        rightSpeed += increment;
+                                                        break;
+                                                case '1':
                                                         leftSpeed -= increment;
                                                         break;
-                                                case 'x': case 'X': case '3':
+                                                case '3':
                                                         rightSpeed -= increment;
                                                         break;
                                                 case 'q': case 'Q':
@@ -124,14 +140,14 @@ public class WaypointSimulator {
                                 Thread.sleep((long)MILLISECONDS_PER_FRAME);
 
                                 elapsedTimeMilliseconds = System.currentTimeMillis() - startTimeMilliseconds;
-                                System.out.printf("Tank controls: A   S      7   9   Speeds:    %.2f/%.2f  Robot heading: %s     \r\n",
+                                System.out.printf("Tank controls:   W        7   9   Speeds:    %.2f/%.2f  Robot heading: %s     \r\n",
                                                   leftSpeed,
                                                   rightSpeed,
                                                   robot.getDrive().getDirection());
-                                System.out.printf("  Press 'Q'    |---|  or  |---|   FPS:       %.1f       Robot position: %s    \r\n",
+                                System.out.printf("  Press 'Q'    A-+-D  or  |---|   FPS:       %.1f       Robot position: %s    \r\n",
                                                   frames * 1000.0 / elapsedTimeMilliseconds,
                                                   robot.getDrive().getPosition());
-                                System.out.printf("   to quit     Z   X      1   3   Time left: %.1f       Robot speed: %.4f    ",
+                                System.out.printf("   to quit       S        1   3   Time left: %.1f       Robot speed: %.4f    ",
                                                   (totalSimulationTimeMilliseconds - elapsedTimeMilliseconds)/1000,
                                                   robot.getDrive().getSpeed());
 
