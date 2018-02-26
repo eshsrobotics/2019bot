@@ -367,12 +367,13 @@ public class WaypointSimulator {
                                   p, theta, o, q);
 
                 // Now test the drive.
-                FakeTankDrive drive = new FakeRobotModel().new FakeTankDrive(Constants.ORIGIN, 1.5);
+                FakeEncoder encoder = new FakeEncoder(Constants.ORIGIN, 0.001);
+                FakeTankDrive drive = new FakeRobotModel().new FakeTankDrive(Constants.ORIGIN, 1.5, encoder);
                 drive.setDirection(new Vector2(0, 1));
 
 
                 final double leftSpeed = 1.0;
-                final double rightSpeed = -1.0;
+                final double rightSpeed = -0.5;
 
                 System.out.printf("Before moving the drive:\n  %s\n", drive.toString());
                 drive.tankDrive(leftSpeed, rightSpeed);

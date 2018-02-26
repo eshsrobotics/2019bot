@@ -18,13 +18,26 @@ import models.Vector2;
 public class FakeRobotModel {
 
         private final FakeTankDrive drive;
+        private final FakeEncoder encoder;
 
         /***
+         * The encoder drift we use if not given one during construction.
+         */
+        private static final double DEFAULT_ENCODER_DRIFT_PER_FOOT = 0.001;
+
+        /**
          * Returns the fake tank drive used to store this virtual robot's
          * position, direction, and velocity.
          */
         public FakeTankDrive getDrive() {
                 return drive;
+        }
+
+        /**
+         * Returns the fake encoder used to track total distance traveled.
+         */
+        public FakeEncoder getEncoder() {
+            return encoder;
         }
 
         /**
@@ -39,10 +52,33 @@ public class FakeRobotModel {
          * Creates a fake robot at the given position, with the given width
          * between the (virtual) tank treads and pointing in the given
          * direction.
+         *
+         * A FakeTankDrive created this way will not use an encoder.
          */
         public FakeRobotModel(Point position, double width, Vector2 direction) {
-                drive = new FakeTankDrive(position, width);
-                drive.setDirection(direction);
+            encoder = null;
+            drive = new FakeTankDrive(position, width, encoder);
+            drive.setDirection(direction.length() < Constants.EPSILON ? new Vector2(0, 1) : direction);
+        }
+
+        /**
+         * Creates a fake robot at the given position, with the given width
+         * between the (virtual) tank treads and pointing in the given
+         * direction.
+         *
+         * @param position  The initial position of the robot (and thus the
+         *                  drive and encoder.)
+         * @param width     The distance between the virtual tank treads of the
+         *                  drive, in feet.
+         * @param direction The initial direction unit vector.
+         * @param maxEncoderDeviancePerFoot The maximum amount by which the
+         *                                  encoder is allowed to misreport
+         *                                  distance per foot traveled.
+         */
+        public FakeRobotModel(Point position, double width, Vector2 direction, double maxEncoderDeviancePerFoot) {
+            encoder = new FakeEncoder(position, maxEncoderDeviancePerFoot);
+            drive = new FakeTankDrive(position, width, encoder);
+            drive.setDirection(direction.length() < Constants.EPSILON ? new Vector2(0, 1) : direction);
         }
 
         /***
@@ -111,6 +147,16 @@ public class FakeRobotModel {
                 private double speed;
 
                 /**
+                 * Every time tankDrive() is called, our position can change.
+                 * We use this object to (somewhat inaccurately) keep track of
+                 * distance traveled.
+                 *
+                 * It's okay if this value is null; in that case, we just won't
+                 * use it.
+                 */
+                private FakeEncoder encoder;
+
+                /**
                  * Returns the position of the drive (in feet.)
                  */
                 public Point getPosition() {
@@ -165,14 +211,36 @@ public class FakeRobotModel {
                 /**
                  * Initializes this tank drive in 2D space.
                  *
-                 * @param position The position of the center of the robot, in feet.
-                 * @param width: The width of the disembodied line segment, in feet.
+                 * @param position    The position of the center of the robot,
+                 *                    in feet.
+                 * @param width       The width of the disembodied line
+                 *                    segment, in feet.
+                 * @param fakeEncoder The fake encoder that we will report our
+                 *                    position to.
                  */
                 public FakeTankDrive(Point position, double width) {
+                        this(position, width, null);
+                }
+
+                /**
+                 * Initializes this tank drive in 2D space.
+                 *
+                 * @param position    The position of the center of the robot,
+                 *                    in feet.
+                 * @param width       The width of the disembodied line
+                 *                    segment, in feet.
+                 * @param fakeEncoder The fake encoder that we will report our
+                 *                    position to.
+                 */
+                public FakeTankDrive(Point position, double width, FakeEncoder fakeEncoder) {
                         this.position = position;
                         this.width = width;
                         this.direction = new Vector2(0, 1);
                         this.speed = 0;
+                        this.encoder = fakeEncoder;
+                        if (encoder != null) {
+                            encoder.reset();
+                        }
                 }
 
                 /***
@@ -318,6 +386,9 @@ public class FakeRobotModel {
                         Point newCenterAfterRotation = new Point((newL.x + newR.x)/2,
                                                                  (newL.y + newR.y)/2);
                         this.position = newCenterAfterRotation.add(this.direction.mult(this.speed));
+                        if (encoder != null) {
+                            encoder.updatePosition(this.position);
+                        }
                 }
 
                 /**
@@ -325,7 +396,11 @@ public class FakeRobotModel {
                  */
                 @Override
                 public String toString() {
-                    return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f", position.toString(), direction.toString(), speed);
+                    if (encoder != null) {
+                        return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f, distance=%.6f", position.toString(), direction.toString(), speed, encoder.getDistance());
+                    } else {
+                        return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f", position.toString(), direction.toString(), speed);
+                    }
                 }
         }
 }
