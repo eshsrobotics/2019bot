@@ -16,9 +16,21 @@ import models.Point;
  */
 public class FakeEncoder implements EncoderInterface {
 
-    private Point actualPosition;
-    private Point lastPosition;
-    private double actualDistanceTraveled;
+    /**
+     * The fake encoder's true simulated position, in feet.
+     */
+    private Point currentPosition;
+
+    /**
+     * The total number of feet that the fake encoder has been asked to "move"
+     * since hte last call to reset().
+     */
+    private double totalDistanceTraveled;
+
+    /**
+     * The number of feet of drift that we will incorporate into our
+     * getDistance() measurements, as a function of totalDistanceTraveled.
+     */
     private double maxDeviancePerFoot;
 
     /**
@@ -45,7 +57,7 @@ public class FakeEncoder implements EncoderInterface {
      *                            not actually going anywhere.
      */
     public FakeEncoder(Point initialPosition, double maxDeviancePerFoot) {
-        actualPosition = initialPosition;
+        currentPosition = initialPosition;
         this.maxDeviancePerFoot = maxDeviancePerFoot;
         reset();
     }
@@ -57,8 +69,8 @@ public class FakeEncoder implements EncoderInterface {
      * @param newPosition The new virtual position of the robot, in feet.
      */
     public void updatePosition(Point newPosition) {
-        actualDistanceTraveled += actualPosition.dist(newPosition);
-        actualPosition = newPosition;
+        totalDistanceTraveled += currentPosition.dist(newPosition);
+        currentPosition = newPosition;
     }
 
     /* (non-Javadoc)
@@ -66,8 +78,7 @@ public class FakeEncoder implements EncoderInterface {
      */
     @Override
     public void reset() {
-        lastPosition = actualPosition;
-        actualDistanceTraveled = 0;
+        totalDistanceTraveled = 0;
     }
 
     /* (non-Javadoc)
@@ -78,11 +89,11 @@ public class FakeEncoder implements EncoderInterface {
 
         // This is very unlikely to overflow, and it will remain consistent for
         // distances that are less than Constants.EPSILON feet apart.
-        long distanceTraveledAsLong = (long)(actualDistanceTraveled / Constants.EPSILON);
+        long totalDistanceTraveledAsLong = (long)(totalDistanceTraveled / Constants.EPSILON);
 
-        Random generator = new Random(distanceTraveledAsLong);
-        double drift = generator.nextDouble() * actualDistanceTraveled * this.maxDeviancePerFoot;
-        return actualDistanceTraveled + drift;
+        Random generator = new Random(totalDistanceTraveledAsLong);
+        double drift = generator.nextDouble() * totalDistanceTraveled * this.maxDeviancePerFoot;
+        return totalDistanceTraveled + drift;
     }
 
 }
