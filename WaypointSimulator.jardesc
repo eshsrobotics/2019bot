@@ -4,7 +4,7 @@
     <options buildIfNeeded="true" compress="true" descriptionLocation="/2018bot/WaypointSimulator.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
-    <manifest generateManifest="true" mainClassHandleIdentifier="=2018bot/src\/main\/java&lt;tests{WaypointSimulator.java[WaypointSimulator" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+    <manifest generateManifest="false" manifestLocation="/2018bot/WaypointSimulator.mf" manifestVersion="1.0" reuseManifest="false" saveManifest="true" usesManifest="true">
         <sealing sealJar="false">
             <packagesToSeal/>
             <packagesToUnSeal/>

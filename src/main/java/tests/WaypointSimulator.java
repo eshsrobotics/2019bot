@@ -368,7 +368,9 @@ public class WaypointSimulator {
 
                 // Now test the drive.
                 FakeEncoder encoder = new FakeEncoder(Constants.ORIGIN, 0.001);
-                FakeTankDrive drive = new FakeRobotModel().new FakeTankDrive(Constants.ORIGIN, 1.5, encoder);
+                FakeGyro gyro = new FakeGyro(0, 0.001);
+                final double widthInFeet = 1.5;
+                FakeTankDrive drive = new FakeRobotModel().new FakeTankDrive(Constants.ORIGIN, widthInFeet, encoder, gyro);
                 drive.setDirection(new Vector2(0, 1));
 
 

@@ -19,6 +19,7 @@ public class FakeRobotModel {
 
         private final FakeTankDrive drive;
         private final FakeEncoder encoder;
+        private final FakeGyro gyro;
 
         /***
          * The encoder drift we use if not given one during construction.
@@ -53,11 +54,12 @@ public class FakeRobotModel {
          * between the (virtual) tank treads and pointing in the given
          * direction.
          *
-         * A FakeTankDrive created this way will not use an encoder.
+         * A FakeTankDrive created this way will not use an encoder or gyro.
          */
         public FakeRobotModel(Point position, double width, Vector2 direction) {
             encoder = null;
-            drive = new FakeTankDrive(position, width, encoder);
+            gyro = null;
+            drive = new FakeTankDrive(position, width, encoder, gyro);
             drive.setDirection(direction.length() < Constants.EPSILON ? new Vector2(0, 1) : direction);
         }
 
@@ -73,11 +75,17 @@ public class FakeRobotModel {
          * @param direction The initial direction unit vector.
          * @param maxEncoderDeviancePerFoot The maximum amount by which the
          *                                  encoder is allowed to misreport
-         *                                  distance per foot traveled.
+         *                                  its distance per foot traveled.
+         * @param maxGyroDeviancePerDegree  The maximum amount by which the
+         *                                  gyro is allowed to misreport
+         *                                  its angle per degree rotated.
          */
-        public FakeRobotModel(Point position, double width, Vector2 direction, double maxEncoderDeviancePerFoot) {
+        public FakeRobotModel(Point position, double width, Vector2 direction,
+                              double maxEncoderDeviancePerFoot,
+                              double maxGyroDeviancePerDegree) {
             encoder = new FakeEncoder(position, maxEncoderDeviancePerFoot);
-            drive = new FakeTankDrive(position, width, encoder);
+            gyro = new FakeGyro(0, maxGyroDeviancePerDegree);
+            drive = new FakeTankDrive(position, width, encoder, gyro);
             drive.setDirection(direction.length() < Constants.EPSILON ? new Vector2(0, 1) : direction);
         }
 
@@ -157,6 +165,16 @@ public class FakeRobotModel {
                 private FakeEncoder encoder;
 
                 /**
+                 * Every time tankDrive() is called, our angle can change.
+                 * We use this object to (somewhat inaccurately) keep track of
+                 * degrees rotated.
+                 *
+                 * It's okay if this value is null; in that case, we just won't
+                 * use it.
+                 */
+                private FakeGyro gyro;
+
+                /**
                  * Returns the position of the drive (in feet.)
                  */
                 public Point getPosition() {
@@ -209,7 +227,8 @@ public class FakeRobotModel {
                 }
 
                 /**
-                 * Initializes this tank drive in 2D space.
+                 * Initializes this tank drive in 2D space without an encoder
+                 * or gyro.
                  *
                  * @param position    The position of the center of the robot,
                  *                    in feet.
@@ -219,7 +238,7 @@ public class FakeRobotModel {
                  *                    position to.
                  */
                 public FakeTankDrive(Point position, double width) {
-                        this(position, width, null);
+                        this(position, width, null, null);
                 }
 
                 /**
@@ -230,9 +249,11 @@ public class FakeRobotModel {
                  * @param width       The width of the disembodied line
                  *                    segment, in feet.
                  * @param fakeEncoder The fake encoder that we will report our
-                 *                    position to.
+                 *                    position to.  This can be null.
+                 * @param fakeGyro    The fake gyro that we will report our
+                 *                    angle to.  This can be null.
                  */
-                public FakeTankDrive(Point position, double width, FakeEncoder fakeEncoder) {
+                public FakeTankDrive(Point position, double width, FakeEncoder fakeEncoder, FakeGyro fakeGyro) {
                         this.position = position;
                         this.width = width;
                         this.direction = new Vector2(0, 1);
@@ -240,6 +261,10 @@ public class FakeRobotModel {
                         this.encoder = fakeEncoder;
                         if (encoder != null) {
                             encoder.reset();
+                        }
+                        this.gyro = fakeGyro;
+                        if (gyro != null) {
+                            gyro.reset();
                         }
                 }
 
@@ -253,6 +278,7 @@ public class FakeRobotModel {
                 @Override
                 public void tankDrive(double leftSpeed, double rightSpeed) {
 
+                        double oldAngleInRadians = Math.atan2(this.direction.y, this.direction.x);
 
                         // How do you simulate a tank drive?
                         //
@@ -389,6 +415,11 @@ public class FakeRobotModel {
                         if (encoder != null) {
                             encoder.updatePosition(this.position);
                         }
+                        if (gyro != null) {
+                            double newAngleInRadians = Math.atan2(this.direction.y, this.direction.x);
+                            double degreesRotated = (newAngleInRadians - oldAngleInRadians) * Constants.RADIANS_TO_DEGREES;
+                            gyro.updateAngle(degreesRotated);
+                        }
                 }
 
                 /**
@@ -396,11 +427,22 @@ public class FakeRobotModel {
                  */
                 @Override
                 public String toString() {
+                    String encoderInformation = "";
                     if (encoder != null) {
-                        return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f, distance=%.6f", position.toString(), direction.toString(), speed, encoder.getDistance());
-                    } else {
-                        return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f", position.toString(), direction.toString(), speed);
+                        encoderInformation = String.format(", distance=%.6f", encoder.getDistance());
                     }
+
+                    String gyroInformation = "";
+                    if (gyro != null) {
+                        gyroInformation = String.format(", angle=%.6f", gyro.getAngle());
+                    }
+
+                    return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f%s%s",
+                            position.toString(),
+                            direction.toString(),
+                            speed,
+                            encoderInformation,
+                            gyroInformation);
                 }
         }
 }
