@@ -437,7 +437,7 @@ public class FakeRobotModel {
                         gyroInformation = String.format(", angle=%.6f", gyro.getAngle());
                     }
 
-                    return String.format("FakeTankDrive(position=%s,  direction=%s, speed=%f%s%s",
+                    return String.format("FakeTankDrive(position=%s, direction=%s, speed=%f%s%s",
                             position.toString(),
                             direction.toString(),
                             speed,

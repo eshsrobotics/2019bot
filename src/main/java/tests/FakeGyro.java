@@ -138,6 +138,7 @@ public class FakeGyro implements Gyro {
      */
     @Override
     public void reset() {
+        currentAngle = 0;
         totalDegreesRotated = 0;
         lastResetTimeMilliseconds = System.currentTimeMillis();
     }
