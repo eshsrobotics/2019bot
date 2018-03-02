@@ -1,10 +1,11 @@
 package org.usfirst.frc.team1759.robot.commands;
 
 import models.Constants;
+import models.TankDriveInterface;
 import models.Vector2;
 
 import org.usfirst.frc.team1759.robot.Sensors;
-import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
+
 import edu.wpi.first.wpilibj.command.Command;
 
 /***
@@ -20,7 +21,7 @@ public class TurnCommand extends Command {
         /***
          * The tank drive we're supposed to be turning.
          */
-        TankDrive tank;
+        TankDriveInterface tank;
 
         /**
          * The forward-pointing vector that the robot has at the time of start().
@@ -49,8 +50,8 @@ public class TurnCommand extends Command {
          * @param tank The tank drive to turn.
          */
 
-        public TurnCommand(TankDrive tank) {
-                tank = new TankDrive();
+        public TurnCommand(TankDriveInterface tank) {
+                this.tank = tank;
                 goalHeading = initialHeading; // By default, we don't turn.
         }
         
