@@ -18,6 +18,8 @@ import org.usfirst.frc.team1759.robot.subsystems.Intake;
 import org.usfirst.frc.team1759.robot.subsystems.Launcher;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
 
+import wrappers.EncoderWrapper;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.CameraServer;
@@ -42,12 +44,12 @@ public class Robot extends IterativeRobot {
 	private OI oi;
 	private MatchData matchData;
 	private Encoder encoder;
-	
+
 	/**
-	 * Used to set the threshold for the throttle. If the throttle is greater than positive threshold, it is up. If it is less 
+	 * Used to set the threshold for the throttle. If the throttle is greater than positive threshold, it is up. If it is less
 	 * than negative threshold, it is down. If it is between positive and negative threshold, it remains in it's current state.
 	 */
-	private static final double THROTTLE_THRESHOLD = 1 / 3.0;	 
+	private static final double THROTTLE_THRESHOLD = 1 / 3.0;
 
 
 	@Override
@@ -71,27 +73,36 @@ public class Robot extends IterativeRobot {
 		//currentPosition = new Vector2(0, 0);
 	}
 
+	@Override
 	public void disabledInit() {
 
 	}
 
+	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
 	}
 
+	@Override
 	public void autonomousInit() {
 		Graph graph = new Graph(matchData);
 		Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
-		FollowPath followPath = new FollowPath(encoder, tank, graph.currentNode, graph.findShortestPath(graph.currentNode, graph.target), endCommand);
+		FollowPath followPath = new FollowPath(new EncoderWrapper(encoder),
+				tank,
+				graph.currentNode,
+				graph.findShortestPath(graph.currentNode, graph.target),
+				endCommand);
 		followPath.start();
 	}
 
+	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
 	}
 
+	@Override
 	public void teleopInit() {
-		
+
 	}
 
 	@Override
