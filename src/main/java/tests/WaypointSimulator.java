@@ -64,6 +64,10 @@ public class WaypointSimulator {
                         Map map = new Map();
                         map.enableRawMode();
                         map.clearScreen();
+                        Node blah = new Node(0, 5);
+                        map.addWaypoint(blah);
+                        // Testing ability to highlight.
+                        map.highlightWaypoint(blah, Map.BRIGHT_BLUE, 'G');
                         FakeRobotModel robot = new FakeRobotModel();
                         robot.getDrive().setPosition(new Point(0, 0));
 
