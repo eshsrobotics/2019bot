@@ -1,6 +1,7 @@
 package tests;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import models.Constants;
@@ -25,22 +26,25 @@ public class Map {
         // We support the 16 standard ANSI colors by default.  We could support
         // up to 256, but that would require me to care more than I currently
         // do.
-        private static final int BLACK = 0;
-        private static final int RED = 1;
-        private static final int GREEN = 2;
-        private static final int ORANGE = 3;
-        private static final int BLUE = 4;
-        private static final int PINK = 5;
-        private static final int TEAL = 6;
-        private static final int WHITE = 7;
-        private static final int GRAY = 8;
-        private static final int BRIGHT_RED = 9;
-        private static final int BRIGHT_GREEN = 10;
-        private static final int YELLOW = 11;
-        private static final int BRIGHT_BLUE = 12;
-        private static final int BRIGHT_MAGENTA = 13;
-        private static final int BRIGHT_CYAN = 14;
-        private static final int BRIGHT_WHITE = 15;
+        public static final int BLACK = 0;
+        public static final int RED = 1;
+        public static final int GREEN = 2;
+        public static final int ORANGE = 3;
+        public static final int BLUE = 4;
+        public static final int PINK = 5;
+        public static final int TEAL = 6;
+        public static final int WHITE = 7;
+        public static final int GRAY = 8;
+        public static final int BRIGHT_RED = 9;
+        public static final int BRIGHT_GREEN = 10;
+        public static final int YELLOW = 11;
+        public static final int BRIGHT_BLUE = 12;
+        public static final int BRIGHT_MAGENTA = 13;
+        public static final int BRIGHT_CYAN = 14;
+        public static final int BRIGHT_WHITE = 15;
+
+        
+        private HashMap<Integer, ScreenCharacter> nodesToHighlight;
 
         /**
          * The "arrow character" to use for each octant, starting
@@ -62,9 +66,10 @@ public class Map {
         private Vector2 robotVector;
 
         /**
-         * Octant will return a value between 0 and 7. 0 is anything between 0
-         * and 45 degrees. The octants move in 45 degree increments
-         * counterclockwise until it reaches 360 degrees.
+         * Octant will return a value between 0 and 7. 0 is anything
+         * between 0 and 45 degrees. The octants move in 45 degree
+         * increments counterclockwise until it reaches 360 degrees
+         * and wraps around to 0.
          */
         private int octant;
 
@@ -154,6 +159,7 @@ public class Map {
          * @param heightInFeet *Virtual* height of the game area, in feet.
          */
         public Map(double widthInFeet, double heightInFeet) {
+        		nodesToHighlight = new HashMap<>();
                 width = widthInFeet;
                 height = heightInFeet;
                 waypoints = new ArrayList<>();
@@ -173,6 +179,25 @@ public class Map {
         public double getHeight() {
                 return height;
         }
+        
+        /**
+         * The function below will take whatever node it is given and change the color and character
+         * to whatever is desired. 
+         * @param waypoint Which node to highlight.
+         * @param color what color to set it to.
+         * @param c what character to set it to.
+         */
+        public void highlightWaypoint(Node waypoint, int color, char c) {
+        	nodesToHighlight.put(waypoint.id, new ScreenCharacter(color, c));
+        }
+        
+        /**
+         * This function just removes the highlighting. 
+         * @param waypoint the point to un highlight.
+         */
+        public void unHighlightWaypoint(Node waypoint) {
+        	nodesToHighlight.remove(waypoint.id);
+        }
 
         /**
          * "Waypoints" are the positions that our robot must visit during
@@ -185,7 +210,7 @@ public class Map {
          *
          * @param waypoint The waypoint Node to register.
          */
-        public void AddWaypoint(Node waypoint) {
+        public void addWaypoint(Node waypoint) {
                 waypoints.add(waypoint);
         }
 
@@ -195,8 +220,8 @@ public class Map {
 
          * @param graph: The graph whose nodes need to be drawn.
          */
-        public void AddWaypointsFromGraph(Graph graph) {
-                AddWaypointsFromGraph(graph.currentNode, new HashSet<Integer>());
+        public void addWaypointsFromGraph(Graph graph) {
+                addWaypointsFromGraphRecursive(graph.currentNode, new HashSet<Integer>());
         }
 
         /***
@@ -209,7 +234,7 @@ public class Map {
          *                        recursion has touched so far.  It should
          *                        start out empty.
          */
-        private void AddWaypointsFromGraph(Node current, HashSet<Integer> visitedNodeIds) {
+        private void addWaypointsFromGraphRecursive(Node current, HashSet<Integer> visitedNodeIds) {
                 // If the current node is already visited, there's nothing more
                 // to do.
                 if (visitedNodeIds.contains(current.id)) {
@@ -218,14 +243,14 @@ public class Map {
 
                 // The current node is officially visited.
                 visitedNodeIds.add(current.id);
-                AddWaypoint(current);
+                addWaypoint(current);
 
                 // Walk to the neighbors in turn and add them if they haven't
                 // been visited.
                 java.util.List<Node> neighbors = current.neighbors;
                 for (int i = 0; i < neighbors.size(); i++) {
                         Node neighbor = neighbors.get(i);
-                        AddWaypointsFromGraph(neighbor, visitedNodeIds);
+                        addWaypointsFromGraphRecursive(neighbor, visitedNodeIds);
                 }
         }
 
@@ -386,8 +411,14 @@ public class Map {
                 // Draws the waypoints the robot will be traveling to.
 
                 for (Node waypoint: waypoints) {
+                		
                         Point screenCoordinate = virtualCoordinateToScreenCoordinate(waypoint.point, screenWidth, screenHeight, scale);
-                        drawCharacter(screenBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), BRIGHT_GREEN, '$');
+                        if (nodesToHighlight.containsKey(waypoint.id)) {
+                        	ScreenCharacter sc = nodesToHighlight.get(waypoint.id);
+                        	drawCharacter(screenBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), sc.color, sc.c);
+                        } else {
+                        	drawCharacter(screenBuffer, screenWidth, (int) Math.round(screenCoordinate.x), (int) Math.round(screenCoordinate.y), BRIGHT_GREEN, '$');
+                        }
                 }
 
                 // Draws "you" (that is, draws the robot and its direction vector.)
