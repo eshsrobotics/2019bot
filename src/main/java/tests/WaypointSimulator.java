@@ -193,7 +193,7 @@ public class WaypointSimulator {
                 Map map = new Map();
                 map.clearScreen();
                 Graph graph = new Graph(null);
-                map.AddWaypointsFromGraph(graph);
+                map.addWaypointsFromGraph(graph);
                 final int screenWidth = 170;//120;
                 final int screenHeight = 50;//40;
 
@@ -254,7 +254,7 @@ public class WaypointSimulator {
                 Map map = new Map(200, 100);
                 HashMap<Integer, String> nameToIdTable = new HashMap<Integer, String>();
                 Graph graph = createSampleGraph(nameToIdTable);
-                map.AddWaypointsFromGraph(graph);
+                map.addWaypointsFromGraph(graph);
                 map.draw(120, 40);
         }
 
@@ -262,7 +262,7 @@ public class WaypointSimulator {
                 Map map = new Map();
                 map.clearScreen();
                 Graph graph = new Graph(null);
-                map.AddWaypointsFromGraph(graph);
+                map.addWaypointsFromGraph(graph);
                 // commented out to remove build error, will fix later
                 //map.setRobotPosition(graph.getStartingPosition(Graph.RIGHT_POSITION, Graph.BLUE_ALLIANCE).point);
                 map.setRobotVector(new Vector2(300, 200));

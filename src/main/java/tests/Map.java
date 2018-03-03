@@ -62,9 +62,10 @@ public class Map {
         private Vector2 robotVector;
 
         /**
-         * Octant will return a value between 0 and 7. 0 is anything between 0
-         * and 45 degrees. The octants move in 45 degree increments
-         * counterclockwise until it reaches 360 degrees.
+         * Octant will return a value between 0 and 7. 0 is anything
+         * between 0 and 45 degrees. The octants move in 45 degree
+         * increments counterclockwise until it reaches 360 degrees
+         * and wraps around to 0.
          */
         private int octant;
 
@@ -185,7 +186,7 @@ public class Map {
          *
          * @param waypoint The waypoint Node to register.
          */
-        public void AddWaypoint(Node waypoint) {
+        public void addWaypoint(Node waypoint) {
                 waypoints.add(waypoint);
         }
 
@@ -195,8 +196,8 @@ public class Map {
 
          * @param graph: The graph whose nodes need to be drawn.
          */
-        public void AddWaypointsFromGraph(Graph graph) {
-                AddWaypointsFromGraph(graph.currentNode, new HashSet<Integer>());
+        public void addWaypointsFromGraph(Graph graph) {
+                addWaypointsFromGraphRecursive(graph.currentNode, new HashSet<Integer>());
         }
 
         /***
@@ -209,7 +210,7 @@ public class Map {
          *                        recursion has touched so far.  It should
          *                        start out empty.
          */
-        private void AddWaypointsFromGraph(Node current, HashSet<Integer> visitedNodeIds) {
+        private void addWaypointsFromGraphRecursive(Node current, HashSet<Integer> visitedNodeIds) {
                 // If the current node is already visited, there's nothing more
                 // to do.
                 if (visitedNodeIds.contains(current.id)) {
@@ -218,14 +219,14 @@ public class Map {
 
                 // The current node is officially visited.
                 visitedNodeIds.add(current.id);
-                AddWaypoint(current);
+                addWaypoint(current);
 
                 // Walk to the neighbors in turn and add them if they haven't
                 // been visited.
                 java.util.List<Node> neighbors = current.neighbors;
                 for (int i = 0; i < neighbors.size(); i++) {
                         Node neighbor = neighbors.get(i);
-                        AddWaypointsFromGraph(neighbor, visitedNodeIds);
+                        addWaypointsFromGraphRecursive(neighbor, visitedNodeIds);
                 }
         }
 
