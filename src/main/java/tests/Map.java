@@ -43,7 +43,7 @@ public class Map {
         public static final int BRIGHT_CYAN = 14;
         public static final int BRIGHT_WHITE = 15;
 
-        
+
         private HashMap<Integer, ScreenCharacter> nodesToHighlight;
 
         /**
@@ -179,10 +179,10 @@ public class Map {
         public double getHeight() {
                 return height;
         }
-        
+
         /**
          * The function below will take whatever node it is given and change the color and character
-         * to whatever is desired. 
+         * to whatever is desired.
          * @param waypoint Which node to highlight.
          * @param color what color to set it to.
          * @param c what character to set it to.
@@ -190,9 +190,9 @@ public class Map {
         public void highlightWaypoint(Node waypoint, int color, char c) {
         	nodesToHighlight.put(waypoint.id, new ScreenCharacter(color, c));
         }
-        
+
         /**
-         * This function just removes the highlighting. 
+         * This function just removes the highlighting.
          * @param waypoint the point to un highlight.
          */
         public void unHighlightWaypoint(Node waypoint) {
@@ -411,7 +411,7 @@ public class Map {
                 // Draws the waypoints the robot will be traveling to.
 
                 for (Node waypoint: waypoints) {
-                		
+
                         Point screenCoordinate = virtualCoordinateToScreenCoordinate(waypoint.point, screenWidth, screenHeight, scale);
                         if (nodesToHighlight.containsKey(waypoint.id)) {
                         	ScreenCharacter sc = nodesToHighlight.get(waypoint.id);
@@ -426,7 +426,7 @@ public class Map {
                 Point robotScreenPosition = virtualCoordinateToScreenCoordinate(robotPosition, screenWidth, screenHeight, scale);
                 drawCharacter(screenBuffer, screenWidth, (int) Math.round(robotScreenPosition.x), (int) Math.round(robotScreenPosition.y), BRIGHT_RED, '&');
 
-                if (robotVector.length() > Constants.EPSILON) {
+                if (robotVector != null && robotVector.length() > Constants.EPSILON) {
                     Vector2 screenVector = new Vector2(robotVector.x, -robotVector.y); // Positive Y needs to point up.
                     Point frontOfRobot = robotScreenPosition.add(screenVector);
                     // Character arrowCharacter = new Integer(octant).toString().charAt(0);

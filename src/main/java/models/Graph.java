@@ -52,7 +52,7 @@ public class Graph {
          *            randomized at the start of the match, we need this object to
          *            tell us where to go.
          */
-        public Graph(MatchData matchData) {
+        public Graph(MatchDataInterface matchData) {
             // All of these values are in feet, with (0, 0)
             // representing the center of the game field.
 
@@ -150,25 +150,25 @@ public class Graph {
                 if (matchData.getAlliance() ==  DriverStation.Alliance.Red) {
                     switch (matchData.getTarget()) {
                         case CLOSE_SWITCH:
-                            target = matchData.getSwitch1Position() == MatchData.Position.LEFT ? redSwitchTop : redSwitchBottom;
+                            target = matchData.getNearSwitchPosition() == MatchData.Position.LEFT ? redSwitchTop : redSwitchBottom;
                             break;
                         case SCALE:
                             target = matchData.getScalePosition() == MatchData.Position.LEFT ? topScale : bottomScale;
                             break;
                         case FAR_SWITCH:
-                            target = matchData.getSwitch2Position() == MatchData.Position.LEFT ? blueSwitchTop : blueSwitchBottom;
+                            target = matchData.getFarSwitchPosition() == MatchData.Position.LEFT ? blueSwitchTop : blueSwitchBottom;
                             break;
                     }
                 } else {
                     switch (matchData.getTarget()) {
                         case CLOSE_SWITCH:
-                            target = matchData.getSwitch1Position() == MatchData.Position.LEFT ? blueSwitchBottom : blueSwitchTop;
+                            target = matchData.getNearSwitchPosition() == MatchData.Position.LEFT ? blueSwitchBottom : blueSwitchTop;
                             break;
                         case SCALE:
                             target = matchData.getScalePosition() == MatchData.Position.LEFT ? bottomScale : topScale;
                             break;
                         case FAR_SWITCH:
-                            target = matchData.getSwitch2Position() == MatchData.Position.LEFT ? redSwitchBottom : redSwitchTop;
+                            target = matchData.getFarSwitchPosition() == MatchData.Position.LEFT ? redSwitchBottom : redSwitchTop;
                             break;
 
                     }
@@ -210,7 +210,7 @@ public class Graph {
          * @param alliance
          * @return
          */
-        public Node getStartingNode(MatchData matchData) {
+        public Node getStartingNode(MatchDataInterface matchData) {
             int alliance = matchData.getAlliance() == DriverStation.Alliance.Red ? 0 : 1;
             int position = -1;
             switch (matchData.getOwnStartPosition()) {

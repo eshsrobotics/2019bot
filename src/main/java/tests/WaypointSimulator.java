@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import models.Constants;
 import models.Graph;
+import models.MatchDataInterface;
 import models.Node;
 import models.Point;
 import models.Vector2;
@@ -32,9 +33,39 @@ public class WaypointSimulator {
                 //testAddWaypointsFromGraph();        // Superseded by testFalseRobotMovementAnimation
                 //testFalseRobotMovementAnimation();  // Superseded by testInteractiveFakeRobotDrive
                 testInteractiveFakeRobotDrive();
+                //testEndToEnd();
                 testFindShortestPath();
-                testTankDrive();
+                testTankDriveCalculations();
                 System.out.println("something different");
+        }
+
+        /**
+         * This is the big test in this file.  It brings all of the individual
+         * test components:
+         * - FakeTakeDrive
+         * - FakeGyro
+         * - FakeEncoder
+         * - Map
+         * - Graph
+         * - Node
+         * And the autonomous commands:
+         * - FollowPath
+         * - GoEncoder
+         * - TurnCommand
+         * Into one coherent whole.
+         */
+        public static void testEndToEnd() {
+
+
+        	MatchDataInterface matchData = new FakeMatchData();
+        	Graph graph = new Graph(matchData);
+        	Map map = new Map();
+        	map.addWaypointsFromGraph(graph);
+
+        	Node startingNode = graph.getStartingNode(matchData);
+        	map.highlightWaypoint(startingNode, Map.BRIGHT_MAGENTA, '@');
+        	map.clearScreen();
+        	map.draw(140, 50);
         }
 
         /**
@@ -64,13 +95,17 @@ public class WaypointSimulator {
                         Map map = new Map();
                         map.enableRawMode();
                         map.clearScreen();
-                        Node blah = new Node(0, 5);
-                        map.addWaypoint(blah);
-                        // Testing ability to highlight.
-                        map.highlightWaypoint(blah, Map.BRIGHT_BLUE, 'G');
-                        FakeRobotModel robot = new FakeRobotModel();
-                        robot.getDrive().setPosition(new Point(0, 0));
 
+                        // Render the default waypoints, highlighting where we
+                        // should have started.
+                    	MatchDataInterface matchData = new FakeMatchData();
+                    	Graph graph = new Graph(matchData);
+                    	map.addWaypointsFromGraph(graph);
+                    	Node startingNode = graph.getStartingNode(matchData);
+                    	map.highlightWaypoint(startingNode, Map.BRIGHT_MAGENTA, '@');
+
+                    	FakeRobotModel robot = new FakeRobotModel();
+                    	robot.getDrive().setPosition(new Point(0, 0));
                         final double startTimeMilliseconds = System.currentTimeMillis();
                         final double totalSimulationTimeMilliseconds = 1000 * 100;
                         double leftSpeed = 0;
@@ -361,7 +396,7 @@ public class WaypointSimulator {
          * A test used to isolate the behavior of FakeTankDrive.tankDrive() by
          * itself.
          */
-        public static final void testTankDrive() {
+        public static final void testTankDriveCalculations() {
                 // Test rotation.
                 Point o = new Point(2, 2);
                 Point p = new Point(5, 2);
