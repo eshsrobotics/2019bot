@@ -21,7 +21,6 @@ public class FakeMatchData implements MatchDataInterface {
         private Alliance alliance;
         private Position startPosition;
         private Target dropoffTarget;
-        private Position dropoffTargetPosition;
         private Position nearSwitchPosition;
         private Position scalePosition;
         private Position farSwitchPosition;

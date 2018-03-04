@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Graph {
 
-        public Node target;
-        public Node currentNode;
+        private Node target;
+        private Node currentNode;
         private ArrayList<Node> redStartingPositions;
         private ArrayList<Node> blueStartingPositions;
 
@@ -202,15 +202,35 @@ public class Graph {
 
 
         /**
+         * Constructs a graph to use for testing purposes.
+         *
+         * You may optionally supply Nodes that belong to this graph if you
+         * wish to use it for waypoint finding; if you don't care about that,
+         * pass null for the arguments.
+         *
+         * @param startingNode The Node that the graph will consider to be its
+         *                      starting position.  Optional.
+         * @param targetNode   The node that the graph will consider to be its
+         *                      ending position.  Optional, and can be equal to
+         *                      the startingNode if you wish.
+         */
+        public Graph(Node startingNode, Node targetNode) {
+        	this.currentNode = startingNode;
+        	this.target = targetNode;
+        }
+
+
+        /**
          * This is meant to return the starting position of the robot. If you are
          * standing in your alliance station and are looking onto the field, 0 is to
          * the left, 1 is directly ahead, and 2 is to the right.
          *
-         * @param position
-         * @param alliance
-         * @return
+         * @param matchData The data structure that stores the alliance
+         *                   assignments for the major locations in a given
+         *                   match.
+         * @return The Node where your team's robot will start in this match.
          */
-        public Node getStartingNode(MatchDataInterface matchData) {
+        private Node getStartingNode(MatchDataInterface matchData) {
             int alliance = matchData.getAlliance() == DriverStation.Alliance.Red ? 0 : 1;
             int position = -1;
             switch (matchData.getOwnStartPosition()) {
@@ -242,6 +262,27 @@ public class Graph {
             }
         }
 
+
+        /**
+         * Returns the robot's starting node for this particular match if we
+         * were constructed with valid match data, or null otherwise.
+         */
+        public Node getStartingNode() {
+        	return this.currentNode;
+        }
+
+        /**
+         * Returns the robot's target node for this particular match if we were
+         * constructed with valid match data, or null otherwise.
+         */
+        public Node getTargetNode() {
+        	return this.target;
+        }
+
+        /**
+         * Links two nodes to each other, whether they belong to this Graph or
+         * not.  Each node will become the other node's neighbor.
+         */
         public void addEdge(Node node1, Node node2) {
             node1.neighbors.add(node2);
             node2.neighbors.add(node1);
@@ -252,12 +293,15 @@ public class Graph {
          * target.
          *
          * @param start
-         *            The node to start our search from.
+         *            The node to start our search from.  It does not need to
+         *            belong to this Graph object.
          * @param target
-         *            The node we are trying to reach.
-         * @return A LinkedList<Node>. If the linked list has one element, the start
-         *         IS the target; if the linked list is null, there is no path from
-         *         the start to the target.
+         *            The node we are trying to reach.  It does not need to
+         *            belong to this Graph object.
+         * @return A LinkedList<Node>. If the linked list has one element, the
+         *          start *IS* the target; if the linked list is null, there is
+         *          no path from the start to the target (in other words, they
+         *          are not linked by any number of neighbors.)
          */
         public LinkedList<Node> findShortestPath(Node start, Node target) {
             Set<Integer> visitedNodeIds = new HashSet<Integer>();
@@ -282,8 +326,8 @@ public class Graph {
          *         target; null otherwise.
          */
         private LinkedList<Node> findShortestPathRecursive(Node current,
-                                                           Node target,
-                                                           Set<Integer> visitedNodeIds) {
+                                                            Node target,
+                                                            Set<Integer> visitedNodeIds) {
 
             if (current.id == target.id) {
                 // Direct hit.

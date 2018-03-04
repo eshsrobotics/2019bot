@@ -221,7 +221,7 @@ public class Map {
          * @param graph: The graph whose nodes need to be drawn.
          */
         public void addWaypointsFromGraph(Graph graph) {
-                addWaypointsFromGraphRecursive(graph.currentNode, new HashSet<Integer>());
+                addWaypointsFromGraphRecursive(graph.getStartingNode(), new HashSet<Integer>());
         }
 
         /***

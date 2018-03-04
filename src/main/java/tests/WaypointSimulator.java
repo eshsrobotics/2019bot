@@ -33,7 +33,7 @@ public class WaypointSimulator {
                 //testAddWaypointsFromGraph();        // Superseded by testFalseRobotMovementAnimation
                 //testFalseRobotMovementAnimation();  // Superseded by testInteractiveFakeRobotDrive
                 testInteractiveFakeRobotDrive();
-                //testEndToEnd();
+                // testEndToEnd();
                 testFindShortestPath();
                 testTankDriveCalculations();
                 System.out.println("something different");
@@ -56,16 +56,36 @@ public class WaypointSimulator {
          */
         public static void testEndToEnd() {
 
-
+        	// Randomize the start and target positions for the robot.
         	MatchDataInterface matchData = new FakeMatchData();
+
         	Graph graph = new Graph(matchData);
         	Map map = new Map();
+        	map.clearScreen();
         	map.addWaypointsFromGraph(graph);
 
-        	Node startingNode = graph.getStartingNode(matchData);
-        	map.highlightWaypoint(startingNode, Map.BRIGHT_MAGENTA, '@');
-        	map.clearScreen();
-        	map.draw(140, 50);
+
+        	// S = Start
+        	// T = Target
+        	// @ = Next
+
+        	Node startingNode = graph.getStartingNode();
+        	Node targetNode = graph.getTargetNode();
+
+        	map.highlightWaypoint(startingNode, Map.BRIGHT_WHITE, 'S');
+        	boolean done = false;
+        	final int width = 140;
+        	final int height = 50;
+
+        	while (!done) {
+
+        		// Have we reached out target yet?
+
+        		map.draw(width, height);
+
+        	}
+
+
         }
 
         /**
@@ -101,7 +121,7 @@ public class WaypointSimulator {
                     	MatchDataInterface matchData = new FakeMatchData();
                     	Graph graph = new Graph(matchData);
                     	map.addWaypointsFromGraph(graph);
-                    	Node startingNode = graph.getStartingNode(matchData);
+                    	Node startingNode = graph.getStartingNode();
                     	map.highlightWaypoint(startingNode, Map.BRIGHT_MAGENTA, '@');
 
                     	FakeRobotModel robot = new FakeRobotModel();
@@ -340,9 +360,7 @@ public class WaypointSimulator {
                 nameToIdTable.put(g.id, "G");
                 nameToIdTable.put(h.id, "H");
 
-                Graph graph = new Graph(null);
-                graph.currentNode = h; // This disconnects all the real nodes in the graph!
-                graph.target = d;
+                Graph graph = new Graph(h, d);
                 graph.addEdge(a, e);
                 graph.addEdge(a, b);
                 graph.addEdge(e, c);
@@ -367,7 +385,7 @@ public class WaypointSimulator {
                 HashMap<Integer, String> nameToIdTable = new HashMap<Integer, String>();
                 Graph graph = createSampleGraph(nameToIdTable);
 
-                LinkedList <Node> findShortestPathResult = graph.findShortestPath(graph.currentNode, graph.target);
+                LinkedList <Node> findShortestPathResult = graph.findShortestPath(graph.getStartingNode(), graph.getTargetNode());
                 System.out.printf("findShortestPath() result = %s\n", printPath(findShortestPathResult, nameToIdTable));
         }
 

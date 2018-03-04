@@ -89,8 +89,8 @@ public class Robot extends IterativeRobot {
 		Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
 		FollowPath followPath = new FollowPath(new EncoderWrapper(encoder),
 				tank,
-				graph.currentNode,
-				graph.findShortestPath(graph.currentNode, graph.target),
+				graph.getStartingNode(),
+				graph.findShortestPath(graph.getStartingNode(), graph.getTargetNode()),
 				endCommand);
 		followPath.start();
 	}
