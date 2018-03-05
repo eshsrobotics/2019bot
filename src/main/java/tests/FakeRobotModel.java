@@ -438,11 +438,11 @@ public class FakeRobotModel {
                     }
 
                     return String.format("FakeTankDrive(position=%s, direction=%s, speed=%f%s%s",
-                            position.toString(),
-                            direction.toString(),
-                            speed,
-                            encoderInformation,
-                            gyroInformation);
+                                         position,
+                                         direction,
+                                         speed,
+                                         encoderInformation,
+                                         gyroInformation);
                 }
         }
 }

@@ -81,6 +81,25 @@ public class Graph {
             Node blueStartCenter = new Node(24.53, 0);
             Node blueStartBottom = new Node(24.53, -11.28);
 
+            // Set the names in case we want to display them during the
+            // simulation.
+            redStartTop.setName("redStartTop");
+            redStartCenter.setName("redStartCenter");
+            redStartBottom.setName("redStartBottom");
+            redSwitchSetupTop.setName("redSwitchSetupTop");
+            redSwitchTop.setName("redSwitchTop");
+            redSwitchBottom.setName("redSwitchBottom");
+            redSwitchSetupBottom.setName("redSwitchSetupBottom");
+            topScale.setName("topScale");
+            bottomScale.setName("bottomScale");
+            blueSwitchSetupTop.setName("blueSwitchSetupTop");
+            blueSwitchTop.setName("blueSwitchTop");
+            blueSwitchBottom.setName("blueSwitchBottom");
+            blueSwitchSetupBottom.setName("blueSwitchSetupBottom");
+            blueStartTop.setName("blueStartTop");
+            blueStartCenter.setName("blueStartCenter");
+            blueStartBottom.setName("blueStartBottom");
+
             // The primary node network connects all the starting
             // positions, the top and bottom scale positions, and
             // the top and bottom switch setup positions in a
@@ -173,6 +192,7 @@ public class Graph {
 
                     }
                 }
+
                 if (this.currentNode == null) {
                     System.out.println("Current node is null. Check match data config");
                 }
@@ -180,6 +200,7 @@ public class Graph {
                 if (this.target == null) {
                     System.out.println("Target node is null. Check match data config");
                 }
+
             } else {
                 // During pure simulation testing, the match data sometimes
                 // doesn't exist.  In that case, invent it.
@@ -198,6 +219,9 @@ public class Graph {
                 int randomTarget = (int) Math.floor(Math.random() * potentialTargets.length);
                 this.target = potentialTargets[randomTarget];
             }
+
+            this.currentNode.setName(String.format("%s (START)", this.currentNode.getName()));
+            this.target.setName(String.format("%s (TARGET)", this.target.getName()));
         }
 
 
@@ -215,8 +239,8 @@ public class Graph {
          *                      the startingNode if you wish.
          */
         public Graph(Node startingNode, Node targetNode) {
-        	this.currentNode = startingNode;
-        	this.target = targetNode;
+                this.currentNode = startingNode;
+                this.target = targetNode;
         }
 
 
@@ -268,7 +292,7 @@ public class Graph {
          * were constructed with valid match data, or null otherwise.
          */
         public Node getStartingNode() {
-        	return this.currentNode;
+                return this.currentNode;
         }
 
         /**
@@ -276,7 +300,7 @@ public class Graph {
          * constructed with valid match data, or null otherwise.
          */
         public Node getTargetNode() {
-        	return this.target;
+                return this.target;
         }
 
         /**

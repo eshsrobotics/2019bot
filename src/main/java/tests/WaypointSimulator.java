@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import models.Constants;
 import models.Graph;
@@ -33,7 +34,7 @@ public class WaypointSimulator {
                 //testAddWaypointsFromGraph();        // Superseded by testFalseRobotMovementAnimation
                 //testFalseRobotMovementAnimation();  // Superseded by testInteractiveFakeRobotDrive
                 testInteractiveFakeRobotDrive();
-                // testEndToEnd();
+                testEndToEnd();
                 testFindShortestPath();
                 testTankDriveCalculations();
                 System.out.println("something different");
@@ -56,36 +57,77 @@ public class WaypointSimulator {
          */
         public static void testEndToEnd() {
 
-        	// Randomize the start and target positions for the robot.
-        	MatchDataInterface matchData = new FakeMatchData();
+                boolean quit = false;
+                final int width = 140;
+                final int height = 45;
 
-        	Graph graph = new Graph(matchData);
-        	Map map = new Map();
-        	map.clearScreen();
-        	map.addWaypointsFromGraph(graph);
+                // Randomize the start and target positions for the robot.
+                MatchDataInterface matchData = new FakeMatchData();
+
+                // Set up the board.
+                Graph graph = new Graph(matchData);
+                Map map = new Map();
+                map.clearScreen();
+                map.addWaypointsFromGraph(graph);
+
+                // Set up the robot and orient it toward the center of the
+                // field.
+                FakeRobotModel robot = new FakeRobotModel();
+                robot.getDrive().setPosition(graph.getStartingNode().getPosition());
+                Vector2 direction = robot.getDrive().getDirection();
+                if (robot.getDrive().getPosition().x < 0) {
+                    direction.x = Math.abs(direction.x);
+                } else {
+                    direction.x = -Math.abs(direction.x);
+                }
+                robot.getDrive().setDirection(direction);
+
+                // Set up the navigation system.
+                final char START_NODE_CHAR  = 'S';
+                final char TARGET_NODE_CHAR = 'T';
+                final char NEXT_NODE_CHAR   = '@';
+                final int START_NODE_COLOR  = Map.BRIGHT_WHITE;
+                final int TARGET_NODE_COLOR  = Map.YELLOW;
+                final int NEXT_NODE_COLOR  = Map.BRIGHT_MAGENTA;
+
+                Node startingNode = graph.getStartingNode();
+                Node targetNode = graph.getTargetNode();
+                Node currentNode = startingNode;
+                LinkedList<Node> path = graph.findShortestPath(startingNode, targetNode);
+                if (path == null) {
+                    System.out.printf("Error: no path from start node to target.\n");
+                    return;
+                }
+                ListIterator<Node> iter = path.listIterator();
+
+                map.highlightWaypoint(startingNode, START_NODE_COLOR, START_NODE_CHAR);
+                map.highlightWaypoint(targetNode, TARGET_NODE_COLOR, TARGET_NODE_CHAR);
 
 
-        	// S = Start
-        	// T = Target
-        	// @ = Next
+                while (iter.hasNext() && !quit) {
+                        // Have we reached the next node yet?
+                        Node nextNode = iter.next(); iter.previous();
+                        if (nextNode.point.dist(robot.getDrive().getPosition()) < Constants.EPSILON) {
+                            // We have!
+                            if (currentNode.id != startingNode.id) {
+                                map.unHighlightWaypoint(currentNode);
+                            }
+                            iter.next();
+                        } else {
+                            // Not yet.
+                            map.highlightWaypoint(nextNode, NEXT_NODE_COLOR, NEXT_NODE_CHAR);
+                        }
 
-        	Node startingNode = graph.getStartingNode();
-        	Node targetNode = graph.getTargetNode();
+                        map.resetCursor();
+                        map.setRobotPosition(robot.getDrive().getPosition());
+                        map.setRobotVector(robot.getDrive().getDirection());
+                        map.draw(width, height);
+                        System.out.printf("Current node: %s | Next node: %s | Target node: %s     \n",
+                                currentNode.getName(),
+                                nextNode.getName(),
+                                targetNode.getName());
 
-        	map.highlightWaypoint(startingNode, Map.BRIGHT_WHITE, 'S');
-        	boolean done = false;
-        	final int width = 140;
-        	final int height = 50;
-
-        	while (!done) {
-
-        		// Have we reached out target yet?
-
-        		map.draw(width, height);
-
-        	}
-
-
+                } // end (while we have not yet reached our target)
         }
 
         /**
@@ -118,14 +160,14 @@ public class WaypointSimulator {
 
                         // Render the default waypoints, highlighting where we
                         // should have started.
-                    	MatchDataInterface matchData = new FakeMatchData();
-                    	Graph graph = new Graph(matchData);
-                    	map.addWaypointsFromGraph(graph);
-                    	Node startingNode = graph.getStartingNode();
-                    	map.highlightWaypoint(startingNode, Map.BRIGHT_MAGENTA, '@');
+                        MatchDataInterface matchData = new FakeMatchData();
+                        Graph graph = new Graph(matchData);
+                        map.addWaypointsFromGraph(graph);
+                        Node startingNode = graph.getStartingNode();
+                        map.highlightWaypoint(startingNode, Map.BRIGHT_MAGENTA, '@');
 
-                    	FakeRobotModel robot = new FakeRobotModel();
-                    	robot.getDrive().setPosition(new Point(0, 0));
+                        FakeRobotModel robot = new FakeRobotModel();
+                        robot.getDrive().setPosition(new Point(0, 0));
                         final double startTimeMilliseconds = System.currentTimeMillis();
                         final double totalSimulationTimeMilliseconds = 1000 * 100;
                         double leftSpeed = 0;
