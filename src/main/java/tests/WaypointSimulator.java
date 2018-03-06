@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import org.usfirst.frc.team1759.robot.MatchData.Position;
+import org.usfirst.frc.team1759.robot.commands.FinalAutonomousTurnCommand;
+import org.usfirst.frc.team1759.robot.commands.FollowPath;
+
+import edu.wpi.first.wpilibj.command.Command;
 import models.Constants;
 import models.Graph;
 import models.MatchDataInterface;
@@ -103,31 +108,81 @@ public class WaypointSimulator {
                 map.highlightWaypoint(startingNode, START_NODE_COLOR, START_NODE_CHAR);
                 map.highlightWaypoint(targetNode, TARGET_NODE_COLOR, TARGET_NODE_CHAR);
 
+                // Set up a chain of TurnCommands and GoEncoder commands that,
+                // when combined, will get us from where we started to where we
+                // want to be.
+                Position targetPosition = getTargetPosition(matchData);
+                Command finalCommand = new FinalAutonomousTurnCommand(robot.getDrive(),
+                                                                      robot.getDrive().getDirection(),
+                                                                      targetPosition == Position.LEFT ? false : true);
+                FollowPath followPathCommand = new FollowPath(robot.getEncoder(),
+                                                              robot.getDrive(),
+                                                              currentNode,
+                                                              path,
+                                                              finalCommand);
+                FakeScheduler.getInstance().add(followPathCommand);
 
                 while (iter.hasNext() && !quit) {
-                        // Have we reached the next node yet?
+
                         Node nextNode = iter.next(); iter.previous();
-                        if (nextNode.point.dist(robot.getDrive().getPosition()) < Constants.EPSILON) {
+                        Point robotPosition = robot.getDrive().getPosition();
+
+                        // Move the robot incrementally.
+                        FakeScheduler.getInstance().run();
+
+                        // Draw map and system information.
+                        map.resetCursor();
+                        map.setRobotPosition(robot.getDrive().getPosition());
+                        map.setRobotVector(robot.getDrive().getDirection());
+                        map.draw(width, height);
+                        System.out.printf("Current node: %s | Next node: %s | Target node: %s            \n",
+                                currentNode.getName(),
+                                nextNode.getName(),
+                                targetNode.getName());
+
+                        // Have we reached the next node yet?
+                        if (robotPosition.dist(nextNode.getPosition()) < Constants.EPSILON) {
                             // We have!
                             if (currentNode.id != startingNode.id) {
                                 map.unHighlightWaypoint(currentNode);
                             }
+                            currentNode = nextNode;
+
+                            // Adjust commands for the next target.
+
+
                             iter.next();
                         } else {
                             // Not yet.
                             map.highlightWaypoint(nextNode, NEXT_NODE_COLOR, NEXT_NODE_CHAR);
                         }
 
-                        map.resetCursor();
-                        map.setRobotPosition(robot.getDrive().getPosition());
-                        map.setRobotVector(robot.getDrive().getDirection());
-                        map.draw(width, height);
-                        System.out.printf("Current node: %s | Next node: %s | Target node: %s     \n",
-                                currentNode.getName(),
-                                nextNode.getName(),
-                                targetNode.getName());
-
                 } // end (while we have not yet reached our target)
+        }
+
+        /**
+         * Is this match's target on the left or right side of the field?
+         *
+         * @param matchData The data structure that defines the settings for the
+         *                  current match.
+         * @return {@link Position.LEFT} if the target position is on the left
+         *         side of the map from the perspective of our team's drivers,
+         *         and {@link position.RIGHT} otherwise.
+         */
+        private static Position getTargetPosition(MatchDataInterface matchData) {
+            Position targetPosition = Position.CENTER;
+            switch (matchData.getTarget()) {
+                case CLOSE_SWITCH:
+                    targetPosition = matchData.getNearSwitchPosition();
+                    break;
+                case SCALE:
+                    targetPosition = matchData.getScalePosition();
+                    break;
+                case FAR_SWITCH:
+                    targetPosition = matchData.getFarSwitchPosition();
+                    break;
+            }
+            return targetPosition;
         }
 
         /**

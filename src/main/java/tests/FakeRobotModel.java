@@ -248,10 +248,10 @@ public class FakeRobotModel {
                  *                    in feet.
                  * @param width       The width of the disembodied line
                  *                    segment, in feet.
-                 * @param fakeEncoder The fake encoder that we will report our
-                 *                    position to.  This can be null.
-                 * @param fakeGyro    The fake gyro that we will report our
-                 *                    angle to.  This can be null.
+                 * @param fakeEncoder The {@link FakeEncoder} that we will
+                 *                    report our position to.  This can be null.
+                 * @param fakeGyro    The {@link FakeGyro} that we will report
+                 *                    our angle to.  This can be null.
                  */
                 public FakeTankDrive(Point position, double width, FakeEncoder fakeEncoder, FakeGyro fakeGyro) {
                         this.position = position;

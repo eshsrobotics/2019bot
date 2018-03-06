@@ -1,17 +1,16 @@
 package org.usfirst.frc.team1759.robot.commands;
 
+import org.usfirst.frc.team1759.robot.Sensors;
+
+import edu.wpi.first.wpilibj.command.Command;
 import models.Constants;
 import models.TankDriveInterface;
 import models.Vector2;
 
-import org.usfirst.frc.team1759.robot.Sensors;
-
-import edu.wpi.first.wpilibj.command.Command;
-
 /***
  * This command's purpose is to rotate the tank drive continuously until the
  * robot is pointing at the desired heading.
- * 
+ *
  * This should not be running at the same time as Go(), as they both utilize the TankDrive.
  *
  * @author uakotaobi
@@ -52,9 +51,9 @@ public class TurnCommand extends Command {
 
         public TurnCommand(TankDriveInterface tank) {
                 this.tank = tank;
-                goalHeading = initialHeading; // By default, we don't turn.
+                this.goalHeading = initialHeading; // By default, we don't turn.
         }
-        
+
         /***
          * Returns the gyro angle, in degrees, between the initial heading at
          * start() and the given heading.
