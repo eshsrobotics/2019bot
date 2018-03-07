@@ -7,11 +7,10 @@ import edu.wpi.first.wpilibj.command.Command;
 
 /**
  * The WPILibJ {@link Command} class is designed so that its most important
- * functions ({@link Command#start() start()},
- * {@link Command#execute() execute()}, {@link Command#isRunning() isRunning()},
- * and {@link Command#isFinished() isFinished()}) are protected, and can only
- * be accessed from within the same package.  But our waypoint simulator needs
- * to run these commands, too.
+ * functions ({@link Command#start() start()}, {@link Command#execute()
+ * execute()}, and {@link Command#isFinished() isFinished()}) are protected,
+ * and can only be accessed from within the same package.  But our waypoint
+ * simulator needs to run these commands, too.
  *
  * The compromise is implementing an interface whose only purpose is to take
  * our own commands' protected functions and make them public again so that we
@@ -34,12 +33,6 @@ public interface TestableCommandInterface {
      */
     public void executeCommand();
 
-
-    /**
-     * This function must return the result from calling your Command's
-     * {@link Command#isRunning() isRunning()} method.
-     */
-    public boolean isCommandRunning();
 
     /**
      * This function must return the result from calling your Command's

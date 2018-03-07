@@ -85,9 +85,14 @@ public class FakeGyro implements Gyro {
      * the true simulated angle to it in order for it to remember that and then
      * pretend that it can't measure it accurately during getAngle().
      *
-     * @param newAngle The true current heading of your fake robot.
+     * @param newAngle The true current heading of your fake robot, in degrees.
      */
     public void updateAngle(double newAngle) {
+
+        // Normalize newAngle to a value between 0 and 360 degrees.
+        newAngle += Math.ceil(Math.abs(newAngle) / 360) * 360;
+        newAngle %= 360;
+
         totalDegreesRotated += Math.abs(currentAngle - newAngle);
         currentAngle = newAngle;
     }

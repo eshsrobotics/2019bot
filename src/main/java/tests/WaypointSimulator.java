@@ -7,14 +7,16 @@ import java.util.ListIterator;
 
 import org.usfirst.frc.team1759.robot.MatchData.Position;
 import org.usfirst.frc.team1759.robot.commands.FinalAutonomousTurnCommand;
-import org.usfirst.frc.team1759.robot.commands.FollowPath;
+import org.usfirst.frc.team1759.robot.commands.GoEncoder;
+import org.usfirst.frc.team1759.robot.commands.TurnCommand;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import models.Constants;
 import models.Graph;
 import models.MatchDataInterface;
 import models.Node;
 import models.Point;
+import models.TestableCommandInterface;
 import models.Vector2;
 import tests.FakeRobotModel.FakeTankDrive;
 
@@ -69,31 +71,19 @@ public class WaypointSimulator {
                 // Randomize the start and target positions for the robot.
                 MatchDataInterface matchData = new FakeMatchData();
 
-                // Set up the board.
+                // Set up the field.
                 Graph graph = new Graph(matchData);
                 Map map = new Map();
                 map.clearScreen();
                 map.addWaypointsFromGraph(graph);
 
-                // Set up the robot and orient it toward the center of the
-                // field.
-                FakeRobotModel robot = new FakeRobotModel();
-                robot.getDrive().setPosition(graph.getStartingNode().getPosition());
-                Vector2 direction = robot.getDrive().getDirection();
-                if (robot.getDrive().getPosition().x < 0) {
-                    direction.x = Math.abs(direction.x);
-                } else {
-                    direction.x = -Math.abs(direction.x);
-                }
-                robot.getDrive().setDirection(direction);
-
                 // Set up the navigation system.
-                final char START_NODE_CHAR  = 'S';
-                final char TARGET_NODE_CHAR = 'T';
-                final char NEXT_NODE_CHAR   = '@';
-                final int START_NODE_COLOR  = Map.BRIGHT_WHITE;
-                final int TARGET_NODE_COLOR  = Map.YELLOW;
-                final int NEXT_NODE_COLOR  = Map.BRIGHT_MAGENTA;
+                final char START_NODE_CHAR   = 'S';
+                final char TARGET_NODE_CHAR  = 'T';
+                final char NEXT_NODE_CHAR    = '@';
+                final int  START_NODE_COLOR  = Map.BRIGHT_WHITE;
+                final int  TARGET_NODE_COLOR = Map.YELLOW;
+                final int  NEXT_NODE_COLOR   = Map.BRIGHT_MAGENTA;
 
                 Node startingNode = graph.getStartingNode();
                 Node targetNode = graph.getTargetNode();
@@ -104,23 +94,26 @@ public class WaypointSimulator {
                     return;
                 }
                 ListIterator<Node> iter = path.listIterator();
-
                 map.highlightWaypoint(startingNode, START_NODE_COLOR, START_NODE_CHAR);
                 map.highlightWaypoint(targetNode, TARGET_NODE_COLOR, TARGET_NODE_CHAR);
 
-                // Set up a chain of TurnCommands and GoEncoder commands that,
-                // when combined, will get us from where we started to where we
-                // want to be.
-                Position targetPosition = getTargetPosition(matchData);
-                Command finalCommand = new FinalAutonomousTurnCommand(robot.getDrive(),
-                                                                      robot.getDrive().getDirection(),
-                                                                      targetPosition == Position.LEFT ? false : true);
-                FollowPath followPathCommand = new FollowPath(robot.getEncoder(),
-                                                              robot.getDrive(),
-                                                              currentNode,
-                                                              path,
-                                                              finalCommand);
-                FakeScheduler.getInstance().add(followPathCommand);
+                // Set up the robot and orient it toward the center of the
+                // field.
+                final double ROBOT_WIDTH_FEET              = 1.5;
+                final double MAX_ENCODER_DEVIANCE_PER_FOOT = 0;//0.001;
+                final double MAX_GYRO_DEVIANCE_PER_DEGREE  = 0;//0.001;
+                FakeRobotModel robot = new FakeRobotModel(startingNode.getPosition(),
+                                                          ROBOT_WIDTH_FEET,
+                                                          matchData.getAlliance() == Alliance.Blue ? new Vector2(1, 0) : new Vector2(-1, 0),
+                                                          MAX_ENCODER_DEVIANCE_PER_FOOT,
+                                                          MAX_GYRO_DEVIANCE_PER_DEGREE);
+
+                // Point the robot in the correct initial direction.
+                Vector2 direction = (robot.getDrive().getPosition().x < 0 ? new Vector2(1, 0) : new Vector2(-1, 0));
+                robot.getDrive().setDirection(direction);
+
+                // Set up the scheduler.
+                addFollowPathCommandsToScheduler(matchData, robot, path);
 
                 while (iter.hasNext() && !quit) {
 
@@ -131,6 +124,14 @@ public class WaypointSimulator {
                         FakeScheduler.getInstance().run();
 
                         // Draw map and system information.
+                        try {
+                            //Thread.sleep(40);
+                            Thread.sleep(400);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
                         map.resetCursor();
                         map.setRobotPosition(robot.getDrive().getPosition());
                         map.setRobotVector(robot.getDrive().getDirection());
@@ -158,6 +159,52 @@ public class WaypointSimulator {
                         }
 
                 } // end (while we have not yet reached our target)
+        }
+
+        /**
+         * Instead of using the actual FollowPath command (which can't be used
+         * without linking to the NetworkTables native library at runtime), we
+         * do exactly the same think the FollowPath command does.
+         *
+         * @param matchData A data structure that tells us which side of the
+         *                  field our target is on.
+         * @param robot     A {@link FakeRobotModel} that owns a
+         *                  {@link FakeEncoder} and a {@link FakeTankDrive}.
+         * @param path      The path that the fake robot is supposed to
+         *                  navigate.
+         */
+        private static void addFollowPathCommandsToScheduler(
+                MatchDataInterface matchData, FakeRobotModel robot,
+                LinkedList<Node> path) {
+
+            // Set up a chain of TurnCommands and GoEncoder commands that,
+            // when combined, will get us from where we started to where we
+            // want to be.
+            Vector2 initialDirection = robot.getDrive().getDirection();
+            Position targetPosition = getTargetPosition(matchData);
+            ListIterator<Node> iter = path.listIterator();
+            while (iter.hasNext()) {
+                Point currentPosition = iter.next().getPosition();
+                if (!iter.hasNext()) {
+                    break;
+                }
+                Point nextPosition = iter.next().getPosition(); iter.previous();
+                GoEncoder go = new GoEncoder(robot.getEncoder(),
+                                             robot.getDrive(),
+                                             currentPosition,
+                                             nextPosition);
+                TurnCommand turnCommand = new TurnCommand(robot.getDrive(),
+                                                          robot.getGyro(),
+                                                          initialDirection);
+                turnCommand.setHeading(currentPosition.vectorTo(nextPosition));
+                FakeScheduler.getInstance().add(turnCommand);
+                FakeScheduler.getInstance().add(go);
+            }
+            TestableCommandInterface finalCommand = new FinalAutonomousTurnCommand(robot.getDrive(),
+                                                                                   robot.getGyro(),
+                                                                                   robot.getDrive().getDirection(),
+                                                                                   targetPosition == Position.LEFT ? false : true);
+            FakeScheduler.getInstance().add(finalCommand);
         }
 
         /**
@@ -221,8 +268,11 @@ public class WaypointSimulator {
                         Node startingNode = graph.getStartingNode();
                         map.highlightWaypoint(startingNode, Map.BRIGHT_MAGENTA, '@');
 
-                        FakeRobotModel robot = new FakeRobotModel();
-                        robot.getDrive().setPosition(new Point(0, 0));
+                        FakeRobotModel robot = new FakeRobotModel(new Point(0, 0),
+                                1.5,
+                                new Vector2(0, 1),
+                                0.0,
+                                0.0);
                         final double startTimeMilliseconds = System.currentTimeMillis();
                         final double totalSimulationTimeMilliseconds = 1000 * 100;
                         double leftSpeed = 0;
@@ -303,8 +353,9 @@ public class WaypointSimulator {
                                 System.out.printf("  Press 'Q'    A-+-D  or  |---|   FPS:       %.1f       Robot position: %s    \r\n",
                                                   frames * 1000.0 / elapsedTimeMilliseconds,
                                                   robot.getDrive().getPosition());
-                                System.out.printf("   to quit       S        1   3   Time left: %.1f       Robot speed: %.4f    ",
+                                System.out.printf("   to quit       S        1   3   Time left: %.1f       Robot angle/speed: %.2f / %.4f   ",
                                                   (totalSimulationTimeMilliseconds - elapsedTimeMilliseconds)/1000,
+                                                  robot.getGyro().getAngle(),
                                                   robot.getDrive().getSpeed());
 
                         } // end (while the simulation is not complete)

@@ -41,6 +41,15 @@ public class FakeRobotModel {
             return encoder;
         }
 
+
+        /**
+         * Returns the fake gyro used to track total degrees turned.
+         * @return
+         */
+        public FakeGyro getGyro() {
+            return gyro;
+        }
+
         /**
          * Creates a fake robot that sits at the origin, points up, and is 18
          * inches wide.
@@ -278,8 +287,6 @@ public class FakeRobotModel {
                 @Override
                 public void tankDrive(double leftSpeed, double rightSpeed) {
 
-                        double oldAngleInRadians = Math.atan2(this.direction.y, this.direction.x);
-
                         // How do you simulate a tank drive?
                         //
                         // Phrased another way: I apply 50% power
@@ -417,8 +424,7 @@ public class FakeRobotModel {
                         }
                         if (gyro != null) {
                             double newAngleInRadians = Math.atan2(this.direction.y, this.direction.x);
-                            double degreesRotated = (newAngleInRadians - oldAngleInRadians) * Constants.RADIANS_TO_DEGREES;
-                            gyro.updateAngle(degreesRotated);
+                            gyro.updateAngle(newAngleInRadians * Constants.RADIANS_TO_DEGREES);
                         }
                 }
 
