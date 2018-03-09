@@ -43,6 +43,8 @@ public class FakeScheduler {
          */
         private ArrayList<TestableCommandInterface> commandList;
 
+        private TestableCommandInterface currentCommand;
+
         /**
          * Adds the given command to the command list. This operates on a first in, first out thought process. Commands should be added in the order
          * you wish them to be executed.
@@ -87,6 +89,7 @@ public class FakeScheduler {
          */
         public void enable() {
             commandIterator = commandList.listIterator();
+            currentCommand = null;
         }
 
         /**
@@ -94,6 +97,7 @@ public class FakeScheduler {
          */
         public void disable() {
             commandIterator = null;
+            currentCommand = null;
         }
 
         /**
@@ -105,28 +109,20 @@ public class FakeScheduler {
                 enable();
             }
 
-            if (!commandIterator.hasNext()) {
-                return;
-            }
+            if (currentCommand == null || currentCommand.isCommandFinished()) {
 
-            // Java doesn't have a ListIterator.current(), so this is the
-            // nearest equivalent.
-            TestableCommandInterface currentCommand = commandIterator.next();
-            commandIterator.previous();
+                if (!commandIterator.hasNext()) {
+                    // We've reached the end of the command list.
+                    disable();
+                    return;
+                }
 
-            if (!currentCommand.isCommandRunning()) {
+                currentCommand = commandIterator.next();
                 currentCommand.startCommand();
             } else {
                 currentCommand.executeCommand();
             }
 
-            if (currentCommand.isCommandFinished()) {
-                if (!commandIterator.hasNext()) {
-                    // Completely done!
-                    return;
-                } else {
-                    commandIterator.next();
-                }
-            }
+            System.out.printf("Current command: %s  \n", currentCommand.getName());
         }
 }

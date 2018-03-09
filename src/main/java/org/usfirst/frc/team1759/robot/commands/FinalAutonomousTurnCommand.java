@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import models.Constants;
 import models.TankDriveInterface;
+import models.TestableCommandInterface;
 import models.Vector2;
 
 /**
@@ -20,10 +21,9 @@ import models.Vector2;
  * @author uakotaobi
  *
  */
-public class FinalAutonomousTurnCommand extends Command {
+public class FinalAutonomousTurnCommand extends Command implements TestableCommandInterface {
 
     private TurnCommand turnCommand;
-    private Gyro gyro;
     private Vector2 initialDirection;
     private boolean faceLeft;
 
@@ -33,6 +33,11 @@ public class FinalAutonomousTurnCommand extends Command {
      *
      * @param tankDrive The {@link TankDriveInterface} we'll use to turn the
      *                  robot.
+     * @param gyro      The Gyro used to track how far the robot has turned.
+     *                  We assume that this is the same Gyro the robot used
+     *                  when the match started, and that its
+     *                  {@link Gyro#getAngle() getAngle()} value at that time
+     *                  was 0.
      * @param initialDirection The direction the robot had at the time it
      *                         started autonomous (that is, when
      *                         {@link Gyro.getAngle() its gyro angle} was 0.)
@@ -55,8 +60,8 @@ public class FinalAutonomousTurnCommand extends Command {
      *                  the left side of the field; if it is false, we will
      *                  rotate until the robot faces the right side.
      */
-    public FinalAutonomousTurnCommand(TankDriveInterface tankDrive, Vector2 initialDirection, boolean faceLeft) {
-        this.turnCommand = new TurnCommand(tankDrive);
+    public FinalAutonomousTurnCommand(TankDriveInterface tankDrive, Gyro gyro, Vector2 initialDirection, boolean faceLeft) {
+        this.turnCommand = new TurnCommand(tankDrive, gyro, initialDirection);
         this.initialDirection = initialDirection;
         this.faceLeft = faceLeft;
     }
@@ -88,5 +93,21 @@ public class FinalAutonomousTurnCommand extends Command {
     @Override
     protected boolean isFinished() {
         return turnCommand.isFinished();
+    }
+
+
+    @Override
+    public void startCommand() {
+        // No-op because super.start() activates the WPILibJ Scheduler mechanism.
+    }
+
+    @Override
+    public void executeCommand() {
+        execute();
+    }
+
+    @Override
+    public boolean isCommandFinished() {
+        return isFinished();
     }
 }

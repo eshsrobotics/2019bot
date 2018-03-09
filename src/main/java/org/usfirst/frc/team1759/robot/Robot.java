@@ -7,8 +7,6 @@
 
 package org.usfirst.frc.team1759.robot;
 
-import models.Graph;
-
 import org.usfirst.frc.team1759.robot.commands.ExpelCommand;
 import org.usfirst.frc.team1759.robot.commands.FollowPath;
 import org.usfirst.frc.team1759.robot.commands.ShootCommand;
@@ -17,8 +15,6 @@ import org.usfirst.frc.team1759.robot.subsystems.Climber;
 import org.usfirst.frc.team1759.robot.subsystems.Intake;
 import org.usfirst.frc.team1759.robot.subsystems.Launcher;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
-
-import wrappers.EncoderWrapper;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -29,6 +25,9 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import models.Graph;
+import models.Vector2;
+import wrappers.EncoderWrapper;
 
 /**
  * This is a demo program showing the use of the RobotDrive class, specifically
@@ -86,9 +85,15 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		Graph graph = new Graph(matchData);
-		Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
+
+		// Remember: the center of the field is at (0, 0) by convention.
+        Vector2 initialDirection = (graph.getStartingNode().getPosition().x < 0 ? new Vector2(1, 0) : new Vector2(-1, 0));
+
+        Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
 		FollowPath followPath = new FollowPath(new EncoderWrapper(encoder),
+		        Sensors.gyro,
 				tank,
+				initialDirection,
 				graph.getStartingNode(),
 				graph.findShortestPath(graph.getStartingNode(), graph.getTargetNode()),
 				endCommand);
