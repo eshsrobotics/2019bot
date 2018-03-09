@@ -1,11 +1,11 @@
 package org.usfirst.frc.team1759.robot.commands;
 
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import models.Constants;
 import models.TankDriveInterface;
 import models.TestableCommandInterface;
 import models.Vector2;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 /***
  * This command's purpose is to rotate the tank drive continuously until the
@@ -147,25 +147,18 @@ public class TurnCommand extends Command implements TestableCommandInterface {
 
                 // Calculate θ, our desired absolute angle.
                 double desiredAbsoluteAngleInRadians = Math.atan2(goalHeading.y,
-                                                                  goalHeading.x);
+                                                                   goalHeading.x);
                 double desiredAbsoluteAngleInDegrees = normalizedAngle(desiredAbsoluteAngleInRadians * Constants.RADIANS_TO_DEGREES);
 
 
                 // The difference between θ and θ₁ is how much we have to rotate.
-                double degreesToTurn = desiredAbsoluteAngleInDegrees - currentAbsoluteAngleInDegrees;
-
-                // Let's say our current absolute angle is 10 degrees and our
-                // desired absolute angle is 340 degrees.  Which is a smarter
-                // direction to turn, then?
                 //
-                // * (340 - 10), which normalizes to 330 degrees (counterclockwise), or
-                // * (10 - 340), which normalizes to 30 degrees (clockwise)?
-                //
-                // Clearly the latter.
-
-                double sign = Math.signum(degreesToTurn);
-                degreesToTurn = sign * Math.min(normalizedAngle(degreesToTurn),
-                                                normalizedAngle(-degreesToTurn));
+                // To minimize the amount by which we turn, we try to keep this
+                // between -180 and 180 degrees.
+                double degreesToTurn = normalizedAngle(desiredAbsoluteAngleInDegrees - currentAbsoluteAngleInDegrees);
+                if (degreesToTurn > 180) {
+                	degreesToTurn -= 360;
+                }
 
                 // Turn at the appropriate magnitude.
                 //
@@ -199,14 +192,14 @@ public class TurnCommand extends Command implements TestableCommandInterface {
                 }
 
                 // Angle sanity check.
-                System.out.printf("TurnCommand.execute(): Initial[θ₀]: %.2f° | Current[θ₁]: %.2f° [gyro=%.2f°] | Target[θ]: %.2f° [%s] | Degrees to turn: %.2f (from %.2f)        \n",
-                        initialAbsoluteAngleInDegrees,
-                        currentAbsoluteAngleInDegrees,
-                        gyro.getAngle(),
-                        desiredAbsoluteAngleInDegrees,
-                        goalHeading,
-                        degreesToTurnClipped,
-                        degreesToTurn);
+                // System.out.printf("TurnCommand.execute(): Initial[θ₀]: %.2f° | Current[θ₁]: %.2f° [gyro=%.2f°] | Target[θ]: %.2f° [%s] | Degrees to turn: %.2f (from %.2f)        \n",
+                //         initialAbsoluteAngleInDegrees,
+                //         currentAbsoluteAngleInDegrees,
+                //         gyro.getAngle(),
+                //         desiredAbsoluteAngleInDegrees,
+                //         goalHeading,
+                //         degreesToTurnClipped,
+                //         degreesToTurn);
 
                 // 0 <= turningMagnitude <= 1.
                 // As we get closer and closer to our desired goal, we should
@@ -221,10 +214,13 @@ public class TurnCommand extends Command implements TestableCommandInterface {
 
                 if (degreesToTurn < -Constants.EPSILON) {
                         // Turn left.
-                        tank.tankDrive(-linearSpeed, linearSpeed);
+                        tank.tankDrive(linearSpeed, -linearSpeed);
                 } else if (degreesToTurn > Constants.EPSILON) {
                         // Turn right.
-                        tank.tankDrive(linearSpeed, -linearSpeed);
+                        tank.tankDrive(-linearSpeed, linearSpeed);
+                } else {
+                    System.out.printf("TurnCommand.execute(): Turning done.  Estimated delta degrees = %.4f \n",
+                    		getEstimatedAngleDifferenceDegrees());
                 }
 
                 // Tank drive sanity check.
@@ -235,16 +231,21 @@ public class TurnCommand extends Command implements TestableCommandInterface {
 
         }
 
+        /**
+         * Uses the gyro to estimate the difference, in degrees, between our
+         * current heading and our goal vector.
+         */
+        private double getEstimatedAngleDifferenceDegrees() {
+            Vector2 estimatedCurrentHeading = initialRobotDirection.rotatedBy(gyro.getAngle() * Constants.DEGREES_TO_RADIANS);
+            return Math.acos(estimatedCurrentHeading.dot(goalHeading)) * Constants.RADIANS_TO_DEGREES;
+        }
+
         /***
          * Are we done turning?  Did we hit the vector we set out to hit?
          */
         @Override
         protected boolean isFinished() {
-
-                Vector2 estimatedCurrentHeading = initialRobotDirection.rotatedBy(gyro.getAngle() * Constants.RADIANS_TO_DEGREES);
-                double angleDifference = Math.acos(estimatedCurrentHeading.dot(goalHeading));
-
-                if (Math.abs(angleDifference) < Constants.EPSILON) {
+                if (Math.abs(getEstimatedAngleDifferenceDegrees()) < Constants.EPSILON) {
                         return true;
                 } else {
                         return false;

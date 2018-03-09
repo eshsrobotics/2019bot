@@ -2,8 +2,8 @@ package tests;
 
 import java.util.Random;
 
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import models.Constants;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 /**
  * A gyro that looks somewhat like the real edu.wpi.first.wpilibj.AnalogGyro
@@ -77,6 +77,7 @@ public class FakeGyro implements Gyro {
      */
     public FakeGyro(double initialAngle, double maxDeviancePerDegree) {
         currentAngle = initialAngle;
+        this.maxDeviancePerDegree = maxDeviancePerDegree;
         reset();
     }
 
