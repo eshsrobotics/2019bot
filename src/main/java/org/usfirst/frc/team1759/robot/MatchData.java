@@ -92,7 +92,7 @@ public class MatchData implements MatchDataInterface {
 	@Override
 	public Position getOwnStartPosition() {
 		// Hardcoded temporarily, should read from a switch in the final version
-		return Position.LEFT;
+		return Position.CENTER;
 	}
 
 	@Override
