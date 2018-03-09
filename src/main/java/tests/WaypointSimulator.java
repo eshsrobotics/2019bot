@@ -5,12 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import org.usfirst.frc.team1759.robot.MatchData.Position;
-import org.usfirst.frc.team1759.robot.commands.FinalAutonomousTurnCommand;
-import org.usfirst.frc.team1759.robot.commands.GoEncoder;
-import org.usfirst.frc.team1759.robot.commands.TurnCommand;
-
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import models.Constants;
 import models.Graph;
 import models.MatchDataInterface;
@@ -18,7 +12,14 @@ import models.Node;
 import models.Point;
 import models.TestableCommandInterface;
 import models.Vector2;
+
+import org.usfirst.frc.team1759.robot.MatchData.Position;
+import org.usfirst.frc.team1759.robot.commands.FinalAutonomousTurnCommand;
+import org.usfirst.frc.team1759.robot.commands.GoEncoder;
+import org.usfirst.frc.team1759.robot.commands.TurnCommand;
+
 import tests.FakeRobotModel.FakeTankDrive;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class WaypointSimulator {
 
@@ -136,10 +137,7 @@ public class WaypointSimulator {
                         map.setRobotPosition(robot.getDrive().getPosition());
                         map.setRobotVector(robot.getDrive().getDirection());
                         map.draw(width, height);
-                        System.out.printf("Current node: %s | Next node: %s | Target node: %s            \n",
-                                currentNode.getName(),
-                                nextNode.getName(),
-                                targetNode.getName());
+                        System.out.printf("%s\n", getWaypointBreadcrumbTrail(path, currentNode));
 
                         // Have we reached the next node yet?
                         if (robotPosition.dist(nextNode.getPosition()) < Constants.EPSILON) {
@@ -162,6 +160,40 @@ public class WaypointSimulator {
         }
 
         /**
+         * Helper function for {@link WaypointSimulator#testEndToEnd() testEndToEnd()}.
+         *
+         * Prints a string representing the WayPoint trail that the robot must
+         * travel.
+         * @param path The path the robot must take.
+         * @param current The most recent {@link Node} that the robot visited.
+         * @return A path string -- potentially a long one if the path is long.
+         */
+        private static String getWaypointBreadcrumbTrail(LinkedList<Node> path, Node current) {
+        	StringBuilder builder = new StringBuilder();
+        	for (Node node : path) {
+        		String suffix = "";
+        		String arrow = " -> ";
+
+        		if (node.id == path.getFirst().id) {
+        			suffix = " [START]";
+        		} else if (node.id == path.getLast().id) {
+        			suffix = " [TARGET]";
+        			arrow = "";
+        		}
+
+        		if (node.id == current.id) {
+        			suffix += " [CURRENT]";
+        		}
+        		builder.append(node.getName());
+        		builder.append(suffix);
+        		builder.append(arrow);
+        	}
+        	return builder.toString();
+        }
+
+        /**
+         * Helper function for {@link WaypointSimulator#testEndToEnd() testEndToEnd()}.
+         *
          * Instead of using the actual FollowPath command (which can't be used
          * without linking to the NetworkTables native library at runtime), we
          * do exactly the same think the FollowPath command does.
@@ -208,7 +240,10 @@ public class WaypointSimulator {
         }
 
         /**
-         * Is this match's target on the left or right side of the field?
+         * Helper function for {@link WaypointSimulator#testEndToEnd() testEndToEnd()}.
+         *
+         * Determines whether this match's target on the left or right side of
+         * the field.
          *
          * @param matchData The data structure that defines the settings for the
          *                  current match.

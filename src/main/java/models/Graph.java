@@ -219,9 +219,6 @@ public class Graph {
                 int randomTarget = (int) Math.floor(Math.random() * potentialTargets.length);
                 this.target = potentialTargets[randomTarget];
             }
-
-            this.currentNode.setName(String.format("%s (START)", this.currentNode.getName()));
-            this.target.setName(String.format("%s (TARGET)", this.target.getName()));
         }
 
 
