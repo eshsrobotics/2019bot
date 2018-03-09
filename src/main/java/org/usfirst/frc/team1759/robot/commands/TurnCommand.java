@@ -45,7 +45,7 @@ public class TurnCommand extends Command implements TestableCommandInterface {
          * magnitudes into reasonable linear speeds?  The answer can only be
          * determined empirically, and this constant stores that information.
          */
-        private static final double TURN_MAGNITUDE_TO_LINEAR_SPEED = 0.05;
+        private static final double TURN_MAGNITUDE_TO_LINEAR_SPEED = 0.25;
 
         /***
          * The tank drive we're supposed to be turning.
