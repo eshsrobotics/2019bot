@@ -94,7 +94,7 @@ public class WaypointSimulator {
                     System.out.printf("Error: no path from start node to target.\n");
                     return;
                 }
-                ListIterator<Node> iter = path.listIterator();
+                ListIterator<Node> waypointIterator = path.listIterator();
                 map.highlightWaypoint(startingNode, START_NODE_COLOR, START_NODE_CHAR);
                 map.highlightWaypoint(targetNode, TARGET_NODE_COLOR, TARGET_NODE_CHAR);
 
@@ -115,10 +115,11 @@ public class WaypointSimulator {
 
                 // Set up the scheduler.
                 addFollowPathCommandsToScheduler(matchData, robot, path);
+                FakeScheduler.getInstance().enable();
 
-                while (iter.hasNext() && !quit) {
+                while (waypointIterator.hasNext() && !quit) {
 
-                        Node nextNode = iter.next(); iter.previous();
+                        Node nextNode = waypointIterator.next(); waypointIterator.previous();
                         Point robotPosition = robot.getDrive().getPosition();
 
                         // Move the robot incrementally.
@@ -149,8 +150,7 @@ public class WaypointSimulator {
 
                             // Adjust commands for the next target.
 
-
-                            iter.next();
+                            waypointIterator.next();
                         } else {
                             // Not yet.
                             map.highlightWaypoint(nextNode, NEXT_NODE_COLOR, NEXT_NODE_CHAR);

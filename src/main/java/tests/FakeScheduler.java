@@ -3,8 +3,8 @@ package tests;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import edu.wpi.first.wpilibj.command.Command;
 import models.TestableCommandInterface;
+import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  * From a programming perspective, this should function very similarly to how
@@ -80,7 +80,7 @@ public class FakeScheduler {
 
 
         /**
-         * Allows commands to run anew.
+         * Allows the added {@link Command commands} to run anew.
          *
          * Note that until {@link FakeScheduler#disable() disable()} is called,
          * attempts to add new {@link Command Commands} to the scheduler will
@@ -104,10 +104,9 @@ public class FakeScheduler {
          * Execute the current (sequential) command in our list incrementally.
          */
         public void run() {
-
-            if (commandIterator == null) {
-                enable();
-            }
+        	if (commandIterator == null) {
+        		return;
+        	}
 
             if (currentCommand == null || currentCommand.isCommandFinished()) {
 
