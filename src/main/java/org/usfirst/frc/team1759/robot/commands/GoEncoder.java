@@ -18,6 +18,7 @@ public class GoEncoder extends Command implements TestableCommandInterface {
 	 * feet.
 	 */
 	double targetDistance;
+	// There are 1440 pulses per revolution, Diameter is .5 feet.
 	double distancePerPulse = Math.PI * .5 / 1440;
 
 	public GoEncoder(EncoderInterface encoder, TankDriveInterface tank, Point current, Point dest) {
@@ -37,9 +38,6 @@ public class GoEncoder extends Command implements TestableCommandInterface {
 		// mechanism, which makes testing unfeasible.  Besides, I don't think
 		// we need super.start()'s side effects.
 		encoder.reset();
-		// Pulses per revolution: 1440
-		// Diameter of wheels: 6 inches, aka .5 feet.
-		encoder.setDistancePerPulse(disstancePerPulse);
 		targetDistance = this.current.dist(this.dest);
 	}
 
@@ -47,6 +45,7 @@ public class GoEncoder extends Command implements TestableCommandInterface {
 	// speed = something ? value : value
 	@Override
     public void execute() {
+	    encoder.setDistancePerPulse(distancePerPulse);
 		double speed = 1.0;
 		if (distRemaining() < Constants.WAYPOINT_SLOWDOWN_DISTANCE) {
 			double calcSpeed = distRemaining() / Constants.WAYPOINT_SLOWDOWN_DISTANCE;

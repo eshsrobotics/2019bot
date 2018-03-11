@@ -15,7 +15,7 @@ import org.usfirst.frc.team1759.robot.subsystems.Climber;
 import org.usfirst.frc.team1759.robot.subsystems.Intake;
 import org.usfirst.frc.team1759.robot.subsystems.Launcher;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
-import org.usfirst.frc.team1759.robot.subsystems.FakeEnd;
+import org.usfirst.frc.team1759.robot.commands.FakeEnd;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -36,11 +36,11 @@ import wrappers.EncoderWrapper;
  */
 public class Robot extends IterativeRobot {
 	private TankDrive tank;
-	//private Launcher launcher;
-	//private Intake upperIntake;
-	//private Intake lowerIntake;
-	//private Climber climber;
-	//private Arm arm;
+	private Launcher launcher;
+	private Intake upperIntake;
+	private Intake lowerIntake;
+	private Climber climber;
+	private Arm arm;
 	private OI oi;
 	private MatchData matchData;
 	private Encoder encoder;
@@ -82,14 +82,15 @@ public class Robot extends IterativeRobot {
 		// Remember: the center of the field is at (0, 0) by convention.
         Vector2 initialDirection = (graph.getStartingNode().getPosition().x < 0 ? new Vector2(1, 0) : new Vector2(-1, 0));
 
-        Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
+        //Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
+	Command endCommand = new FakeEnd();
 		FollowPath followPath = new FollowPath(new EncoderWrapper(encoder),
 		        Sensors.gyro,
 				tank,
 				initialDirection,
 				graph.getStartingNode(),
 				graph.findShortestPath(graph.getStartingNode(), graph.getTargetNode()),
-				fakeEnd);
+				endCommand);
 		followPath.start();
 	}
 
