@@ -15,6 +15,7 @@ import org.usfirst.frc.team1759.robot.subsystems.Climber;
 import org.usfirst.frc.team1759.robot.subsystems.Intake;
 import org.usfirst.frc.team1759.robot.subsystems.Launcher;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
+import org.usfirst.frc.team1759.robot.subsystems.FakeEnd;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -35,11 +36,11 @@ import wrappers.EncoderWrapper;
  */
 public class Robot extends IterativeRobot {
 	private TankDrive tank;
-	private Launcher launcher;
-	private Intake upperIntake;
-	private Intake lowerIntake;
-	private Climber climber;
-	private Arm arm;
+	//private Launcher launcher;
+	//private Intake upperIntake;
+	//private Intake lowerIntake;
+	//private Climber climber;
+	//private Arm arm;
 	private OI oi;
 	private MatchData matchData;
 	private Encoder encoder;
@@ -58,14 +59,6 @@ public class Robot extends IterativeRobot {
 		// Initialize drive.
 		oi = new OI();
 		tank = new TankDrive();
-		upperIntake = new Intake(new WPI_TalonSRX(RobotMap.UPPER_LEFT_INTAKE),
-				new WPI_TalonSRX(RobotMap.UPPER_RIGHT_INTAKE));
-		lowerIntake = new Intake(new WPI_TalonSRX(RobotMap.LOWER_LEFT_INTAKE),
-				new WPI_TalonSRX(RobotMap.LOWER_RIGHT_INTAKE));
-		arm = new Arm(new DoubleSolenoid(RobotMap.ARM_PORT_IN,
-				RobotMap.ARM_PORT_OUT));
-		launcher = new Launcher();
-		climber = new Climber();
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
 		encoder = new Encoder(0, 1);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
@@ -96,7 +89,7 @@ public class Robot extends IterativeRobot {
 				initialDirection,
 				graph.getStartingNode(),
 				graph.findShortestPath(graph.getStartingNode(), graph.getTargetNode()),
-				endCommand);
+				fakeEnd);
 		followPath.start();
 	}
 
@@ -114,27 +107,5 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		tank.tankDrive(oi);
-		launcher.launch(oi);
-		climber.climb(oi);
-		if(oi.intakeInJoystick.get() || oi.intakeInNetwork.get()) {
-			lowerIntake.takeIn(1.0);
-			upperIntake.takeIn(1.0);
-		} else if(oi.intakeOutJoystick.get() || oi.intakeOutJoystick.get()) {
-			lowerIntake.pushOut(1.0);
-			upperIntake.pushOut(1.0);
-		} else {
-			upperIntake.stop();
-			lowerIntake.stop();
-		}
-		if(oi.rightJoystick.getThrottle() > THROTTLE_THRESHOLD) {
-				arm.raise();
-		} else if(oi.rightJoystick.getThrottle() < -1.0 * THROTTLE_THRESHOLD) {
-			arm.lower();
-		} else {
-			/**
-			 * If neither condition is true, the arm will remain in it's current state. If we utilize the kOff setting for the solenoid, it will move as
-			 * gravity, inertia, etc. dictates. We want the arm to remain in a current position, so it does nothing otherwise.
-			 */
-		}
 	}
 }
