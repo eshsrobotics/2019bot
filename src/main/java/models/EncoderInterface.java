@@ -21,4 +21,8 @@ public interface EncoderInterface {
 	 * This returns the distance that the encoder thinks it has traveled (in feet).
 	 */
 	abstract public double getDistance();
+	/**
+	* This sets the distance traveled for each pulse of the encoder.
+	*/
+	abstract public void setDistancePerPulse(double distancePerPulseInFeet);
 }

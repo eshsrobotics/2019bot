@@ -38,6 +38,7 @@ public class GoEncoder extends Command implements TestableCommandInterface {
 		// mechanism, which makes testing unfeasible.  Besides, I don't think
 		// we need super.start()'s side effects.
 		encoder.reset();
+		encoder.setDistancePerPulse(distancePerPulse);
 		targetDistance = this.current.dist(this.dest);
 	}
 
@@ -45,7 +46,6 @@ public class GoEncoder extends Command implements TestableCommandInterface {
 	// speed = something ? value : value
 	@Override
     public void execute() {
-	    encoder.setDistancePerPulse(distancePerPulse);
 		double speed = 1.0;
 		if (distRemaining() < Constants.WAYPOINT_SLOWDOWN_DISTANCE) {
 			double calcSpeed = distRemaining() / Constants.WAYPOINT_SLOWDOWN_DISTANCE;

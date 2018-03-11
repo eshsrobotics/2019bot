@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Encoder;
 public class EncoderWrapper implements EncoderInterface {
 
 	private Encoder encoder;
+	private double distancePerPulse;
 	
 	public EncoderWrapper(Encoder encoder) {
 		this.encoder = encoder;
@@ -22,4 +23,8 @@ public class EncoderWrapper implements EncoderInterface {
 		return encoder.getDistance();
 	}
 
+	public void setDistancePerPulse(double distancePerPulse) {
+		this.distancePerPulse = distancePerPulse;
+		encoder.setDistancePerPulse(distancePerPulse);
+	}
 }

@@ -543,7 +543,7 @@ public class WaypointSimulator {
                 nameToIdTable.put(g.id, "G");
                 nameToIdTable.put(h.id, "H");
 
-                Graph graph = new Graph(h, d);
+                Graph graph = new Graph();
                 graph.addEdge(a, e);
                 graph.addEdge(a, b);
                 graph.addEdge(e, c);

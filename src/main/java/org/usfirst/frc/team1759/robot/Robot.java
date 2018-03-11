@@ -16,6 +16,7 @@ import org.usfirst.frc.team1759.robot.subsystems.Intake;
 import org.usfirst.frc.team1759.robot.subsystems.Launcher;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
 import org.usfirst.frc.team1759.robot.commands.FakeEnd;
+import org.usfirst.frc.team1759.robot.MatchData;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -42,8 +43,8 @@ public class Robot extends IterativeRobot {
 	private Climber climber;
 	private Arm arm;
 	private OI oi;
-	private MatchData matchData;
 	private Encoder encoder;
+	private MatchData matchData;
 
 	/**
 	 * Used to set the threshold for the throttle. If the throttle is greater than positive threshold, it is up. If it is less
@@ -77,7 +78,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousInit() {
-		Graph graph = new Graph(matchData);
+		Graph graph = new Graph();
 
 		// Remember: the center of the field is at (0, 0) by convention.
         Vector2 initialDirection = (graph.getStartingNode().getPosition().x < 0 ? new Vector2(1, 0) : new Vector2(-1, 0));

@@ -80,6 +80,11 @@ public class FakeEncoder implements EncoderInterface {
     public void reset() {
         totalDistanceTraveled = 0;
     }
+	
+	@Override
+	public void setDistancePerPulse(double distancePerPulseInFeet) {
+		
+	}
 
     /* (non-Javadoc)
      * @see models.EncoderInterface#getDistance()
