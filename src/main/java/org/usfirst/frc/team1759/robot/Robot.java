@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import models.Graph;
 import models.Vector2;
 import wrappers.EncoderWrapper;
@@ -45,6 +47,7 @@ public class Robot extends IterativeRobot {
 	private OI oi;
 	private Encoder encoder;
 	private MatchData matchData;
+	private Gyro gyro;
 
 	/**
 	 * Used to set the threshold for the throttle. If the throttle is greater than positive threshold, it is up. If it is less
@@ -64,6 +67,7 @@ public class Robot extends IterativeRobot {
 		matchData = new MatchData(DriverStation.getInstance());
 		encoder = new Encoder(0, 1);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
 		//currentPosition = new Vector2(0, 0);
+		gyro = new ADXRS450_Gyro();
 	}
 
 	@Override
@@ -86,7 +90,7 @@ public class Robot extends IterativeRobot {
         //Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
 	Command endCommand = new FakeEnd();
 		FollowPath followPath = new FollowPath(new EncoderWrapper(encoder),
-		        Sensors.gyro,
+		        	gyro,
 				tank,
 				initialDirection,
 				graph.getStartingNode(),
