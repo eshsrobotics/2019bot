@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1759.robot.commands;
 
+import edu.wpi.first.wpilibj.Encoder;
+
 import models.Constants;
 import models.EncoderInterface;
 import models.Point;
@@ -9,7 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 
 public class GoEncoder extends Command implements TestableCommandInterface {
 
-	EncoderInterface encoder;
+	Encoder encoder;
 	TankDriveInterface tank;
 	Point current, dest;
 
@@ -21,7 +23,7 @@ public class GoEncoder extends Command implements TestableCommandInterface {
 	// There are 1440 pulses per revolution, Diameter is .5 feet.
 	double distancePerPulse = Math.PI * .5 / 1440;
 
-	public GoEncoder(EncoderInterface encoder, TankDriveInterface tank, Point current, Point dest) {
+	public GoEncoder(Encoder encoder, TankDriveInterface tank, Point current, Point dest) {
 		this.encoder = encoder;
 		this.tank = tank;
 		this.current = current;

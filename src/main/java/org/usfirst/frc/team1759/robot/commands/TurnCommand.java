@@ -202,7 +202,7 @@ public class TurnCommand extends Command implements TestableCommandInterface {
                 // minTurningAngleDegrees.
 
                 //double turningMagnitude = (Math.abs(degreesToTurnClipped) - MIN_TURNING_ANGLE_DEGREES) / (MAX_TURNING_ANGLE_DEGREES - MIN_TURNING_ANGLE_DEGREES);
-				double turningMagnitude = (.25 * ((Math.abs(degreesToTurn)) / 180)) + .75;
+				double turningMagnitude = (.15 * ((Math.abs(degreesToTurn)) / 180)) + .85;
                 double linearSpeed = turningMagnitude * TURN_MAGNITUDE_TO_LINEAR_SPEED;
 				
 				
@@ -241,7 +241,7 @@ public class TurnCommand extends Command implements TestableCommandInterface {
          */
         @Override
         protected boolean isFinished() {
-                if (Math.abs(getEstimatedAngleDifferenceDegrees()) < Constants.EPSILON) {
+                if (Math.abs(getEstimatedAngleDifferenceDegrees()) < 1) {
                         return true;
                 } else {
                         return false;
