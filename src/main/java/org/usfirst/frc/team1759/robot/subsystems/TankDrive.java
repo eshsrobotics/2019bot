@@ -88,6 +88,6 @@ public class TankDrive extends Subsystem implements TankDriveInterface {
 	}
 	@Override
 	public void tankDrive (double leftSpeed, double rightSpeed) {
-		myRobot.tankDrive(- leftSpeed, - rightSpeed);
+		myRobot.tankDrive(-leftSpeed, -rightSpeed);
 	}
 }

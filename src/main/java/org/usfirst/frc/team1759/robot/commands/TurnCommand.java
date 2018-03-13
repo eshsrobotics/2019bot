@@ -45,7 +45,9 @@ public class TurnCommand extends Command implements TestableCommandInterface {
          * magnitudes into reasonable linear speeds?  The answer can only be
          * determined empirically, and this constant stores that information.
          */
-        private static final double TURN_MAGNITUDE_TO_LINEAR_SPEED = 0.25;
+        private static final double TURN_MAGNITUDE_TO_LINEAR_SPEED = 0.65;
+		
+		private static final double MINIMUM_TURNING_MAGNITUDE = 0.55;
 
         /***
          * The tank drive we're supposed to be turning.
@@ -102,18 +104,7 @@ public class TurnCommand extends Command implements TestableCommandInterface {
          */
         @Override
         public synchronized void start() {
-
-                // At the time the robot began its life, its direction was
-                // initialRobotDiriection and its gyro angle was 0.
-            /*
-                final double initialGyroAngleInRadians = 0;
-
-                double currentGyroAngleInRadians = gyro.getAngle() * Constants.DEGREES_TO_RADIANS;
-                Vector2 estimatedRobotDirectionAtStart = initialRobotDirection.rotatedBy(currentGyroAngleInRadians - initialGyroAngleInRadians);
-
-                System.out.printf("TurnCommand.start(): current gyro angle is %.2f (%s)\n",
-                                  gyro.getAngle(),
-                                  estimatedRobotDirectionAtStart);*/
+                //super.start();
         };
 
         /***
@@ -192,14 +183,15 @@ public class TurnCommand extends Command implements TestableCommandInterface {
                 }
 
                 // Angle sanity check.
-                // System.out.printf("TurnCommand.execute(): Initial[θ₀]: %.2f° | Current[θ₁]: %.2f° [gyro=%.2f°] | Target[θ]: %.2f° [%s] | Degrees to turn: %.2f (from %.2f)        \n",
-                //         initialAbsoluteAngleInDegrees,
-                //         currentAbsoluteAngleInDegrees,
-                //         gyro.getAngle(),
-                //         desiredAbsoluteAngleInDegrees,
-                //         goalHeading,
-                //         degreesToTurnClipped,
-                //         degreesToTurn);
+                 // System.out.printf("TurnCommand.execute(): Initial: %.2f | Current: %.2f [gyro=%.2f] | Target: %.2f [%s] | Degrees to turn: %.2f (from %.2f)        \n",
+                         // initialAbsoluteAngleInDegrees,
+                         // currentAbsoluteAngleInDegrees,
+                         // gyro.getAngle(),
+                         // desiredAbsoluteAngleInDegrees,
+                         // goalHeading,
+                         // degreesToTurnClipped,
+                         // degreesToTurn);
+						 
 
                 // 0 <= turningMagnitude <= 1.
                 // As we get closer and closer to our desired goal, we should
@@ -209,8 +201,12 @@ public class TurnCommand extends Command implements TestableCommandInterface {
                 // may need to increase epsilon and/or the
                 // minTurningAngleDegrees.
 
-                double turningMagnitude = (Math.abs(degreesToTurnClipped) - MIN_TURNING_ANGLE_DEGREES) / (MAX_TURNING_ANGLE_DEGREES - MIN_TURNING_ANGLE_DEGREES);
+                //double turningMagnitude = (Math.abs(degreesToTurnClipped) - MIN_TURNING_ANGLE_DEGREES) / (MAX_TURNING_ANGLE_DEGREES - MIN_TURNING_ANGLE_DEGREES);
+				double turningMagnitude = (.25 * ((Math.abs(degreesToTurn)) / 180)) + .75;
                 double linearSpeed = turningMagnitude * TURN_MAGNITUDE_TO_LINEAR_SPEED;
+				
+				
+				System.out.printf("degreesToTurn: %.3f, turnMagnitude: %.3f \n", degreesToTurn, turningMagnitude);
 
                 if (degreesToTurn < -Constants.EPSILON) {
                         // Turn left.
@@ -224,10 +220,10 @@ public class TurnCommand extends Command implements TestableCommandInterface {
                 }
 
                 // Tank drive sanity check.
-                System.out.printf("TurnCommand.execute(): degreesToTurn: %.4f° [magnitude=%.2f] | linearSpeed: %.2f \n",
-                        degreesToTurnClipped,
-                        turningMagnitude,
-                        linearSpeed);
+                // System.out.printf("TurnCommand.execute(): degreesToTurn: %.4f [magnitude=%.2f] | linearSpeed: %.2f \n",
+                        // degreesToTurnClipped,
+                        // turningMagnitude,
+                        // linearSpeed);
 
         }
 

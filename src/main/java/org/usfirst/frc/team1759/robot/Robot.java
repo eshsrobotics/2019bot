@@ -85,7 +85,7 @@ public class Robot extends IterativeRobot {
 		Graph graph = new Graph();
 
 		// Remember: the center of the field is at (0, 0) by convention.
-        Vector2 initialDirection = (graph.getStartingNode().getPosition().x < 0 ? new Vector2(1, 0) : new Vector2(-1, 0));
+        Vector2 initialDirection = new Vector2(1, 0);
 
         //Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
 	Command endCommand = new FakeEnd();

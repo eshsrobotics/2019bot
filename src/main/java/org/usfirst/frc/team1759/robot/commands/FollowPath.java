@@ -21,7 +21,8 @@ public class FollowPath extends CommandGroup implements TestableCommandInterface
                                 continue;
                         }
                         GoEncoder go = new GoEncoder(encoder, tankDrive, currentNode.point, destNode.point);
-                        TurnCommand turnCommand = new TurnCommand(tankDrive, gyro, initialRobotDirection);
+                        
+			TurnCommand turnCommand = new TurnCommand(tankDrive, gyro, initialRobotDirection);
                         turnCommand.setHeading(currentNode.point.vectorTo(destNode.point));
                         addSequential(turnCommand);
                         addSequential(go);

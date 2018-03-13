@@ -23,4 +23,5 @@ public class Constants {
          * vectors and points (respectively) are concerned.
          */
         public static final double EPSILON = 0.001;
+		public static final double TURN_MARGIN_OF_ERROR = 3;
 }
