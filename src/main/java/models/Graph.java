@@ -14,25 +14,28 @@ public class Graph {
         private Node target;
         private Node currentNode;
 
-	public Graph() {
-           Node origin = new Node (0, 0);
-	   Node easy = new Node (5, 5);
-	   Node altered = new Node (7, 3);
-	   Node far = new Node (10.5, 13.5);
+		public Graph() {
+		   Node origin = new Node (0, 0);
+		   Node easy = new Node (5, 5);
+		   Node altered = new Node (7, 3);
+		   Node far = new Node (10.5, 13.5);
+		   easy = new Node (2.5, 2.5);       // UA: Reduce the distance to travel for testing.
+		   altered = new Node (3.5, 1.5);
+		   far = new Node (5.25, 6.75);
 
-	   addEdge(origin, easy);
-	   addEdge(origin, altered);
-	   addEdge(easy, altered);
-	   addEdge(altered, far);
-	   addEdge(easy, far);
+		   addEdge(origin, easy);
+		   addEdge(origin, altered);
+		   addEdge(easy, altered);
+		   addEdge(altered, far);
+		   addEdge(easy, far);
 
-	   currentNode = origin;
-	   target = far;
-        }
-	
-	public Graph(MatchDataInterface matchDataInterface) {
+		   currentNode = origin;
+		   target = far;
+		}
+		
+		public Graph(MatchDataInterface matchDataInterface) {
 
-	}
+		}
         /**
          * This is meant to return the starting position of the robot. If you are
          * standing in your alliance station and are looking onto the field, 0 is to

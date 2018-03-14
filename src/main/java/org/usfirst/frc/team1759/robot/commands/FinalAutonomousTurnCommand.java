@@ -110,4 +110,7 @@ public class FinalAutonomousTurnCommand extends Command implements TestableComma
     public boolean isCommandFinished() {
         return isFinished();
     }
+	
+	@Override
+	public Command getCommand() { return (Command)this; }
 }

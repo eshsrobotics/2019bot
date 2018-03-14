@@ -41,8 +41,8 @@ public interface TestableCommandInterface {
     public boolean isCommandFinished();
 
     /**
-     * This function must return the result from calling your Command's
-     * {@link Command#getName() getName()} method.
+     * This function will return the real command that TestableCommandInterface is wrapping around
+     * 
      */
-    public String getName();
+    public Command getCommand();
 }

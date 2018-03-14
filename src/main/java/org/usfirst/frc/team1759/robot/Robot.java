@@ -29,8 +29,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import models.Graph;
 import models.Vector2;
+import models.TestableCommandInterface;
 import wrappers.EncoderWrapper;
 
 /**
@@ -65,7 +67,8 @@ public class Robot extends IterativeRobot {
 		tank = new TankDrive();
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
-		encoder = new Encoder(0, 1);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
+		encoder = new Encoder(0, 1, false, EncodingType.k4X);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
+		encoder.setDistancePerPulse(0.75);
 		//currentPosition = new Vector2(0, 0);
 		gyro = new ADXRS450_Gyro();
 	}
@@ -88,7 +91,7 @@ public class Robot extends IterativeRobot {
         Vector2 initialDirection = new Vector2(1, 0);
 
         //Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
-	Command endCommand = new FakeEnd();
+		TestableCommandInterface endCommand = new FakeEnd();
 		FollowPath followPath = new FollowPath(encoder, gyro, tank, initialDirection, graph.getStartingNode(), 
 								graph.findShortestPath(graph.getStartingNode(), graph.getTargetNode()),
 								endCommand);
@@ -98,6 +101,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		//System.out.printf("TEST");
 	}
 
 	@Override

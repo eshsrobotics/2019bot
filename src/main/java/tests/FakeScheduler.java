@@ -122,6 +122,6 @@ public class FakeScheduler {
                 currentCommand.executeCommand();
             }
 
-            System.out.printf("Current command: %s  \n", currentCommand.getName());
+            // System.out.printf("Current command: %s  \n", currentCommand.getName());
         }
 }

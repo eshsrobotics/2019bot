@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
  *
  * @author uakotaobi
  */
-public class TurnCommand extends Command implements TestableCommandInterface {
+public class TurnCommand extends Command {
 
         /**
          * We are not allowed to turn the robot faster than this during each
@@ -127,22 +127,22 @@ public class TurnCommand extends Command implements TestableCommandInterface {
         @Override
         protected void execute() {
 
-                // Calculate θ₀, the angle between our orientation at match
+                // Calculate theta0, the angle between our orientation at match
                 // start time and the positive X axis.
                 double initialAbsoluteAngleInRadians = Math.atan2(initialRobotDirection.y,
                                                                   initialRobotDirection.x);
                 double initialAbsoluteAngleInDegrees = normalizedAngle(initialAbsoluteAngleInRadians * Constants.RADIANS_TO_DEGREES);
 
-                // Use θ₀ to calculate θ₁, our current absolute angle.
+                // Use theta0 to calculate theta1, our current absolute angle.
                 double currentAbsoluteAngleInDegrees = normalizedAngle(initialAbsoluteAngleInDegrees + gyro.getAngle());
 
-                // Calculate θ, our desired absolute angle.
+                // Calculate theta, our desired absolute angle.
                 double desiredAbsoluteAngleInRadians = Math.atan2(goalHeading.y,
                                                                    goalHeading.x);
                 double desiredAbsoluteAngleInDegrees = normalizedAngle(desiredAbsoluteAngleInRadians * Constants.RADIANS_TO_DEGREES);
 
 
-                // The difference between θ and θ₁ is how much we have to rotate.
+                // The difference between theta and theta0 is how much we have to rotate.
                 //
                 // To minimize the amount by which we turn, we try to keep this
                 // between -180 and 180 degrees.
@@ -206,7 +206,7 @@ public class TurnCommand extends Command implements TestableCommandInterface {
                 double linearSpeed = turningMagnitude * TURN_MAGNITUDE_TO_LINEAR_SPEED;
 				
 				
-				System.out.printf("degreesToTurn: %.3f, turnMagnitude: %.3f \n", degreesToTurn, turningMagnitude);
+				//System.out.printf("degreesToTurn: %.3f, turnMagnitude: %.3f \n", degreesToTurn, turningMagnitude);
 
                 if (degreesToTurn < -Constants.EPSILON) {
                         // Turn left.
@@ -246,20 +246,5 @@ public class TurnCommand extends Command implements TestableCommandInterface {
                 } else {
                         return false;
                 }
-        }
-
-        @Override
-        public void startCommand() {
-            start();
-        }
-
-        @Override
-        public void executeCommand() {
-            execute();
-        }
-
-        @Override
-        public boolean isCommandFinished() {
-            return isFinished();
         }
 }

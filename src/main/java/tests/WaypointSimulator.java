@@ -1,3 +1,4 @@
+/**
 package tests;
 import java.io.IOException;
 import java.util.AbstractMap;
@@ -27,6 +28,7 @@ public class WaypointSimulator {
         /**
          * The speed of animations used during some tests.
          */
+		 /*
         private static final double FRAMES_PER_SECOND = 20.0;
         private static final double MILLISECONDS_PER_FRAME = 1000.0 / FRAMES_PER_SECOND;
 
@@ -36,6 +38,7 @@ public class WaypointSimulator {
          * @param args Command-line arguments (which we do not process right now.)
          * @throws Exception Forwarded unadorned if an individual test throws an exception.
          */
+		 /*
         public static void main(String[] args) throws Exception {
 
 
@@ -63,6 +66,7 @@ public class WaypointSimulator {
          * - TurnCommand
          * Into one coherent whole.
          */
+		 /*
         public static void testEndToEnd() {
 
                 boolean quit = false;
@@ -168,6 +172,7 @@ public class WaypointSimulator {
          * @param current The most recent {@link Node} that the robot visited.
          * @return A path string -- potentially a long one if the path is long.
          */
+		 /*
         private static String getWaypointBreadcrumbTrail(LinkedList<Node> path, Node current) {
         	StringBuilder builder = new StringBuilder();
         	for (Node node : path) {
@@ -205,6 +210,7 @@ public class WaypointSimulator {
          * @param path      The path that the fake robot is supposed to
          *                  navigate.
          */
+		 /*
         private static void addFollowPathCommandsToScheduler(
                 MatchDataInterface matchData, FakeRobotModel robot,
                 LinkedList<Node> path) {
@@ -251,6 +257,7 @@ public class WaypointSimulator {
          *         side of the map from the perspective of our team's drivers,
          *         and {@link position.RIGHT} otherwise.
          */
+		 /*
         private static Position getTargetPosition(MatchDataInterface matchData) {
             Position targetPosition = Position.CENTER;
             switch (matchData.getTarget()) {
@@ -281,6 +288,7 @@ public class WaypointSimulator {
          *
          * If you're on Windows, use Cmder or Cygwin's MinTTY instead.
          */
+		 /*
         private static final void testInteractiveFakeRobotDrive() {
                 final String[] rawModeCommand    = { "/bin/sh", "-c", "stty raw </dev/tty" };
                 final String[] cookedModeCommand = { "/bin/sh", "-c", "stty cooked </dev/tty" };
@@ -430,6 +438,7 @@ public class WaypointSimulator {
          *                              interrupted during Thread.sleep()
          *                              (this is exceedingly unlikely.)
          */
+		 /*
         private static final void testFalseRobotMovementAnimation() throws InterruptedException {
 
                 Map map = new Map();
@@ -492,6 +501,7 @@ public class WaypointSimulator {
         /**
          * Tests the Map.addWaypointsFromGraph() function.
          */
+		 /*
         private static final void testAddWaypointsFromFakeGraph() {
                 Map map = new Map(200, 100);
                 HashMap<Integer, String> nameToIdTable = new HashMap<Integer, String>();
@@ -499,7 +509,7 @@ public class WaypointSimulator {
                 map.addWaypointsFromGraph(graph);
                 map.draw(120, 40);
         }
-
+/*
         public static final void testAddWaypointsFromGraph() throws Exception {
                 Map map = new Map();
                 map.clearScreen();
@@ -524,6 +534,7 @@ public class WaypointSimulator {
          * @return A graph with a handful of nodes in it.  The nameToIdTable
          *          will also be updated.
          */
+		 /*
         private static final Graph createSampleGraph(HashMap<Integer, String> nameToIdTable) {
                 Node a = new Node(90, 0);
                 Node b = new Node(80, -30);
@@ -562,6 +573,7 @@ public class WaypointSimulator {
          * Tests the ability to Graph.findShortestPath() to do what it is
          * supposed to do.
          */
+		 /*
         private static void testFindShortestPath() {
 
                 // Let's take those nodes and give them names.
@@ -580,6 +592,7 @@ public class WaypointSimulator {
          * @param nameToIdTable A table mapping node IDs to names.
          * @return A string that looks like "Name1 > Name2 > name3 > Name4".
          */
+		 /*
         private static String printPath(LinkedList <Node> path, AbstractMap<Integer, String> nameToIdTable) {
                 StringBuilder result = new StringBuilder();
                 for (Node n: path) {
@@ -597,6 +610,7 @@ public class WaypointSimulator {
          * A test used to isolate the behavior of FakeTankDrive.tankDrive() by
          * itself.
          */
+		 /*
         public static final void testTankDriveCalculations() {
                 // Test rotation.
                 Point o = new Point(2, 2);
@@ -622,3 +636,4 @@ public class WaypointSimulator {
                 System.out.printf("After calling tankDrive(%.2f, %.2f):\n  %s\n", leftSpeed, rightSpeed, drive.toString());
         }
 }
+*/
