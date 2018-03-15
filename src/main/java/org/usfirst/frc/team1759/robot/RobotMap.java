@@ -18,10 +18,6 @@ public class RobotMap {
 	public static int RIGHT_FRONT_PORT = 7;
 	public static int RIGHT_BACK_PORT = 2;
 	
-	// For launcher solenoid
-	public static int HIGH_LAUNCH_PORT_OUT = 0;
-	public static int HIGH_LAUNCH_PORT_IN = 1;
-	
 	// For intake solenoid
 	public static int ARM_PORT_OUT = 3;
 	public static int ARM_PORT_IN = 2;
@@ -29,6 +25,8 @@ public class RobotMap {
 	// Upper intake motors
 	public static int UPPER_LEFT_INTAKE= 3;
 	public static int UPPER_RIGHT_INTAKE = 1;
+	public static int SECONDARY_UPPER_RIGHT_INTAKE = -2; //these are placeholders. Secondary motors on the upper intake need to be assigned. 
+	public static int SECONDARY_UPPER_LEFT_INTAKE = -1;
 	
 	// Lower intake motors
 	public static int LOWER_LEFT_INTAKE = 4;

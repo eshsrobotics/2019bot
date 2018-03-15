@@ -7,29 +7,30 @@
 
 package org.usfirst.frc.team1759.robot;
 
-import org.usfirst.frc.team1759.robot.commands.ExpelCommand;
+import org.usfirst.frc.team1759.robot.commands.LowerArm;
+import org.usfirst.frc.team1759.robot.commands.RaiseArm;
 import org.usfirst.frc.team1759.robot.commands.FollowPath;
-import org.usfirst.frc.team1759.robot.commands.ShootCommand;
+import org.usfirst.frc.team1759.robot.commands.ExpelCommand;
 import org.usfirst.frc.team1759.robot.subsystems.Arm;
 import org.usfirst.frc.team1759.robot.subsystems.Climber;
 import org.usfirst.frc.team1759.robot.subsystems.Intake;
-import org.usfirst.frc.team1759.robot.subsystems.Launcher;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
-import org.usfirst.frc.team1759.robot.commands.FakeEnd;
+
 import org.usfirst.frc.team1759.robot.MatchData;
+
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import models.Graph;
 import models.Vector2;
 import models.TestableCommandInterface;
@@ -41,21 +42,21 @@ import wrappers.EncoderWrapper;
  */
 public class Robot extends IterativeRobot {
 	private TankDrive tank;
-	private Launcher launcher;
+	//private Launcher launcher;
 	private Intake upperIntake;
 	private Intake lowerIntake;
 	private Climber climber;
 	private Arm arm;
 	private OI oi;
-	private Encoder encoder;
 	private MatchData matchData;
+	private Encoder encoder;
 	private Gyro gyro;
-
+	
 	/**
-	 * Used to set the threshold for the throttle. If the throttle is greater than positive threshold, it is up. If it is less
+	 * Used to set the threshold for the throttle. If the throttle is greater than positive threshold, it is up. If it is less 
 	 * than negative threshold, it is down. If it is between positive and negative threshold, it remains in it's current state.
 	 */
-	private static final double THROTTLE_THRESHOLD = 1 / 3.0;
+	private static final double THROTTLE_THRESHOLD = 1 / 3.0;	 
 
 
 	@Override
@@ -65,53 +66,72 @@ public class Robot extends IterativeRobot {
 		// Initialize drive.
 		oi = new OI();
 		tank = new TankDrive();
+		upperIntake = new Intake(new WPI_TalonSRX(RobotMap.UPPER_LEFT_INTAKE),
+				new WPI_TalonSRX(RobotMap.UPPER_RIGHT_INTAKE), new WPI_TalonSRX(RobotMap.SECONDARY_UPPER_LEFT_INTAKE), new WPI_TalonSRX(RobotMap.SECONDARY_UPPER_RIGHT_INTAKE));
+		lowerIntake = new Intake(new WPI_TalonSRX(RobotMap.LOWER_LEFT_INTAKE),
+				new WPI_TalonSRX(RobotMap.LOWER_RIGHT_INTAKE));
+		arm = new Arm(new DoubleSolenoid(RobotMap.ARM_PORT_IN,
+				RobotMap.ARM_PORT_OUT));
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
-		encoder = new Encoder(0, 1, false, EncodingType.k4X);		//TODO: Determine pulses per revolution and distance per revolution in order to set distance per pulse
-		encoder.setDistancePerPulse(0.75);
+		encoder = new Encoder(0, 1, false, EncodingType.k4X);
+		encoder.setDistancePerPulse(0.75);	//TODO: Calculate distancePerPulse
 		//currentPosition = new Vector2(0, 0);
 		gyro = new ADXRS450_Gyro();
 	}
 
-	@Override
 	public void disabledInit() {
 
 	}
 
-	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
 	}
 
-	@Override
 	public void autonomousInit() {
-		Graph graph = new Graph();
+		Graph graph = new Graph(matchData);
+		Command endCommand = new ExpelCommand(lowerIntake);
+		Vector2 initialDirection = (graph.getStartingNode().getPosition().x < 0 ? new Vector2(1, 0) : new Vector2(-1, 0)); 
+		FollowPath followPath = new FollowPath(encoder, gyro, tank, initialDirection, graph.getStartingNode(),
+                                               graph.findShortestPath(graph.getStartingNode(), 
+																	  graph.getTargetNode()),
+                                               endCommand);
 
-		// Remember: the center of the field is at (0, 0) by convention.
-        Vector2 initialDirection = new Vector2(1, 0);
-
-        //Command endCommand = matchData.getTarget() == MatchData.Target.SCALE ? new ShootCommand(launcher) : new ExpelCommand(lowerIntake);
-		TestableCommandInterface endCommand = new FakeEnd();
-		FollowPath followPath = new FollowPath(encoder, gyro, tank, initialDirection, graph.getStartingNode(), 
-								graph.findShortestPath(graph.getStartingNode(), graph.getTargetNode()),
-								endCommand);
-		followPath.start();
 	}
 
-	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-		//System.out.printf("TEST");
 	}
 
-	@Override
 	public void teleopInit() {
-
+		encoder.reset();
+		
 	}
 
 	@Override
 	public void teleopPeriodic() {
+		//System.out.printf("teleopPeriodic: encoder distance = %.2f \n", encoder.getDistance());
 		Scheduler.getInstance().run();
 		tank.tankDrive(oi);
+		if(oi.intakeIn.get()) {
+			lowerIntake.takeIn(1.0);
+			upperIntake.takeIn(1.0);
+		} else if(oi.intakeOut.get()) {
+			lowerIntake.pushOut(1.0);
+			upperIntake.pushOut(1.0);
+		} else {
+			upperIntake.stop();
+			lowerIntake.stop();
+		}
+		if(oi.rightJoystick.getThrottle() > THROTTLE_THRESHOLD) {
+				arm.raise();
+		} else if(oi.rightJoystick.getThrottle() < -1.0 * THROTTLE_THRESHOLD) {
+			arm.lower();
+		} else {
+			/**
+			 * If neither condition is true, the arm will remain in it's current state. If we utilize the kOff setting for the solenoid, it will move as
+			 * gravity, inertia, etc. dictates. We want the arm to remain in a current position, so it does nothing otherwise.
+			 */
+		}
 	}
 }

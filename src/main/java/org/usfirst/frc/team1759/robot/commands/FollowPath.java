@@ -15,7 +15,7 @@ public class FollowPath extends CommandGroup  {
 	
 		private TestableCommandInterface finalCommand; 
 		
-        public FollowPath(Encoder encoder, Gyro gyro, TankDriveInterface tankDrive, Vector2 initialRobotDirection, Node currentNode, List<Node> path, TestableCommandInterface callback) {
+        public FollowPath(Encoder encoder, Gyro gyro, TankDriveInterface tankDrive, Vector2 initialRobotDirection, Node currentNode, List<Node> path, Command callback) {
 			boolean firstNode = true;
 			for (Node destNode : path) {
 				if(firstNode) {
@@ -30,8 +30,8 @@ public class FollowPath extends CommandGroup  {
 					addSequential(goEncoder);
 					currentNode = destNode;
 			}
-			addSequential(callback.getCommand());
-			finalCommand = callback;
+			addSequential(callback);
+			//finalCommand = callback;
         }
 
         @Override
