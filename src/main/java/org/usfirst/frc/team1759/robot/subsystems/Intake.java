@@ -7,37 +7,41 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Intake extends Subsystem {
 
-	SpeedControllerGroup intake;
+	SpeedControllerGroup leftIntake;
+	SpeedControllerGroup rightIntake;
 	private double SPEED_MULT = 0.75;
 	
 	public Intake(WPI_TalonSRX leftWheel, WPI_TalonSRX rightWheel) {
-		intake = new SpeedControllerGroup(leftWheel, rightWheel);
+		leftIntake = new SpeedControllerGroup(leftWheel);
+		rightIntake = new SpeedControllerGroup(rightWheel);
 	}
 	
 	public Intake(WPI_TalonSRX leftWheel, WPI_TalonSRX rightWheel, WPI_TalonSRX secondaryLeftWheel, WPI_TalonSRX secondaryRightWheel) {
-		SpeedControllerGroup leftIntake = new SpeedControllerGroup(leftWheel, secondaryLeftWheel);
-		SpeedControllerGroup rightIntake = new SpeedControllerGroup(rightWheel, secondaryRightWheel);
-		intake = new SpeedControllerGroup(leftIntake, rightIntake);
+		leftIntake = new SpeedControllerGroup(leftWheel, secondaryLeftWheel);
+		rightIntake = new SpeedControllerGroup(rightWheel, secondaryRightWheel);
 	}
 	
 	public void takeIn(double speed) {
-		intake.set(speed);
+		leftIntake.set(speed);
+		rightIntake.set(-speed);
 	}
 	
 	public void takeIn() {
-		intake.set(SPEED_MULT);
+		takeIn(SPEED_MULT);
 	}
 	
 	public void pushOut(double speed) {
-		intake.set(-1.0 * speed);
+		leftIntake.set(-speed);
+		rightIntake.set(speed);
 	}
 	
 	public void pushOut() {
-		intake.set(-1.0 * SPEED_MULT);
+		pushOut(SPEED_MULT);
 	}
 	
 	public void stop() {
-		intake.set(0);
+		leftIntake.set(0);
+		rightIntake.set(0);
 	}
 
 	@Override
