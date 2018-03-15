@@ -57,13 +57,19 @@ public class Graph {
             // representing the center of the game field.
 
             // Red (left) side starting positions.
-            Node redStartTop = new Node(-24.53, 11.28);
-            Node redStartCenter = new Node(-24.53, 0);
-            Node redStartBottom = new Node(-24.53, -11.28);
+            Node redStartTop = new Node(-25.86, 10.30);
+            Node redStartCenter = new Node(-25.86, 0);
+            Node redStartBottom = new Node(-25.86, -10.30);
+            
+            // Red Nodes, shifted a few feet for turning capability.
+            final double SHIFT = 3.0; 
+            Node redTurnTop = new Node(redStartTop.getPosition().x + SHIFT, 10.30);
+            Node redTurnCenter = new Node(redStartCenter.getPosition().x + SHIFT, 0);
+            Node redTurnBottom = new Node(redStartBottom.getPosition().x + SHIFT, -10.30);
 
             Node redSwitchSetupTop = new Node(-13, 11.28);     // Far above the left switch
-            Node redSwitchTop = new Node(-13, 6);              // Just above the left switch: scoring position.
-            Node redSwitchBottom = new Node(-13, -6);          // Just below the left switch: scoring position.
+            Node redSwitchTop = new Node(-13, 7.33);           // Just above the left switch: scoring position.
+            Node redSwitchBottom = new Node(-13, -7.33);       // Just below the left switch: scoring position.
             Node redSwitchSetupBottom = new Node(-13, -11.28); // Far below the left switch.
 
             // Neutral zone positions -- above and below the giant scale, and
@@ -72,14 +78,18 @@ public class Graph {
             Node bottomScale = new Node(0, -11.28);
 
             Node blueSwitchSetupTop = new Node(13, 11.28);     // Far above the right switch
-            Node blueSwitchTop = new Node(13, 6);              // Just above the right switch: scoring position.
-            Node blueSwitchBottom = new Node(13, -6);          // Just below the right switch: scoring position.
+            Node blueSwitchTop = new Node(13, 7.33);           // Just above the right switch: scoring position.
+            Node blueSwitchBottom = new Node(13, -7.33);       // Just below the right switch: scoring position.
             Node blueSwitchSetupBottom = new Node(13, -11.28); // Far below the right switch.
 
             // Blue (right) side starting positions.
-            Node blueStartTop = new Node(24.53, 11.28);
-            Node blueStartCenter = new Node(24.53, 0);
-            Node blueStartBottom = new Node(24.53, -11.28);
+            Node blueStartTop = new Node(25.86, 10.30);
+            Node blueStartCenter = new Node(25.86, 0);
+            Node blueStartBottom = new Node(25.86, -10.30);
+            
+            Node blueTurnTop = new Node(blueStartTop.getPosition().x - SHIFT, 10.30);
+            Node blueTurnCenter = new Node(blueStartCenter.getPosition().x - SHIFT, 0);
+            Node blueTurnBottom = new Node(blueStartBottom.getPosition().x - SHIFT, -10.30);
 
             // Set the names in case we want to display them during the
             // simulation.
@@ -104,8 +114,13 @@ public class Graph {
             // positions, the top and bottom scale positions, and
             // the top and bottom switch setup positions in a
             // giant rectangle.
-            addEdge(redStartTop, redStartCenter);
-            addEdge(redStartCenter, redStartBottom);
+            addEdge(redStartTop, redTurnTop);
+            addEdge(redStartCenter, redTurnCenter);
+            addEdge(redStartBottom, redTurnBottom);
+            addEdge(redTurnTop, redTurnCenter);
+            addEdge(redTurnBottom, redTurnCenter);
+            addEdge(redTurnTop, redSwitchSetupTop);
+            addEdge(redTurnBottom, redSwitchSetupBottom);
             addEdge(redStartBottom, redSwitchSetupBottom);
             addEdge(redStartTop, redSwitchSetupTop);
             addEdge(redSwitchSetupTop, redSwitchTop);         // Move to the nearest scoring position.
@@ -118,8 +133,13 @@ public class Graph {
             addEdge(blueSwitchSetupBottom, blueSwitchBottom); // Move to the nearest scoring position.
             addEdge(blueSwitchSetupBottom, blueStartBottom);
             addEdge(blueSwitchSetupTop, blueStartTop);
-            addEdge(blueStartTop, blueStartCenter);
-            addEdge(blueStartCenter, blueStartBottom);
+            addEdge(blueStartTop, blueTurnTop);
+            addEdge(blueStartCenter, blueTurnCenter);
+            addEdge(blueStartBottom, blueTurnBottom);
+            addEdge(blueTurnCenter, blueTurnBottom);
+            addEdge(blueTurnCenter, blueTurnTop);
+            addEdge(blueTurnTop, blueSwitchSetupTop);
+            addEdge(blueTurnBottom, blueSwitchSetupBottom);
 
             // Bypass positions: These make it easier to go from
             // one node to a "far" one without an
