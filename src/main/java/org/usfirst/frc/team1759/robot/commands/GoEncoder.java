@@ -20,8 +20,6 @@ public class GoEncoder extends Command {
 	 * feet.
 	 */
 	double targetDistance;
-	// There are 1440 pulses per revolution, Diameter is .5 feet.
-	double distancePerPulse = Math.PI * .5 / 1440;
 	
 	private boolean started = false;
 
@@ -44,7 +42,6 @@ public class GoEncoder extends Command {
 		// mechanism, which makes testing unfeasible.  Besides, I don't think
 		// we need super.start()'s side effects.
 		encoder.reset();
-		encoder.setDistancePerPulse(distancePerPulse);
 		targetDistance = this.current.dist(this.dest);
 		System.out.printf("GoEncoder.customStart(): encoder.getDistance() = %.2f, current = %s, dest=%s\n", encoder.getDistance(), this.current, this.dest.toString());
 	}

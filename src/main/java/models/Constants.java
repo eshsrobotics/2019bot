@@ -15,6 +15,8 @@ public class Constants {
         public static final double WAYPOINT_SLOWDOWN_DISTANCE = 10;
         public static final double MINIMUM_SPEED = .2;
         public static final double MILLI_TO_SEC = 1d / 1000d;
+		// There are 1440 pulses per revolution, Diameter is .5 feet.
+		public static final double DISTANCE_PER_PULSE = Math.PI * .5 / 1440;
 
         public static final Point ORIGIN = new Point(0, 0);
 

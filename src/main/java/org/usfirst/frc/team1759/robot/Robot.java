@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import models.Graph;
 import models.Vector2;
+import models.Constants;
 import models.TestableCommandInterface;
 import wrappers.EncoderWrapper;
 
@@ -71,7 +72,7 @@ public class Robot extends IterativeRobot {
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
 		encoder = new Encoder(0, 1, false, EncodingType.k4X);
-		encoder.setDistancePerPulse(0.75);	//TODO: Calculate distancePerPulse
+		encoder.setDistancePerPulse(Constants.DISTANCE_PER_PULSE);
 		//currentPosition = new Vector2(0, 0);
 		gyro = new ADXRS450_Gyro();
 	}
