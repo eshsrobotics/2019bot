@@ -112,15 +112,15 @@ public class Robot extends IterativeRobot {
 		// Add a control that allows us to slow down the intake and outtake, which gives us more control when
 		// getting cubes in and out of the portal.
 		if (oi.halfPower.get()) {
-			intake.speedMult = intake.PARTIAL_MULT;
+			lowerIntake.speedMult = Intake.PARTIAL_MULT;
 		} else {
-			intake.speedMult = intake.FULL_MULT;
+			lowerIntake.speedMult = Intake.FULL_MULT;
 		}
 		if(oi.intakeIn.get()) {
-			lowerIntake.takeIn(1.0);
+			lowerIntake.takeIn();
 			//upperIntake.takeIn(1.0);
 		} else if(oi.intakeOut.get()) {
-			lowerIntake.pushOut(1.0);
+			lowerIntake.pushOut();
 			//upperIntake.pushOut(1.0);
 		} else {
 			//upperIntake.stop();

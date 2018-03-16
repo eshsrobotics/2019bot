@@ -11,8 +11,8 @@ public class Intake extends Subsystem {
 	
 	//Direction is a multiplier to set the current direction for different intakes
 	private double direction = 1.0;
-	public final double PARTIAL_MULT = 0.50;
-	public final double FULL_MULT = 1.0;
+	public static final double PARTIAL_MULT = 0.50;
+	public static final double FULL_MULT = 1.0;
 	public double speedMult;
 	
 	
