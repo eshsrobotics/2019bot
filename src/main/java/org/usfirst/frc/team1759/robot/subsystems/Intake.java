@@ -1,29 +1,32 @@
 package org.usfirst.frc.team1759.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Intake extends Subsystem {
 
 	SpeedControllerGroup leftIntake;
 	SpeedControllerGroup rightIntake;
-	private double SPEED_MULT = 0.75;
 	
-	public Intake(WPI_TalonSRX leftWheel, WPI_TalonSRX rightWheel) {
+	//Direction is a multiplier to set the current direction for different intakes
+	private double direction = 1.0;
+	private final double SPEED_MULT = 0.50;
+	
+	public Intake(SpeedController leftWheel, SpeedController rightWheel) {
 		leftIntake = new SpeedControllerGroup(leftWheel);
 		rightIntake = new SpeedControllerGroup(rightWheel);
 	}
 	
-	public Intake(WPI_TalonSRX leftWheel, WPI_TalonSRX rightWheel, WPI_TalonSRX secondaryLeftWheel, WPI_TalonSRX secondaryRightWheel) {
+	public Intake(SpeedController leftWheel, SpeedController rightWheel, SpeedController secondaryLeftWheel, SpeedController secondaryRightWheel) {
+		//direction = -1;	
 		leftIntake = new SpeedControllerGroup(leftWheel, secondaryLeftWheel);
 		rightIntake = new SpeedControllerGroup(rightWheel, secondaryRightWheel);
 	}
 	
 	public void takeIn(double speed) {
-		leftIntake.set(speed);
-		rightIntake.set(-speed);
+		leftIntake.set(speed * direction);
+		rightIntake.set(-speed * direction);
 	}
 	
 	public void takeIn() {
@@ -31,8 +34,8 @@ public class Intake extends Subsystem {
 	}
 	
 	public void pushOut(double speed) {
-		leftIntake.set(-speed);
-		rightIntake.set(speed);
+		leftIntake.set(-speed * direction);
+		rightIntake.set(speed * direction);
 	}
 	
 	public void pushOut() {

@@ -61,16 +61,32 @@ public class OI {
 		// Can set to false to force keyboard controls
 		joysticksAttached = leftJoystick != null && rightJoystick != null;
 		
+		inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
+		NetworkTableInstance.getDefault().setUpdateRate(0.0166);
+		launchOut = new NetworkButton(inputTable, "J");
+		launchIn = new NetworkButton(inputTable, "K");
+		armIn = new NetworkButton(inputTable, "Up");
+		armOut = new NetworkButton(inputTable, "Down");
+		climbUp = new NetworkButton(inputTable, "N");
+		climbDown = new NetworkButton(inputTable, "M");
+		intakeIn = new NetworkButton(inputTable, "Q");
+		intakeOut = new NetworkButton(inputTable, "E");
+		forward = new NetworkButton(inputTable, "W");
+		back = new NetworkButton(inputTable, "S");
+		left = new NetworkButton(inputTable, "A");
+		right = new NetworkButton(inputTable, "D");
+		sneak = new NetworkButton(inputTable, "Shift");
+	
 		if (joysticksAttached) {
 			System.out.println("Creating OI with joystick buttons");
-			launchOut = new JoystickButton(rightJoystick, LAUNCHING_BUTTON_OUT);
-			launchIn = new JoystickButton(leftJoystick, LAUNCHING_BUTTON_IN);
-			armOut = new JoystickButton(rightJoystick, ARM_OUT_BUTTON);
-			armIn = new JoystickButton(rightJoystick, ARM_IN_BUTTON);
-			climbUp = new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON);
-			climbDown = new JoystickButton(leftJoystick, CLIMBER_DOWN_BUTTON);
-			intakeIn = new JoystickButton(rightJoystick, INTAKE_IN_BUTTON);
-			intakeOut = new JoystickButton(leftJoystick, INTAKE_OUT_BUTTON);
+			launchOut = new SharedButton (new JoystickButton(rightJoystick, LAUNCHING_BUTTON_OUT), launchOut);
+			launchIn =  new SharedButton (new JoystickButton(leftJoystick, LAUNCHING_BUTTON_IN), launchIn);
+			armOut =    new SharedButton (new JoystickButton(rightJoystick, ARM_OUT_BUTTON), armOut);
+			armIn =     new SharedButton (new JoystickButton(rightJoystick, ARM_IN_BUTTON), armIn);
+			climbUp =   new SharedButton (new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON), climbUp);
+			climbDown = new SharedButton (new JoystickButton(leftJoystick, CLIMBER_DOWN_BUTTON), climbDown);
+			intakeIn =  new SharedButton (new JoystickButton(rightJoystick, INTAKE_IN_BUTTON), intakeIn);
+			intakeOut = new SharedButton (new JoystickButton(leftJoystick, INTAKE_OUT_BUTTON), intakeOut);
 		} else {
 			/*
 			 * Network Button key strings (for NetworkButton constructor):
@@ -94,23 +110,22 @@ public class OI {
 			 * 
 			 * For the mouse right and left buttons, use "Right Mouse" and "Left Mouse"
 			 */
-		  System.out.println("Creating OI with network buttons");
-			inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
-			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
-			launchOut = new NetworkButton(inputTable, "J");
-			launchIn = new NetworkButton(inputTable, "K");
-			armIn = new NetworkButton(inputTable, "Up");
-			armOut = new NetworkButton(inputTable, "Down");
-			climbUp = new NetworkButton(inputTable, "N");
-			climbDown = new NetworkButton(inputTable, "M");
-			intakeIn = new NetworkButton(inputTable, "Q");
-			intakeOut = new NetworkButton(inputTable, "E");
-			forward = new NetworkButton(inputTable, "W");
-			back = new NetworkButton(inputTable, "S");
-			left = new NetworkButton(inputTable, "A");
-			right = new NetworkButton(inputTable, "D");
-			sneak = new NetworkButton(inputTable, "Shift");
+			
 		}
 	}
-
+	private class SharedButton extends Button {
+		
+		Button network;
+		Button joystick;
+		
+		public SharedButton(Button network, Button joystick) {
+			this.network = network;
+			this.joystick = joystick;
+		}
+		
+		@Override
+		public boolean get() {
+			return network.get() || joystick.get();
+		}
+	}
 }

@@ -23,18 +23,14 @@ public class RobotMap {
 	public static int ARM_PORT_IN = 2;
 	
 	// Upper intake motors
-	public static int UPPER_LEFT_INTAKE= 3;
-	public static int UPPER_RIGHT_INTAKE = 1;
-	public static int SECONDARY_UPPER_RIGHT_INTAKE = -2; //these are placeholders. Secondary motors on the upper intake need to be assigned. 
-	public static int SECONDARY_UPPER_LEFT_INTAKE = -1;
+	public static int UPPER_LEFT_INTAKE= 1;
+	public static int UPPER_RIGHT_INTAKE = 3;
+	public static int SECONDARY_UPPER_RIGHT_INTAKE = 0;		//Spark, not Talon 
+	public static int SECONDARY_UPPER_LEFT_INTAKE = 1;		//Spark, not Talon
 	
 	// Lower intake motors
 	public static int LOWER_LEFT_INTAKE = 4;
 	public static int LOWER_RIGHT_INTAKE = 5;
-	
-	// Climber ports
-	public static int CLIMBER_PORT_1 = 10; 		//Spark, not Talon
-	public static int CLIMBER_PORT_2 = 11;		//Spark, not Talon
 	
 	
 
