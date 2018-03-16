@@ -47,11 +47,8 @@ public class OI {
 	public static final int INTAKE_IN_BUTTON = 3;
 	public static final int INTAKE_OUT_BUTTON = 3;
 	
-	public static final int ARM_OUT_BUTTON = 4;
-	public static final int ARM_IN_BUTTON = 4;
-	
-	public static final int CLIMBER_UP_BUTTON = 7;
-	public static final int CLIMBER_DOWN_BUTTON = 7;
+	public static final int ARM_OUT_BUTTON = 12;//not a magic number, just a fake one. Real button for the solonoids is the slider
+	public static final int ARM_IN_BUTTON = 12;// same as above
 
 	public OI() {
 
@@ -63,12 +60,8 @@ public class OI {
 		
 		inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
 		NetworkTableInstance.getDefault().setUpdateRate(0.0166);
-		launchOut = new NetworkButton(inputTable, "J");
-		launchIn = new NetworkButton(inputTable, "K");
 		armIn = new NetworkButton(inputTable, "Up");
 		armOut = new NetworkButton(inputTable, "Down");
-		climbUp = new NetworkButton(inputTable, "N");
-		climbDown = new NetworkButton(inputTable, "M");
 		intakeIn = new NetworkButton(inputTable, "Q");
 		intakeOut = new NetworkButton(inputTable, "E");
 		forward = new NetworkButton(inputTable, "W");
@@ -79,12 +72,8 @@ public class OI {
 	
 		if (joysticksAttached) {
 			System.out.println("Creating OI with joystick buttons");
-			launchOut = new SharedButton (new JoystickButton(rightJoystick, LAUNCHING_BUTTON_OUT), launchOut);
-			launchIn =  new SharedButton (new JoystickButton(leftJoystick, LAUNCHING_BUTTON_IN), launchIn);
 			armOut =    new SharedButton (new JoystickButton(rightJoystick, ARM_OUT_BUTTON), armOut);
 			armIn =     new SharedButton (new JoystickButton(rightJoystick, ARM_IN_BUTTON), armIn);
-			climbUp =   new SharedButton (new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON), climbUp);
-			climbDown = new SharedButton (new JoystickButton(leftJoystick, CLIMBER_DOWN_BUTTON), climbDown);
 			intakeIn =  new SharedButton (new JoystickButton(rightJoystick, INTAKE_IN_BUTTON), intakeIn);
 			intakeOut = new SharedButton (new JoystickButton(leftJoystick, INTAKE_OUT_BUTTON), intakeOut);
 		} else {
