@@ -11,7 +11,10 @@ public class Intake extends Subsystem {
 	
 	//Direction is a multiplier to set the current direction for different intakes
 	private double direction = 1.0;
-	private final double SPEED_MULT = 0.50;
+	public final double PARTIAL_MULT = 0.50;
+	public final double FULL_MULT = 1.0;
+	public double speedMult;
+	
 	
 	public Intake(SpeedController leftWheel, SpeedController rightWheel) {
 		leftIntake = new SpeedControllerGroup(leftWheel);
@@ -30,7 +33,7 @@ public class Intake extends Subsystem {
 	}
 	
 	public void takeIn() {
-		takeIn(SPEED_MULT);
+		takeIn(speedMult);
 	}
 	
 	public void pushOut(double speed) {
@@ -39,7 +42,7 @@ public class Intake extends Subsystem {
 	}
 	
 	public void pushOut() {
-		pushOut(SPEED_MULT);
+		pushOut(speedMult);
 	}
 	
 	public void stop() {

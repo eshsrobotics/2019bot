@@ -32,6 +32,7 @@ public class OI {
 	public Button sneak;
 	public Button climbUp;
 	public Button climbDown;
+	public Button halfPower;
 
 	public Joystick leftJoystick;
 	public Joystick rightJoystick;
@@ -41,11 +42,13 @@ public class OI {
 	//With the variables below, the high/up option is a button keyed to the right joystick, the 
 	//low/down option is a button keyed to the left joystick.
 	
-	public static final int LAUNCHING_BUTTON_OUT = 1;
-	public static final int LAUNCHING_BUTTON_IN = 1;
+	//public static final int LAUNCHING_BUTTON_OUT = 1;
+	//public static final int LAUNCHING_BUTTON_IN = 1;
 
-	public static final int INTAKE_IN_BUTTON = 3;
-	public static final int INTAKE_OUT_BUTTON = 3;
+	public static final int INTAKE_IN_BUTTON = 1;
+	public static final int INTAKE_OUT_BUTTON = 1;
+	
+	public static final int HALF_POWER_BUTTON = 2;
 	
 	public static final int ARM_OUT_BUTTON = 12;//not a magic number, just a fake one. Real button for the solonoids is the slider
 	public static final int ARM_IN_BUTTON = 12;// same as above
@@ -69,6 +72,7 @@ public class OI {
 		left = new NetworkButton(inputTable, "A");
 		right = new NetworkButton(inputTable, "D");
 		sneak = new NetworkButton(inputTable, "Shift");
+		halfPower = new NetworkButton(inputTable, "Tab");
 	
 		if (joysticksAttached) {
 			System.out.println("Creating OI with joystick buttons");
@@ -76,6 +80,7 @@ public class OI {
 			armIn =     new SharedButton (new JoystickButton(rightJoystick, ARM_IN_BUTTON), armIn);
 			intakeIn =  new SharedButton (new JoystickButton(rightJoystick, INTAKE_IN_BUTTON), intakeIn);
 			intakeOut = new SharedButton (new JoystickButton(leftJoystick, INTAKE_OUT_BUTTON), intakeOut);
+			halfPower = new SharedButton (new JoystickButton(rightJoystick, HALF_POWER_BUTTON), fullPower);
 		} else {
 			/*
 			 * Network Button key strings (for NetworkButton constructor):

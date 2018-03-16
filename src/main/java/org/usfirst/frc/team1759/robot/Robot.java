@@ -89,9 +89,8 @@ public class Robot extends IterativeRobot {
 		Command endCommand = new ExpelCommand(lowerIntake);
 		Vector2 initialDirection = (graph.getStartingNode().getPosition().x < 0 ? new Vector2(1, 0) : new Vector2(-1, 0)); 
 		FollowPath followPath = new FollowPath(encoder, gyro, tank, initialDirection, graph.getStartingNode(),
-                                               graph.findShortestPath(graph.getStartingNode(), 
-																	  graph.getTargetNode()),
-                                               endCommand);
+                                                graph.findShortestPath(graph.getStartingNode(), 
+												graph.getTargetNode()), endCommand);
 
 	}
 
@@ -109,6 +108,14 @@ public class Robot extends IterativeRobot {
 		//System.out.printf("teleopPeriodic: encoder distance = %.2f \n", encoder.getDistance());
 		Scheduler.getInstance().run();
 		tank.tankDrive(oi);
+		
+		// Add a control that allows us to slow down the intake and outtake, which gives us more control when
+		// getting cubes in and out of the portal.
+		if (oi.halfPower.get()) {
+			intake.speedMult = intake.PARTIAL_MULT;
+		} else {
+			intake.speedMult = intake.FULL_MULT;
+		}
 		if(oi.intakeIn.get()) {
 			lowerIntake.takeIn(1.0);
 			//upperIntake.takeIn(1.0);
@@ -120,9 +127,9 @@ public class Robot extends IterativeRobot {
 			lowerIntake.stop();
 		}
 		if(oi.rightJoystick.getThrottle() > THROTTLE_THRESHOLD || oi.armIn.get()) {
-				arm.raise();
+				arm.lower();
 		} else if(oi.rightJoystick.getThrottle() < -1.0 * THROTTLE_THRESHOLD || oi.armOut.get()) {
-			arm.lower();
+			arm.raise();
 		} else {
 			/**
 			 * If neither condition is true, the arm will remain in it's current state. If we utilize the kOff setting for the solenoid, it will move as
