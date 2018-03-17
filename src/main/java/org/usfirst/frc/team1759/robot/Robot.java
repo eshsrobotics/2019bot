@@ -11,6 +11,7 @@ import org.usfirst.frc.team1759.robot.commands.LowerArm;
 import org.usfirst.frc.team1759.robot.commands.RaiseArm;
 import org.usfirst.frc.team1759.robot.commands.FollowPath;
 import org.usfirst.frc.team1759.robot.commands.ExpelCommand;
+import org.usfirst.frc.team1759.robot.commands.GoEncoder;
 import org.usfirst.frc.team1759.robot.subsystems.Arm;
 import org.usfirst.frc.team1759.robot.subsystems.Intake;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import models.Graph;
 import models.Vector2;
+import models.Point;
 import models.Constants;
 import models.TestableCommandInterface;
 import wrappers.EncoderWrapper;
@@ -43,6 +45,7 @@ import wrappers.EncoderWrapper;
  */
 public class Robot extends IterativeRobot {
 	private TankDrive tank;
+	private long autonomousStartTimeMilliseconds;
 	private Intake upperIntake;
 	private Intake lowerIntake;
 	private Arm arm;
@@ -50,6 +53,7 @@ public class Robot extends IterativeRobot {
 	private MatchData matchData;
 	private Encoder encoder;
 	private Gyro gyro;
+	static final double AUTONOMOUS_SPEED = 0.5;
 	
 	/**
 	 * Used to set the threshold for the throttle. If the throttle is greater than positive threshold, it is up. If it is less 
@@ -72,9 +76,10 @@ public class Robot extends IterativeRobot {
 		// Parse match data for use later on
 		matchData = new MatchData(DriverStation.getInstance());
 		encoder = new Encoder(0, 1, false, EncodingType.k4X);
-		encoder.setDistancePerPulse(Constants.DISTANCE_PER_PULSE);
+		
 		//currentPosition = new Vector2(0, 0);
 		gyro = new ADXRS450_Gyro();
+		arm.raise();
 	}
 
 	public void disabledInit() {
@@ -86,21 +91,23 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void autonomousInit() {
-		Graph graph = new Graph(matchData);
-		Command endCommand = new ExpelCommand(lowerIntake);
-		Vector2 initialDirection = (graph.getStartingNode().getPosition().x < 0 ? new Vector2(1, 0) : new Vector2(-1, 0)); 
-		FollowPath followPath = new FollowPath(encoder, gyro, tank, initialDirection, graph.getStartingNode(),
-                                                graph.findShortestPath(graph.getStartingNode(), 
-												graph.getTargetNode()), endCommand);
-
+		GoEncoder goCommand = new GoEncoder(encoder, tank, new Point(0, 0), new Point(0, 5));
+		Scheduler.getInstance().add(goCommand);
+		this.autonomousStartTimeMilliseconds = System.currentTimeMillis();
+		//goCommand.customStart();
 	}
 
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		if (System.currentTimeMillis() - this.autonomousStartTimeMilliseconds < Constants. AUTONOMOUS_TIME_DRIVE_FORWARD_MILLISECONDS) {
+			tank.tankDrive(-AUTONOMOUS_SPEED, -AUTONOMOUS_SPEED);
+		} else {
+			tank.tankDrive(0,0);
+		}
 	}
 
 	public void teleopInit() {
-		encoder.reset();
+
 		
 	}
 
@@ -117,11 +124,17 @@ public class Robot extends IterativeRobot {
 		} else {
 			lowerIntake.speedMult = Intake.FULL_MULT;
 		}
+		double speedMult = 1;
+		if (oi.sneak.get()) {
+				speedMult = 0.65; 
+		} else if (oi.precision.get()) {
+				speedMult = 0.4;
+		}
 		if(oi.intakeIn.get()) {
-			lowerIntake.takeIn();
+			lowerIntake.takeIn(speedMult);
 			//upperIntake.takeIn(1.0);
 		} else if(oi.intakeOut.get()) {
-			lowerIntake.pushOut();
+			lowerIntake.pushOut(speedMult);
 			//upperIntake.pushOut(1.0);
 		} else {
 			//upperIntake.stop();

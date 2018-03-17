@@ -33,6 +33,7 @@ public class OI {
 	public Button climbUp;
 	public Button climbDown;
 	public Button halfPower;
+	public Button precision; 
 
 	public Joystick leftJoystick;
 	public Joystick rightJoystick;
@@ -50,8 +51,11 @@ public class OI {
 	
 	public static final int HALF_POWER_BUTTON = 2;	
 	
-	public static final int ARM_OUT_BUTTON = 12;//not a magic number, just a fake one. Real button for the solonoids is the slider
-	public static final int ARM_IN_BUTTON = 12;// same as above
+	public static final int ARM_OUT_BUTTON = 4;
+	public static final int ARM_IN_BUTTON = 6;
+	
+	public static final int SNEAK = 4;
+	public static final int PRECISION = 5;
 
 	public OI() {
 
@@ -63,16 +67,17 @@ public class OI {
 		
 		inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
 		NetworkTableInstance.getDefault().setUpdateRate(0.0166);
-		armIn = new NetworkButton(inputTable, "Up");
-		armOut = new NetworkButton(inputTable, "Down");
-		intakeIn = new NetworkButton(inputTable, "Q");
-		intakeOut = new NetworkButton(inputTable, "E");
+		armIn = new NetworkButton(inputTable, "E");
+		armOut = new NetworkButton(inputTable, "Q");
+		intakeIn = new NetworkButton(inputTable, "Right Mouse");
+		intakeOut = new NetworkButton(inputTable, "Left Mouse");
 		forward = new NetworkButton(inputTable, "W");
 		back = new NetworkButton(inputTable, "S");
 		left = new NetworkButton(inputTable, "A");
 		right = new NetworkButton(inputTable, "D");
 		sneak = new NetworkButton(inputTable, "Shift");
 		halfPower = new NetworkButton(inputTable, "Tab");
+		precision = new NetworkButton(inputTable, "Ctrl");
 	
 	
 		if (joysticksAttached) {
@@ -82,6 +87,8 @@ public class OI {
 			intakeIn =  new SharedButton (new JoystickButton(rightJoystick, INTAKE_IN_BUTTON), intakeIn);
 			intakeOut = new SharedButton (new JoystickButton(leftJoystick, INTAKE_OUT_BUTTON), intakeOut);
 			halfPower = new SharedButton (new JoystickButton(rightJoystick, HALF_POWER_BUTTON), halfPower);
+			sneak = new SharedButton (new JoystickButton(leftJoystick, SNEAK), sneak);
+			precision = new SharedButton (new JoystickButton(leftJoystick, PRECISION), precision);
 		} else {
 			/*
 			 * Network Button key strings (for NetworkButton constructor):

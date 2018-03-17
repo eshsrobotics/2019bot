@@ -42,6 +42,7 @@ public class GoEncoder extends Command {
 		// mechanism, which makes testing unfeasible.  Besides, I don't think
 		// we need super.start()'s side effects.
 		encoder.reset();
+		encoder.setDistancePerPulse(Constants.DISTANCE_PER_PULSE);
 		targetDistance = this.current.dist(this.dest);
 		System.out.printf("GoEncoder.customStart(): encoder.getDistance() = %.2f, current = %s, dest=%s\n", encoder.getDistance(), this.current, this.dest.toString());
 	}
@@ -54,14 +55,14 @@ public class GoEncoder extends Command {
 			customStart();
 			started = true;
 		}
-		double speed = 1.0;
+		double speed = 0.5;
 		if (distRemaining() < Constants.WAYPOINT_SLOWDOWN_DISTANCE) {
 			double calcSpeed = distRemaining() / Constants.WAYPOINT_SLOWDOWN_DISTANCE;
 			speed = calcSpeed < Constants.MINIMUM_SPEED ? Constants.MINIMUM_SPEED : calcSpeed;
 		}
 		System.out.printf("GoEncoder.execute(): distRemaining=%.2f, encoder.getDistance()=%.2f, speed=%.2f\n",
 				distRemaining(),encoder.getDistance(), speed);
-		tank.tankDrive(speed, speed);
+		tank.tankDrive(-speed, -speed);
 	}
 
 	@Override

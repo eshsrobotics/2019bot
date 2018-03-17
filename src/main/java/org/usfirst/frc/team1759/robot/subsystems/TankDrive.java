@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import models.Constants;
 
 /**
  * This subsystem is used to control the tank drive for 2018bot. Constructor
@@ -54,36 +55,49 @@ public class TankDrive extends Subsystem implements TankDriveInterface {
 	}
 
 	public void tankDrive(OI oi) {
-		if (oi.joysticksAttached) {
-			myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
+
+		double left = 0;
+		double right = 0;
+
+		if (oi.forward.get()) {
+			left = 1;
+			right = 1;
+		} else if (oi.back.get()) {
+			left = -1;
+			right = -1;
+		} else if (oi.left.get()) {
+			left = -0.7;
+			right = 0.7;
+		} else if (oi.right.get()) {
+			left = 0.7;
+			right = -0.7;
+		}
+		if (oi.sneak.get()) {
+			if (oi.left.get() || oi.right.get()) {
+				left *= 0.8;
+				right *= 0.8;
+			} else {
+				left *= 0.65; 
+				right *= 0.65;
+			}
+		} else if (oi.precision.get()) {
+			if (oi.left.get() || oi.right.get()) {
+				left *= 0.7;
+				right *= 0.7;
+			} else {
+				left *= 0.4;
+				right *= 0.4;
+			}
+		}
+		
+		if (Math.abs(left) < Constants.EPSILON &&
+		    Math.abs(right) < Constants.EPSILON &&
+			oi.joysticksAttached) {
+				// No NetworkTables buttons are pressed, but the joystick
+				// is present.  Default to the joystick.
+				myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
 		} else {
-			double left = 0;
-			double right = 0;
-
-			if (oi.forward.get()) {
-				left = 1;
-				right = 1;
-			} else if (oi.back.get()) {
-				left = -1;
-				right = -1;
-			} else if (oi.left.get()) {
-				left = -1;
-				right = 1;
-			} else if (oi.right.get()) {
-				left = 1;
-				right = -1;
-			}
-			if (oi.sneak.get()) {
-				if (oi.left.get() || oi.right.get()) {
-					left *= 0.8;
-					right *= 0.8;
-				} else {
-					left *= 0.5;
-					right *= 0.5;
-				}
-			}
-
-			myRobot.tankDrive(- left, - right);
+				myRobot.tankDrive(left, right);
 		}
 	}
 	@Override

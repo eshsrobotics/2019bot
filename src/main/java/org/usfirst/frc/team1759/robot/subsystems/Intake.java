@@ -28,12 +28,12 @@ public class Intake extends Subsystem {
 	}
 	
 	public void takeIn(double speed) {
-		leftIntake.set(speed * direction);
-		rightIntake.set(-speed * direction);
+		leftIntake.set(speedMult * speed * direction);
+		rightIntake.set(speedMult * -speed * direction);
 	}
 	
 	public void takeIn() {
-		takeIn(speedMult);
+		takeIn(1);
 	}
 	
 	public void pushOut(double speed) {

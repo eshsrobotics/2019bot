@@ -19,6 +19,7 @@ public class Constants {
 		public static final double DISTANCE_PER_PULSE = Math.PI * .5 / 1440;
 
         public static final Point ORIGIN = new Point(0, 0);
+		public static final long AUTONOMOUS_TIME_DRIVE_FORWARD_MILLISECONDS = 6000;
 
         /***
          * Lengths and distances less than this are considered to be 0 as far as
