@@ -21,11 +21,11 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class TankDrive<T> extends Subsystem{
 	DifferentialDrive myRobot;
-	SpeedController leftFront;
-	SpeedController leftBack;
+	public SpeedController leftFront;
+	public SpeedController leftBack;
 	SpeedController leftMid;
-	SpeedController rightFront;
-	SpeedController rightBack;
+	public SpeedController rightFront;
+	public SpeedController rightBack;
 	SpeedController rightMid;
 	SpeedControllerGroup left;
 	SpeedControllerGroup right;
@@ -105,8 +105,9 @@ public class TankDrive<T> extends Subsystem{
 		
 		long timeSincePressed = System.currentTimeMillis() - timeMovementPressed; 
 		double accelerationCurveMultiplier = Math.sqrt(timeSincePressed / 1000d);
-		left *= accelerationCurveMultiplier;
-		right *= accelerationCurveMultiplier;
+		//Commented out to remove the acceleration curve. Undo to bring back the acceleration curve. 
+		//left *= accelerationCurveMultiplier;
+		//right *= accelerationCurveMultiplier;
 		myRobot.tankDrive(left, right);
 		wasMovementLastFrame = oi.forward.get() || oi.back.get();
 		
