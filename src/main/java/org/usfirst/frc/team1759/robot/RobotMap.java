@@ -18,31 +18,8 @@ public class RobotMap {
 	public static int RIGHT_FRONT_PORT = 7;
 	public static int RIGHT_BACK_PORT = 2;
 	
-	// For intake solenoid
-	public static int ARM_PORT_OUT = 3;
-	public static int ARM_PORT_IN = 2;
-	
-	// Upper intake motors
-	public static int UPPER_LEFT_INTAKE= 1;
-	public static int UPPER_RIGHT_INTAKE = 3;
-	public static int SECONDARY_UPPER_RIGHT_INTAKE = 0;		//Spark, not Talon 
-	public static int SECONDARY_UPPER_LEFT_INTAKE = 1;		//Spark, not Talon
-	
-	// Lower intake motors
-	public static int LOWER_LEFT_INTAKE = 4;
-	public static int LOWER_RIGHT_INTAKE = 5;
-	
-	
-
-	
-//	public static final int CLIMBER_UP_PORT = 10; //will be assigned to sparks in contrast to everything else being talons
-//	public static final int CLIMBER_DOWN_PORT = 11;// ^same
-//	
-//	public static final int INTAKE_PORT_1 = 4; // Should be 7	
-//	public static final int INTAKE_PORT_2 = 7; // Should be 8
-//	
-//	public static final int RESERVE_PORT_1 = 8;
-//	public static final int RESERVE_PORT_2 = 9; //neither are currently used
+	public static int LAUNCHER_SOLENOID_OUT = 6;
+	public static int LAUNCHER_SOLENOID_IN = 7;
 	
 	private RobotMap() {
 		

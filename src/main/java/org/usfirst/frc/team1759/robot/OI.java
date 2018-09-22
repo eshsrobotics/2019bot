@@ -33,7 +33,9 @@ public class OI {
 	public Button climbUp;
 	public Button climbDown;
 	public Button halfPower;
-	public Button precision; 
+	public Button precision;
+	public Button tankLeft;
+	public Button tankRight;
 
 	public Joystick leftJoystick;
 	public Joystick rightJoystick;
@@ -78,6 +80,10 @@ public class OI {
 		sneak = new NetworkButton(inputTable, "Shift");
 		halfPower = new NetworkButton(inputTable, "Tab");
 		precision = new NetworkButton(inputTable, "Ctrl");
+		tankLeft = new NetworkButton(inputTable, "Z");
+		tankRight = new NetworkButton(inputTable, "C");
+		launchIn = new NetworkButton(inputTable, "N");
+		launchOut = new NetworkButton(inputTable, "M");
 	
 	
 		if (joysticksAttached) {

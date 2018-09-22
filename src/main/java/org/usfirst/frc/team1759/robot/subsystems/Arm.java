@@ -1,35 +1,20 @@
 package org.usfirst.frc.team1759.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import org.usfirst.frc.team1759.robot.OI;
+import org.usfirst.frc.team1759.robot.RobotMap;
+
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Arm extends Subsystem {
-
+	
 	DoubleSolenoid arm;
 	
-	public Arm(DoubleSolenoid arm) {
-		this.arm = arm;
+	public Arm() {
+		arm = new DoubleSolenoid(RobotMap.LAUNCHER_SOLENOID_OUT, RobotMap.LAUNCHER_SOLENOID_IN);
 	}
 	
-	public void raise() {
-		arm.set(DoubleSolenoid.Value.kReverse);
-	}
-	public void lower() {
+	public void raiseArm() {
 		arm.set(DoubleSolenoid.Value.kForward);
 	}
-	public void stop() {
-		arm.set(DoubleSolenoid.Value.kOff);
-	}
-	@Override
-	public void setName(String subsystem, String name) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void initDefaultCommand() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

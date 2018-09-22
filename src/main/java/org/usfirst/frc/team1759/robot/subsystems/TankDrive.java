@@ -1,16 +1,15 @@
 package org.usfirst.frc.team1759.robot.subsystems;
 
-import models.TankDriveInterface;
-
 import org.usfirst.frc.team1759.robot.OI;
 import org.usfirst.frc.team1759.robot.RobotMap;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.Spark;
 
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import models.Constants;
 
 /**
  * This subsystem is used to control the tank drive for 2018bot. Constructor
@@ -20,26 +19,28 @@ import models.Constants;
  * @author Aidan Galbreath
  */
 
-public class TankDrive extends Subsystem implements TankDriveInterface {
-
+public class TankDrive<T> extends Subsystem{
 	DifferentialDrive myRobot;
-	WPI_TalonSRX leftFront;
-	WPI_TalonSRX leftBack;
-	WPI_TalonSRX leftMid;
-	WPI_TalonSRX rightFront;
-	WPI_TalonSRX rightBack;
-	WPI_TalonSRX rightMid;
+	SpeedController leftFront;
+	SpeedController leftBack;
+	SpeedController leftMid;
+	SpeedController rightFront;
+	SpeedController rightBack;
+	SpeedController rightMid;
 	SpeedControllerGroup left;
 	SpeedControllerGroup right;
+	long timeMovementPressed = -1;
+	boolean wasMovementLastFrame = false;
+	
 
 	public TankDrive() {
 
-		rightFront = new WPI_TalonSRX(RobotMap.RIGHT_FRONT_PORT);
-		rightBack = new WPI_TalonSRX(RobotMap.RIGHT_BACK_PORT);
+		rightFront = new Spark(RobotMap.RIGHT_FRONT_PORT);
+		rightBack = new Spark(RobotMap.RIGHT_BACK_PORT);
 		// rightMid = new WPI_TalonSRX(RobotMap.RIGHT_MID_PORT);
 		// leftMid = new WPI_TalonSRX(RobotMap.LEFT_MID_PORT);
-		leftFront = new WPI_TalonSRX(RobotMap.LEFT_FRONT_PORT);
-		leftBack = new WPI_TalonSRX(RobotMap.LEFT_BACK_PORT);
+		leftFront = new Spark(RobotMap.LEFT_FRONT_PORT);
+		leftBack = new Spark(RobotMap.LEFT_BACK_PORT);
 		left = new SpeedControllerGroup(leftFront, leftBack);
 		right = new SpeedControllerGroup(rightFront, rightBack);
 		myRobot = new DifferentialDrive(left, right);
@@ -55,6 +56,8 @@ public class TankDrive extends Subsystem implements TankDriveInterface {
 	}
 
 	public void tankDrive(OI oi) {
+		
+		
 
 		double left = 0;
 		double right = 0;
@@ -65,12 +68,18 @@ public class TankDrive extends Subsystem implements TankDriveInterface {
 		} else if (oi.back.get()) {
 			left = -1;
 			right = -1;
-		} else if (oi.left.get()) {
-			left = -0.7;
-			right = 0.7;
+		}
+		if (oi.left.get()) {
+			left *= 0.5;
 		} else if (oi.right.get()) {
-			left = 0.7;
-			right = -0.7;
+			right *= 0.5;
+		}
+		if (oi.tankLeft.get()) {
+			left = -1;
+			right = 1;
+		} else if (oi.tankRight.get()) {
+			left = 1;
+			right = -1;
 		}
 		if (oi.sneak.get()) {
 			if (oi.left.get() || oi.right.get()) {
@@ -90,17 +99,20 @@ public class TankDrive extends Subsystem implements TankDriveInterface {
 			}
 		}
 		
-		if (Math.abs(left) < Constants.EPSILON &&
-		    Math.abs(right) < Constants.EPSILON &&
-			oi.joysticksAttached) {
-				// No NetworkTables buttons are pressed, but the joystick
-				// is present.  Default to the joystick.
-				myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
-		} else {
-				myRobot.tankDrive(left, right);
+		if ((oi.forward.get() || oi.back.get()) && !wasMovementLastFrame) {
+			timeMovementPressed = System.currentTimeMillis();
 		}
+		
+		long timeSincePressed = System.currentTimeMillis() - timeMovementPressed; 
+		double accelerationCurveMultiplier = Math.sqrt(timeSincePressed / 1000d);
+		left *= accelerationCurveMultiplier;
+		right *= accelerationCurveMultiplier;
+		myRobot.tankDrive(left, right);
+		wasMovementLastFrame = oi.forward.get() || oi.back.get();
+		
+		
 	}
-	@Override
+	
 	public void tankDrive (double leftSpeed, double rightSpeed) {
 		myRobot.tankDrive(-leftSpeed, -rightSpeed);
 	}
