@@ -1,7 +1,6 @@
 package org.usfirst.frc.team1759.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -10,7 +9,7 @@ public class Intake extends Subsystem {
 	SpeedControllerGroup intake;
 	private double SPEED_MULT = 0.5;
 	
-	public Intake(WPI_TalonSRX leftWheel, WPI_TalonSRX rightWheel) {
+	public Intake(SpeedController leftWheel, SpeedController rightWheel) {
 		intake = new SpeedControllerGroup(leftWheel, rightWheel);
 	}
 	

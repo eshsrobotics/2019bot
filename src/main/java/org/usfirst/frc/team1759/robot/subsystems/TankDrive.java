@@ -3,8 +3,9 @@ package org.usfirst.frc.team1759.robot.subsystems;
 import org.usfirst.frc.team1759.robot.OI;
 import org.usfirst.frc.team1759.robot.RobotMap;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.Spark;
 
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -20,23 +21,21 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 public class TankDrive extends Subsystem {
 
 	DifferentialDrive myRobot;
-	WPI_TalonSRX leftFront;
-	WPI_TalonSRX leftBack;
-	WPI_TalonSRX leftMid;
-	WPI_TalonSRX rightFront;
-	WPI_TalonSRX rightBack;
-	WPI_TalonSRX rightMid;
+	SpeedController leftFront;
+	SpeedController leftBack;
+	SpeedController leftMid;
+	SpeedController rightFront;
+	SpeedController rightBack;
+	SpeedController rightMid;
 	SpeedControllerGroup left;
 	SpeedControllerGroup right;
 
 	public TankDrive() {
 
-		rightFront = new WPI_TalonSRX(RobotMap.RIGHT_FRONT_PORT);
-		rightBack = new WPI_TalonSRX(RobotMap.RIGHT_BACK_PORT);
-		// rightMid = new WPI_TalonSRX(RobotMap.RIGHT_MID_PORT);
-		// leftMid = new WPI_TalonSRX(RobotMap.LEFT_MID_PORT);
-		leftFront = new WPI_TalonSRX(RobotMap.LEFT_FRONT_PORT);
-		leftBack = new WPI_TalonSRX(RobotMap.LEFT_BACK_PORT);
+		rightFront = new Spark(RobotMap.RIGHT_FRONT_PORT);
+		rightBack = new Spark(RobotMap.RIGHT_BACK_PORT);
+		leftFront = new Spark(RobotMap.LEFT_FRONT_PORT);
+		leftBack = new Spark(RobotMap.LEFT_BACK_PORT);
 		left = new SpeedControllerGroup(leftFront, leftBack);
 		right = new SpeedControllerGroup(rightFront, rightBack);
 		myRobot = new DifferentialDrive(left, right);

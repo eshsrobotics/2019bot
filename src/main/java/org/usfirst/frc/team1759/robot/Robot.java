@@ -14,7 +14,7 @@ import org.usfirst.frc.team1759.robot.subsystems.Intake;
 import org.usfirst.frc.team1759.robot.subsystems.Launcher;
 import org.usfirst.frc.team1759.robot.subsystems.TankDrive;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.Spark;
 
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -53,10 +53,10 @@ public class Robot extends IterativeRobot {
 		// Initialize drive.
 		oi = new OI();
 		tank = new TankDrive();
-		upperIntake = new Intake(new WPI_TalonSRX(RobotMap.UPPER_LEFT_INTAKE),
-				new WPI_TalonSRX(RobotMap.UPPER_RIGHT_INTAKE));
-		lowerIntake = new Intake(new WPI_TalonSRX(RobotMap.LOWER_LEFT_INTAKE),
-				new WPI_TalonSRX(RobotMap.LOWER_RIGHT_INTAKE));
+		upperIntake = new Intake(new Spark(RobotMap.UPPER_LEFT_INTAKE),
+				new Spark(RobotMap.UPPER_RIGHT_INTAKE));
+		lowerIntake = new Intake(new Spark(RobotMap.LOWER_LEFT_INTAKE),
+				new Spark(RobotMap.LOWER_RIGHT_INTAKE));
 		arm = new Arm(new DoubleSolenoid(RobotMap.ARM_PORT_IN,
 				RobotMap.ARM_PORT_OUT));
 		launcher = new Launcher();
