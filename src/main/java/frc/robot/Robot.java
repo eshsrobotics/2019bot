@@ -11,7 +11,10 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.*;
+
+import frc.robot.OI;
+import frc.robot.driving.TankDrive;
+import frc.robot.driving.RobotMap;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,6 +30,7 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Spark motor;
   private TankDrive tank;
+  private OI oi;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -35,6 +39,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     tank = new TankDrive();
+    oi = new OI();
     // motor = new Spark(0);
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);

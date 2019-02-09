@@ -1,7 +1,7 @@
 package frc.robot.driving;
 
 import frc.robot.OI;
-import frc.robot.RobotMap;
+import frc.robot.driving.RobotMap;
 import frc.robot.Robot;
 
 import edu.wpi.first.wpilibj.Spark;
@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * @author Spencer Moore
  */
 
-public class TankDrive {
+public class TankDrive extends Subsystem{
 
 	DifferentialDrive myRobot;
 	SpeedController leftFront;
