@@ -1,4 +1,4 @@
-package org.usfirst.frc.team1759.robot;
+package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.buttons.NetworkButton;
  */
 
 public class OI {
-
 	public boolean joysticksAttached;
 	
 	public Button launchOut;

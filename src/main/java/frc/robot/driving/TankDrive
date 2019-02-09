@@ -1,7 +1,8 @@
-package org.usfirst.frc.team1759.robot.subsystems;
+package frc.robot.driving;
 
-import org.usfirst.frc.team1759.robot.OI;
-import org.usfirst.frc.team1759.robot.RobotMap;
+import frc.robot.OI;
+import frc.robot.RobotMap;
+import frc.robot.Robot;
 
 import edu.wpi.first.wpilibj.Spark;
 
@@ -11,14 +12,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
- * This subsystem is used to control the tank drive for 2018bot. Constructor
- * calls multiple CANTalons, then assigns them into SpeedControllerGroups. Can
- * be instantiated as using a gyro or not using a gyro.
+ * This subsystem is used to control the tank drive for 2019bot. 
  * 
- * @author Aidan Galbreath
+ * @author Spencer Moore
  */
 
-public class TankDrive extends Subsystem {
+public class TankDrive {
 
 	DifferentialDrive myRobot;
 	SpeedController leftFront;
@@ -29,7 +28,6 @@ public class TankDrive extends Subsystem {
 	SpeedController rightMid;
 	SpeedControllerGroup left;
 	SpeedControllerGroup right;
-
 	public TankDrive() {
 
 		rightFront = new Spark(RobotMap.RIGHT_FRONT_PORT);
