@@ -58,16 +58,9 @@ public class OI {
 
 		leftJoystick = new Joystick(0);
 		rightJoystick = new Joystick(1);
-
+		
 		// Can set to false to force keyboard controls
 		joysticksAttached = leftJoystick != null && rightJoystick != null;
-		
-
-		
-		intakeOutJoystick = new JoystickButton(rightJoystick, INTAKE_OUT_BUTTON);
-		intakeInJoystick = new JoystickButton(rightJoystick, INTAKE_IN_BUTTON)
-		;intakeInNetwork = new NetworkButton(inputTable, "Q");
-		intakeOutNetwork = new NetworkButton(inputTable, "E");
 		
 		if (joysticksAttached) {
 			System.out.println("Creating OI with joystick buttons");

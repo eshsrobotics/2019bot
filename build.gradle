@@ -50,6 +50,10 @@ dependencies {
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
     testCompile 'junit:junit:4.12'
+
+    // Add a dependency to networktables-input, a miraculous JAR file 
+    // by Andrew McLees that allows us to control the robot with a keyboard.
+    compile files('lib/networktables-input.jar')
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
