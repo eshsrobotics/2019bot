@@ -93,7 +93,7 @@ public class OI {
 			 * 
 			 * For the mouse right and left buttons, use "Right Mouse" and "Left Mouse"
 			 */
-		  System.out.println("Creating OI with network buttons");
+		  	System.out.println("Creating OI with network buttons");
 			inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
 			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
 			launchOut = new NetworkButton(inputTable, "J");

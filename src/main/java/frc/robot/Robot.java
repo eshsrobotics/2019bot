@@ -40,7 +40,6 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     tank = new TankDrive();
     oi = new OI();
-    // motor = new Spark(0);
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -103,8 +102,7 @@ public class Robot extends TimedRobot {
     tank.tankDrive(oi);
     System.out.println("Test");
     // motor.set(1);
-    System.out.println(motor.get());
-    ;
+    // System.out.println(motor.get());
   }
 
   /**
