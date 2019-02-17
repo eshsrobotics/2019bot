@@ -8,7 +8,7 @@ package frc.robot.driving;
  * 
  * THIS IS NOT FOR BUTTONS.
  * 
- * @author Aidan Galbreath and Spencer Moore
+ * @author Spencer Moore
  */
 public class RobotMap {
 	
@@ -17,7 +17,10 @@ public class RobotMap {
 	public static int LEFT_BACK_PORT = 3;
 	public static int RIGHT_FRONT_PORT = 0;
 	public static int RIGHT_BACK_PORT = 1;
-	
+
+	//arm ports
+	public static int ARM_MOVE = 13;
+	public static int CLAW_MOVE = 4;
 	public RobotMap() {
 	}
 }

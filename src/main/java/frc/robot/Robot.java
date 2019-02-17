@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.OI;
 import frc.robot.driving.TankDrive;
 import frc.robot.driving.RobotMap;
+import frc.robot.arm.Arm;
+import frc.robot.arm.Claw;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,6 +32,8 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Spark motor;
   private TankDrive tank;
+  private Claw claw;
+  private Arm arm;
   private OI oi;
 
   /**
@@ -40,6 +44,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     tank = new TankDrive();
     oi = new OI();
+    claw = new Claw();
+    arm = new Arm();
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -72,6 +78,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    arm.arm(oi);
+    claw.claw(oi);
+    tank.tankDrive(oi);
     m_autoSelected = m_chooser.getSelected();
     // autoSelected = SmartDashboard.getString("Auto Selector",
     // defaultAuto);
@@ -99,6 +108,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    arm.arm(oi);
+    claw.claw(oi);
     tank.tankDrive(oi);
     System.out.println("Test");
     // motor.set(1);

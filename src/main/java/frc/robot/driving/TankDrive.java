@@ -48,7 +48,7 @@ public class TankDrive extends Subsystem{
 
 	public void tankDrive(OI oi) {
 		if (oi.joysticksAttached) {
-			myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
+			myRobot.tankDrive(oi.leftJoystick.getZ(), - oi.rightJoystick.getZ());
 		} else {
 			double left = 0;
 			double right = 0;
