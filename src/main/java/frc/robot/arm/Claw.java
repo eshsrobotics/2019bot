@@ -51,8 +51,16 @@ public class Claw extends Subsystem {
 					h = 0;
 				}
 
-				if (!clawCloseLimitSwitch.get()) {
-					claw.set(oi.rightJoystick.getX());
+				double joystickValue = oi.rightJoystick.getX();
+				double joystickDirection = Math.signum(joystickValue);
+				if (joystickDirection < 0) {
+					// User wants to close the claw.
+					if (canClawClose()) {
+						claw.set(joystickValue);
+					}
+				} else {
+					// We don't have canClawOpen() right now.
+					claw.set(joystickValue);
 				}
 			}
 			//myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
@@ -89,5 +97,23 @@ public class Claw extends Subsystem {
 	
 	public void claw (/*double leftSpeed, double rightSpeed*/) {
 		//myRobot.tankDrive(- leftSpeed, - rightSpeed);
+	}
+	public boolean isClosing() {
+		boolean isClawClosing = (Math.signum(claw.get()) < 0);
+		return isClawClosing;
+	}
+	public void stopClosing() {
+		if (this.isClosing()) {
+			// This should only be executed once as the claw closes.
+			System.out.printf("[%d] stopClosing: claw.get() == %.4f", System.currentTimeMillis(), claw.get());
+			stop();
+		}
+	}
+	public void stop() {
+		claw.set(0);
+	}
+	public boolean canClawClose() {
+		boolean clawCloseLimitSwitchHit = clawCloseLimitSwitch.get();
+		return clawCloseLimitSwitchHit;
 	}
 }

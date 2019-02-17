@@ -110,6 +110,9 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     arm.arm(oi);
     claw.claw(oi);
+    if (!claw.canClawClose()) {
+      claw.stopClosing();
+    }
     tank.tankDrive(oi);
     System.out.println("Test");
     // motor.set(1);
