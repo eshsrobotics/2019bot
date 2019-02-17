@@ -21,6 +21,10 @@ public class RobotMap {
 	//arm ports
 	public static int ARM_MOVE = 13;
 	public static int CLAW_MOVE = 4;
+
+	// Claw sensor ports
+	public static int CLAW_CLOSE_LIMIT_SWITCH_1 = 1;
+
 	public RobotMap() {
 	}
 }

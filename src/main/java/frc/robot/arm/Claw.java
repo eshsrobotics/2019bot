@@ -7,17 +7,21 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
+
 /**
  * This subsystem is used to control the arm raising or lowering for 2019bot. 
  * 
  * @author Spencer Moore
  */
 
-public class Claw extends Subsystem{
+public class Claw extends Subsystem {
     private Spark claw;
+	private DigitalInput clawCloseLimitSwitch;
 
     public Claw() {
-        claw = new Spark(RobotMap.CLAW_MOVE);
+		claw = new Spark(RobotMap.CLAW_MOVE);
+		clawCloseLimitSwitch = new DigitalInput(RobotMap.CLAW_CLOSE_LIMIT_SWITCH_1);
 	}
 	@Override
 	public void setName(String subsystem, String name) {
@@ -46,7 +50,10 @@ public class Claw extends Subsystem{
 				} else {
 					h = 0;
 				}
-				claw.set(oi.rightJoystick.getX());
+
+				if (!clawCloseLimitSwitch.get()) {
+					claw.set(oi.rightJoystick.getX());
+				}
 			}
 			//myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
 		//} else {
