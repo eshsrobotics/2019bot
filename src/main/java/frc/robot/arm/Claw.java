@@ -18,10 +18,12 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class Claw extends Subsystem {
     private Spark claw;
 	private DigitalInput clawCloseLimitSwitch;
+	private DigitalInput clawOpenLimitSwitch;
 
     public Claw() {
 		claw = new Spark(RobotMap.CLAW_MOVE);
 		clawCloseLimitSwitch = new DigitalInput(RobotMap.CLAW_CLOSE_LIMIT_SWITCH_1);
+		clawOpenLimitSwitch = new DigitalInput(RobotMap.CLAW_OPEN_LIMIT_SWITCH_2);
 	}
 	@Override
 	public void setName(String subsystem, String name) {
@@ -102,10 +104,21 @@ public class Claw extends Subsystem {
 		boolean isClawClosing = (Math.signum(claw.get()) < 0);
 		return isClawClosing;
 	}
+	public boolean isOpening() {
+		boolean isClawOpening = (Math.signum(claw.get()) > 0);
+		return isClawOpening;
+	}
 	public void stopClosing() {
 		if (this.isClosing()) {
 			// This should only be executed once as the claw closes.
 			System.out.printf("[%d] stopClosing: claw.get() == %.4f", System.currentTimeMillis(), claw.get());
+			stop();
+		}
+	}
+	public void stopOpening() {
+		if (this.isOpening()) {
+			// This should only be executed once as the claw closes.
+			System.out.printf("[%d] stopOpening: claw.get() == %.4f", System.currentTimeMillis(), claw.get());
 			stop();
 		}
 	}
@@ -115,5 +128,9 @@ public class Claw extends Subsystem {
 	public boolean canClawClose() {
 		boolean clawCloseLimitSwitchHit = clawCloseLimitSwitch.get();
 		return clawCloseLimitSwitchHit;
+	}
+	public boolean canClawOpen() {
+		boolean clawOpenLimitSwitchHit = clawOpenLimitSwitch.get();
+		return clawOpenLimitSwitchHit;
 	}
 }
