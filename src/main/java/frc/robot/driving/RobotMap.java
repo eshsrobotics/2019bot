@@ -24,6 +24,10 @@ public class RobotMap {
 
 	// Claw sensor ports
 	public static int CLAW_CLOSE_LIMIT_SWITCH_1 = 1;
+	public static int CLAW_OPEN_LIMIT_SWITCH_2 = 2;
+	public static int GYRO_PORT = 3;
+	public static int ENCODER_PORT_A = 8;
+	public static int ENCODER_PORT_B = 9;
 
 	public RobotMap() {
 	}

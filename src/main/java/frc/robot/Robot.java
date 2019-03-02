@@ -17,6 +17,8 @@ import frc.robot.driving.TankDrive;
 import frc.robot.driving.RobotMap;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Claw;
+import frc.robot.arm.Gyro;
+import frc.robot.arm.TheEncoder;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -35,6 +37,8 @@ public class Robot extends TimedRobot {
   private Claw claw;
   private Arm arm;
   private OI oi;
+  private Gyro gyro;
+  private TheEncoder theEncoder;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -46,9 +50,17 @@ public class Robot extends TimedRobot {
     oi = new OI();
     claw = new Claw();
     arm = new Arm();
+    gyro = new Gyro();
+    theEncoder = new TheEncoder();
+    
+    //gyro.resetGyro();
+    gyro.calibrateGyro();
+    //System.out.println(gyro.isConnected());
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    System.out.println("Test");
   }
 
   /**
@@ -81,6 +93,7 @@ public class Robot extends TimedRobot {
     arm.arm(oi);
     claw.claw(oi);
     tank.tankDrive(oi);
+    //gyro.Gyro(oi);
     m_autoSelected = m_chooser.getSelected();
     // autoSelected = SmartDashboard.getString("Auto Selector",
     // defaultAuto);
@@ -106,15 +119,34 @@ public class Robot extends TimedRobot {
   /**
    * This function is called periodically during operator control.
    */
+@Override
+  public void teleopInit() {
+  }
   @Override
   public void teleopPeriodic() {
+   // System.out.println("Test2");
     arm.arm(oi);
     claw.claw(oi);
+    if (oi.rightJoystick.getRawButtonPressed(4)) {
+      System.out.println("CALIBRATING");
+      gyro.calibrateGyro();
+    }
+    
+      System.out.println(theEncoder.getDistance());
+    
+    if (oi.rightJoystick.getRawButton(3)) {
+      theEncoder.resetEncoder();
+    }
+    if (oi.leftJoystick.getRawButton(4)) {
+      System.out.println(gyro.getAngle());
+    }
     if (!claw.canClawClose()) {
       claw.stopClosing();
     }
     tank.tankDrive(oi);
-    System.out.println("Test");
+    //System.out.println("Test2");
+   // System.out.println(gyro.getAngle());
+   // System.out.println(gyro.getAngle());
     // motor.set(1);
     // System.out.println(motor.get());
   }
@@ -124,5 +156,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+
+  @Override
+  public void disabledInit() {
+    System.out.println("I'm disabled daddy!");
   }
 }
