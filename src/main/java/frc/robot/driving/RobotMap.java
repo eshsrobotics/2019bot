@@ -12,18 +12,22 @@ package frc.robot.driving;
  */
 public class RobotMap {
 	
-	// Drive controller ports
+	// Drive motor controller ports (PWM)
 	public static int LEFT_FRONT_PORT = 2;
 	public static int LEFT_BACK_PORT = 3;
 	public static int RIGHT_FRONT_PORT = 0;
 	public static int RIGHT_BACK_PORT = 1;
 
-	//arm ports
+	// Arm motor controller ports (PWM)
 	public static int ARM_MOVE = 13;
 	public static int CLAW_MOVE = 4;
+	public static int ELBOW_MOVE = 5; 
 
-	// Claw sensor ports
+	// Sensor ports (digital I/O)
 	public static int CLAW_CLOSE_LIMIT_SWITCH_1 = 1;
+
+	// Sensor ports (analog)
+	public static int TEST_POTENTIOMETER = 0;
 
 	public RobotMap() {
 	}

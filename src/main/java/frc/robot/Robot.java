@@ -113,6 +113,7 @@ public class Robot extends TimedRobot {
     if (!claw.canClawClose()) {
       claw.stopClosing();
     }
+    arm.setElbowMotorSpeedBasedOnElbowPotentiometer();
     tank.tankDrive(oi);
     System.out.println("Test");
     // motor.set(1);
