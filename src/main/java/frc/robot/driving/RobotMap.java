@@ -11,7 +11,10 @@ package frc.robot.driving;
  * @author Spencer Moore
  */
 public class RobotMap {
-	
+
+	// CIM motors tend not to respond when given less than this level of power in either direction.
+	public static double MIN_MOTOR_POWER = 0.15;
+
 	// Drive motor controller ports (PWM)
 	public static int LEFT_FRONT_PORT = 2;
 	public static int LEFT_BACK_PORT = 3;

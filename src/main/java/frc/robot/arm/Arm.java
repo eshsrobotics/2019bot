@@ -21,10 +21,17 @@ public class Arm extends Subsystem{
 
 	// The scale factor here should be the range of degrees that the elbow potentiometer is capable of.
 	//
-	// The test potentiometer I have here goes from about 2:00 to about 10:00, so the range is 
-	// 8 hours (240 degrees) and the offset is 2 hours (60 degrees).
-	private final double SCALE_FACTOR = 240.0;
-	private final double OFFSET = 60.0;
+	// When constucting the AnalogPotentiometer with a scale factor of 1.0 and an offset of 0.0, this
+	// flaky pot we're testing with gives us values between 0 and 0.27.  That's probably
+	// not the correct value, but whatever; we can work around that in software.
+	private final static double MIN_INPUT_POT_VALUE = 0;
+	private final static double MAX_INPUT_POT_VALUE = 0.27;
+
+	// The test potentiometer I have here goes from about 2:00 (60 degrees) to about 10:00 (300 degrees).
+	private final static double MIN_OUTPUT_POT_VALUE = 60;
+	private final static double MAX_OUTPUT_POT_VALUE = 300;
+	private final static double SCALE_FACTOR = (MAX_OUTPUT_POT_VALUE - MIN_OUTPUT_POT_VALUE) / (MAX_INPUT_POT_VALUE - MIN_INPUT_POT_VALUE);
+	private final double OFFSET = MIN_OUTPUT_POT_VALUE;	
 
     public Arm() {
 		arm = new  Spark(RobotMap.ARM_MOVE);
@@ -44,13 +51,28 @@ public class Arm extends Subsystem{
 	public void setElbowMotorSpeedBasedOnElbowPotentiometer() {
 		// Use linear interpolation for now.
 		//
+		// u is our parameter of interpolation -- how far along the range we are.
+		//
 		// u = (current - min) / (max - min)
-		double u = (pot.get() - OFFSET) / SCALE_FACTOR;
+		double u = (pot.get() - MIN_OUTPUT_POT_VALUE) / (MAX_OUTPUT_POT_VALUE - MIN_OUTPUT_POT_VALUE);
+		if (u < RobotMap.MIN_MOTOR_POWER) {
+			u = 0;
+		} else if (u > 1) {
+			u = 1;
+		}
 
-		// At u = 0.5 we want max power and at 0 = 0 or 1, we want no power.
-		double power = 1 - 2 * Math.abs(u - 0.5);
+		// At u = 0.5 we want max power and at u = 0 or 1, we want no power.
+		double power = 1 - 2 * Math.abs(u - 0.5);		
 		elbow.set(power);
-		System.out.printf("Pot: %.2f / Elbow power: %.2f ", pot.get(), elbow.get());
+
+		System.out.printf("u = (%.1f-%.1f)/(%.1f-%.1f) = %.2f | desired, actual power = %.2f, %.2f ", 
+						pot.get(),
+						MIN_OUTPUT_POT_VALUE,
+						MAX_OUTPUT_POT_VALUE,
+						MIN_OUTPUT_POT_VALUE,
+						u,
+						power, 
+						elbow.get());
 	}
 
 	public void arm(OI oi) {
