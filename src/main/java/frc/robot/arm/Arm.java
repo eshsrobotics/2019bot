@@ -24,18 +24,21 @@ public class Arm extends Subsystem{
 	// When constucting the AnalogPotentiometer with a scale factor of 1.0 and an offset of 0.0, this
 	// flaky pot we're testing with gives us values between 0 and 0.27.  That's probably
 	// not the correct value, but whatever; we can work around that in software.
+	//
+	// Update: The potentiometer had a resistance in the M
 	private final static double MIN_INPUT_POT_VALUE = 0;
-	private final static double MAX_INPUT_POT_VALUE = 0.27;
+	private final static double MAX_INPUT_POT_VALUE = 1.0; // 0.27;
 
-	// The test potentiometer I have here goes from about 2:00 (60 degrees) to about 10:00 (300 degrees).
-	private final static double MIN_OUTPUT_POT_VALUE = 60;
-	private final static double MAX_OUTPUT_POT_VALUE = 300;
+	// The test potentiometer I have here goes from about 4:00 (120 degrees) to about 8:00 (240 degrees).
+	private final static double MIN_OUTPUT_POT_VALUE = 120;
+	private final static double MAX_OUTPUT_POT_VALUE = 240;
 	private final static double SCALE_FACTOR = (MAX_OUTPUT_POT_VALUE - MIN_OUTPUT_POT_VALUE) / (MAX_INPUT_POT_VALUE - MIN_INPUT_POT_VALUE);
 	private final double OFFSET = MIN_OUTPUT_POT_VALUE;	
 
     public Arm() {
 		arm = new  Spark(RobotMap.ARM_MOVE);
 		elbow = new Spark(RobotMap.ELBOW_MOVE);
+		// pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, 1.0, 0.0);
 		pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, SCALE_FACTOR, OFFSET);
 	}
 	@Override
@@ -61,8 +64,8 @@ public class Arm extends Subsystem{
 			u = 1;
 		}
 
-		// At u = 0.5 we want max power and at u = 0 or 1, we want no power.
-		double power = 1 - 2 * Math.abs(u - 0.5);		
+		// At u = 0.5 we want no power, and at u = 0 or 1, we want max power (in opposite directions.)
+		double power = 2 * (u - 0.5);		
 		elbow.set(power);
 
 		System.out.printf("u = (%.1f-%.1f)/(%.1f-%.1f) = %.2f | desired, actual power = %.2f, %.2f ", 
