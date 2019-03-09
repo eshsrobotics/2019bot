@@ -115,7 +115,6 @@ public class Robot extends TimedRobot {
     }
     arm.setElbowMotorSpeedBasedOnElbowPotentiometer();
     tank.tankDrive(oi);
-    System.out.println("Test");
     // motor.set(1);
     // System.out.println(motor.get());
   }

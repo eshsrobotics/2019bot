@@ -5,6 +5,7 @@ import frc.robot.driving.RobotMap;
 
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 
@@ -14,10 +15,17 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
  * @author Spencer Moore
  */
 
-public class Arm extends Subsystem{
+public class Arm extends Subsystem {
 	private SpeedController wrist;
 	private SpeedController elbow; 
 	private AnalogPotentiometer pot;
+	private Timer timer;
+	final static double ARM_INCREMENT_INTERVAL_SECONDS = 0.05;
+	final static double ELBOW_POWER_INCREMENT_PER_INTERVAL = 0.02;
+	final static double ELBOW_POWER_INITIAL_RAMP = 0.2;
+	final static double ELBOW_MAX_DOWNWARD_POWER = 0.3;
+	final static double EPSILON = 0.05;
+	double lastIncrementTimeSeconds = 0;
 
 	// The scale factor here should be the range of degrees that the elbow potentiometer is capable of.
 	//
@@ -40,6 +48,8 @@ public class Arm extends Subsystem{
 		elbow = new Spark(RobotMap.ELBOW_MOVE);
 		// pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, 1.0, 0.0);
 		pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, SCALE_FACTOR, OFFSET);
+		timer = new Timer();
+		timer.start();
 	}
 	@Override
 	public void setName(String subsystem, String name) {
@@ -69,40 +79,70 @@ public class Arm extends Subsystem{
 		double power = 2 * (u - 0.5);		
 		//elbow.set(power);
 
-		System.out.printf("u = (%.1f-%.1f)/(%.1f-%.1f) = %.2f | desired, actual power = %.2f, %.2f ", 
-						pot.get(),
-						MIN_OUTPUT_POT_VALUE,
-						MAX_OUTPUT_POT_VALUE,
-						MIN_OUTPUT_POT_VALUE,
-						u,
-						power, 
-						elbow.get());
+		// System.out.printf("u = (%.1f-%.1f)/(%.1f-%.1f) = %.2f | desired, actual power = %.2f, %.2f ", 
+		// 				pot.get(),
+		// 				MIN_OUTPUT_POT_VALUE,
+		// 				MAX_OUTPUT_POT_VALUE,
+		// 				MIN_OUTPUT_POT_VALUE,
+		// 				u,
+		// 				power, 
+		// 				elbow.get());
 	}
 
 	public void arm(OI oi) {
 		if (oi.joysticksAttached) {
-            if (oi.joysticksAttached) {
-				double h = 0;
-                if (oi.leftJoystick.getRawButton(3)) {
-					h = 0.3;
-				} else if (oi.rightJoystick.getRawButton(3)) {
-					h = -1;
-				} else {
-					h = 0;
+			double h = wrist.get();
+			if (oi.leftJoystick.getRawButton(3)) {
+				h = 0.3;
+			} else if (oi.rightJoystick.getRawButton(3)) {
+				h = -0.3; //-1;
+			} else {
+				h = 0;
+			}
+			double j = elbow.get();
+			if (oi.leftJoystick.getRawButton(4)) {
+				// Slow increment every few intervals.
+				if (timer.get() - lastIncrementTimeSeconds > ARM_INCREMENT_INTERVAL_SECONDS) {
+					lastIncrementTimeSeconds = timer.get();
+					if (Math.abs(j) < EPSILON) {
+						j = ELBOW_POWER_INITIAL_RAMP;
+					} else {
+						j += ELBOW_POWER_INCREMENT_PER_INTERVAL;
+					}
+					if (j > 1) {
+						j = 1;
+					}
+					System.out.printf("Increased elbow power to %.2f\n", j);
 				}
-				double j = 0;
-                if (oi.leftJoystick.getRawButton(4)) {
-					j = 0.5;
-				} else if (oi.rightJoystick.getRawButton(4)) {
-					j = -0.5;
-				} else {
-					j = 0;
+			} else if (oi.rightJoystick.getRawButton(4)) {
+				// Slow decrement every few intervals.
+				if (timer.get() - lastIncrementTimeSeconds > ARM_INCREMENT_INTERVAL_SECONDS) {
+					lastIncrementTimeSeconds = timer.get();
+					if (Math.abs(j) < EPSILON) {
+						j = -ELBOW_POWER_INITIAL_RAMP;
+					} else {
+						j -= ELBOW_POWER_INCREMENT_PER_INTERVAL;
+					}
+					// Due to gravity, this does not need to be as rapid as the upward movement.
+					if (j < -ELBOW_MAX_DOWNWARD_POWER) {
+						j = -ELBOW_MAX_DOWNWARD_POWER;
+					}
+					System.out.printf("Decreased elbow power to %.2f\n", j);
 				}
-				wrist.set(h);
-				elbow.set(j);
-                //myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
-            }
-			//myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
+			} else {
+				// Speed decays when there's no set power...but we don't instantly stop (the arm jerks badly.)
+				// j = 0;
+				if (timer.get() - lastIncrementTimeSeconds > ARM_INCREMENT_INTERVAL_SECONDS) {
+					lastIncrementTimeSeconds = timer.get();
+					j -= (Math.signum(j) * ELBOW_POWER_INCREMENT_PER_INTERVAL);
+					if (Math.abs(j) < EPSILON) {
+						j = 0;
+					} 
+					System.out.printf("Wrist power decaying to %.2f\n", j);
+				}
+			}
+			wrist.set(h);
+			elbow.set(j);
 		} else {
 			/*double left = 0;
 			double right = 0;
@@ -130,8 +170,8 @@ public class Arm extends Subsystem{
 				}
 			}
 
-			myRobot.tankDrive(- left, - right);
-        */}
+			myRobot.tankDrive(- left, - right);			
+		*/}
 	}
 	
 	public void arm (/*double leftSpeed, double rightSpeed*/) {
