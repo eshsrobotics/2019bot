@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
  */
 
 public class Arm extends Subsystem{
-	private SpeedController arm;
+	private SpeedController wrist;
 	private SpeedController elbow; 
 	private AnalogPotentiometer pot;
 
@@ -36,7 +36,7 @@ public class Arm extends Subsystem{
 	private final double OFFSET = MIN_OUTPUT_POT_VALUE;	
 
     public Arm() {
-		arm = new  Spark(RobotMap.ARM_MOVE);
+		wrist = new  Spark(RobotMap.WRIST_MOVE);
 		elbow = new Spark(RobotMap.ELBOW_MOVE);
 		// pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, 1.0, 0.0);
 		pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, SCALE_FACTOR, OFFSET);
@@ -57,6 +57,7 @@ public class Arm extends Subsystem{
 		// u is our parameter of interpolation -- how far along the range we are.
 		//
 		// u = (current - min) / (max - min)
+		
 		double u = (pot.get() - MIN_OUTPUT_POT_VALUE) / (MAX_OUTPUT_POT_VALUE - MIN_OUTPUT_POT_VALUE);
 		if (u < RobotMap.MIN_MOTOR_POWER) {
 			u = 0;
@@ -66,7 +67,7 @@ public class Arm extends Subsystem{
 
 		// At u = 0.5 we want no power, and at u = 0 or 1, we want max power (in opposite directions.)
 		double power = 2 * (u - 0.5);		
-		elbow.set(power);
+		//elbow.set(power);
 
 		System.out.printf("u = (%.1f-%.1f)/(%.1f-%.1f) = %.2f | desired, actual power = %.2f, %.2f ", 
 						pot.get(),
@@ -81,13 +82,24 @@ public class Arm extends Subsystem{
 	public void arm(OI oi) {
 		if (oi.joysticksAttached) {
             if (oi.joysticksAttached) {
-                int h = 0;
-                if (oi.leftJoystick.getTrigger()) {
-                    h = 1;
-                } else {
-                    h = 0;
-                }
-                arm.set(h);
+				double h = 0;
+                if (oi.leftJoystick.getRawButton(3)) {
+					h = 0.3;
+				} else if (oi.rightJoystick.getRawButton(3)) {
+					h = -1;
+				} else {
+					h = 0;
+				}
+				double j = 0;
+                if (oi.leftJoystick.getRawButton(4)) {
+					j = 0.5;
+				} else if (oi.rightJoystick.getRawButton(4)) {
+					j = -0.5;
+				} else {
+					j = 0;
+				}
+				wrist.set(h);
+				elbow.set(j);
                 //myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
             }
 			//myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());

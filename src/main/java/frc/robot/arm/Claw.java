@@ -44,14 +44,15 @@ public class Claw extends Subsystem {
 			if (oi.joysticksAttached) {
 				double h = 0;
 				if (oi.leftJoystick.getTrigger()) {
-					h = 0.6;
+					h = 0.3;
 				} else if (oi.rightJoystick.getTrigger()) {
-					h = -0.6;
+					h = -0.3;
 				} else {
 					h = 0;
 				}
+				claw.set(h);
 
-				double joystickValue = oi.rightJoystick.getX();
+				/*double joystickValue = oi.rightJoystick.getX();
 				double joystickDirection = Math.signum(joystickValue);
 				if (joystickDirection < 0) {
 					// User wants to close the claw.
@@ -61,7 +62,7 @@ public class Claw extends Subsystem {
 				} else {
 					// We don't have canClawOpen() right now.
 					claw.set(joystickValue);
-				}
+				}*/
 			}
 			//myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
 		//} else {
