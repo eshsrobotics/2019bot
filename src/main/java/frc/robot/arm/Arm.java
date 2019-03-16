@@ -19,9 +19,17 @@ public class Arm extends Subsystem {
         private SpeedController wrist;
         private SpeedController elbow;
         private AnalogPotentiometer pot;
+        final static double kI = 0;
+        final static double kD = 0;
+        final static double kP = 36;
+        final static double secondsPerIteration = 0.02; //assumption
+        private double integral = 0;
+        private double previousError = 0;
+        private double desiredPosition = 0.5;
         private Timer timer;
         final static double ELBOW_INCREMENT_INTERVAL_SECONDS = 0.05;
         final static double ELBOW_POWER_INCREMENT_PER_INTERVAL = 0.08;
+        final static double ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL = 0.16;
         final static double ELBOW_POWER_INITIAL_RAMP = 0.2;
         final static double ELBOW_MAX_DOWNWARD_POWER = 0.8;
         final static double EPSILON = 0.05;
@@ -55,6 +63,7 @@ public class Arm extends Subsystem {
                 //pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, SCALE_FACTOR, OFFSET);
                 timer = new Timer();
                 timer.start();
+                resetPID(0.5);
         }
 
         @Override
@@ -193,6 +202,10 @@ public class Arm extends Subsystem {
         /**
          * Moves the elbow motor up (in the opposite direction of gravity.)
          */
+        public void resetPID(double desiredPosition2) {
+                integral = desiredPosition2;
+                previousError = desiredPosition2;
+        }
         private void moveElbowUp() {
                 adjustMotor(elbow, +1, ELBOW_INCREMENT_INTERVAL_SECONDS,
                             ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INITIAL_RAMP,
@@ -237,6 +250,20 @@ public class Arm extends Subsystem {
                                 stopElbowGradually();
                         }
                         wrist.set(h);
+                        if (oi.rightJoystick.getRawButton(6)) {
+                                double error = desiredPosition - this.pot.get();
+                                this.integral += error*secondsPerIteration;
+                                double derivative = (error-this.previousError)/secondsPerIteration;
+                                double desiredPower = (kP*error) + (kI*this.integral) + (kD * derivative);
+                                if (desiredPower > 1) {
+                                        desiredPower = 1;
+                                }
+                                if (desiredPower < -1) {
+                                        desiredPower = -1;
+                                }
+                                elbow.set(desiredPower);
+                                this.previousError = error;
+                        }
                 } else {
                         /*
                          * double left = 0; double right = 0;
