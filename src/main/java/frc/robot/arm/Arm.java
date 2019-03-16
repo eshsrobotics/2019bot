@@ -204,7 +204,7 @@ public class Arm extends Subsystem {
          */
         private void moveElbowDown() {
                 adjustMotor(elbow, -1, ELBOW_INCREMENT_INTERVAL_SECONDS,
-                            ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INITIAL_RAMP,
+                            ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
         }
 
@@ -213,7 +213,7 @@ public class Arm extends Subsystem {
          */
         private void stopElbowGradually() {
                 adjustMotor(elbow, 0, ELBOW_INCREMENT_INTERVAL_SECONDS,
-                            ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INITIAL_RAMP,
+                ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
         }
 
