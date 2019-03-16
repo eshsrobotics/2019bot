@@ -21,9 +21,9 @@ public class Arm extends Subsystem {
         private AnalogPotentiometer pot;
         private Timer timer;
         final static double ELBOW_INCREMENT_INTERVAL_SECONDS = 0.05;
-        final static double ELBOW_POWER_INCREMENT_PER_INTERVAL = 0.02;
+        final static double ELBOW_POWER_INCREMENT_PER_INTERVAL = 0.08;
         final static double ELBOW_POWER_INITIAL_RAMP = 0.2;
-        final static double ELBOW_MAX_DOWNWARD_POWER = 0.3;
+        final static double ELBOW_MAX_DOWNWARD_POWER = 0.8;
         final static double EPSILON = 0.05;
         double lastIncrementTimeSeconds = 0;
 
@@ -37,13 +37,13 @@ public class Arm extends Subsystem {
         // not the correct value, but whatever; we can work around that in software.
         //
         // Update: The potentiometer had a resistance in the M
-        private final static double MIN_INPUT_POT_VALUE = 0;
-        private final static double MAX_INPUT_POT_VALUE = 1.0; // 0.27;
+        private final static double MIN_INPUT_POT_VALUE = 0.18;
+        private final static double MAX_INPUT_POT_VALUE = 0.72;
 
         // The test potentiometer I have here goes from about 4:00 (120 degrees) to
         // about 8:00 (240 degrees).
-        private final static double MIN_OUTPUT_POT_VALUE = 120;
-        private final static double MAX_OUTPUT_POT_VALUE = 240;
+        private final static double MIN_OUTPUT_POT_VALUE = 30; // Measured from vertical
+        private final static double MAX_OUTPUT_POT_VALUE = 150;
         private final static double SCALE_FACTOR = (MAX_OUTPUT_POT_VALUE - MIN_OUTPUT_POT_VALUE)
                 / (MAX_INPUT_POT_VALUE - MIN_INPUT_POT_VALUE);
         private final double OFFSET = MIN_OUTPUT_POT_VALUE;
@@ -51,8 +51,8 @@ public class Arm extends Subsystem {
         public Arm() {
                 wrist = new Spark(RobotMap.WRIST_MOVE);
                 elbow = new Spark(RobotMap.ELBOW_MOVE);
-                // pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, 1.0, 0.0);
-                pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, SCALE_FACTOR, OFFSET);
+                pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, 1.0, 0.0);
+                //pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, SCALE_FACTOR, OFFSET);
                 timer = new Timer();
                 timer.start();
         }
@@ -73,18 +73,23 @@ public class Arm extends Subsystem {
                 // u is our parameter of interpolation -- how far along the range we are.
                 //
                 // u = (current - min) / (max - min)
-
-                double u = (pot.get() - MIN_OUTPUT_POT_VALUE) / (MAX_OUTPUT_POT_VALUE - MIN_OUTPUT_POT_VALUE);
+                /*double u = (pot.get() - MIN_OUTPUT_POT_VALUE) / (MAX_OUTPUT_POT_VALUE - MIN_OUTPUT_POT_VALUE);
                 if (u < RobotMap.MIN_MOTOR_POWER) {
                         u = 0;
                 } else if (u > 1) {
                         u = 1;
-                }
+                }*/
+
+                double angle = (pot.get()-MIN_INPUT_POT_VALUE)*SCALE_FACTOR+MIN_OUTPUT_POT_VALUE;
+                double u = (pot.get()-MIN_INPUT_POT_VALUE)/(MAX_INPUT_POT_VALUE-MIN_INPUT_POT_VALUE);
 
                 // At u = 0.5 we want no power, and at u = 0 or 1, we want max power (in
                 // opposite directions.)
-                double power = 2 * (u - 0.5);
+                double power = -2.0 * (u - 0.5);
                 // elbow.set(power);
+
+                System.out.printf("Raw Pot: %.3f, Angle: %.3f, U: %.2f, Power: %.2f\n",
+                                   pot.get(), angle, u, power);
 
                 // System.out.printf("u = (%.1f-%.1f)/(%.1f-%.1f) = %.2f | desired, actual power
                 // = %.2f, %.2f ",
