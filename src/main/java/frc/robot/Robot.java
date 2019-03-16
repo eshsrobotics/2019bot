@@ -51,6 +51,12 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 
+  @Override
+  public void disabledInit() {
+    System.out.println("I'm disabled daddy!");
+    super.disabledInit();
+  }
+
   /**
    * This function is called every robot packet, no matter the mode. Use this for
    * items like diagnostics that you want ran during disabled, autonomous,
@@ -113,7 +119,6 @@ public class Robot extends TimedRobot {
     if (!claw.canClawClose()) {
       claw.stopClosing();
     }
-    arm.setElbowMotorSpeedBasedOnElbowPotentiometer();
     tank.tankDrive(oi);
     // motor.set(1);
     // System.out.println(motor.get());

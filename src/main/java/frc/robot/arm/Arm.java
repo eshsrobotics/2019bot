@@ -19,14 +19,26 @@ public class Arm extends Subsystem {
         private SpeedController wrist;
         private SpeedController elbow;
         private AnalogPotentiometer pot;
+        static double[] DESIRED_ELBOW_POSITIONS = { 0.27, 0.35, 0.4, 0.44, 0.5, 0.6, 0.7 }; // These are potentiometer values.
+        static int currentPosition = 0;
+
+        // PID invariants.
+        final static double secondsPerIteration = 0.02; //assumption
+
+        // PID constants for the elbow.
         final static double kI = 0;
         final static double kD = 0;
-        final static double kP = 36;
-        final static double secondsPerIteration = 0.02; //assumption
+        final static double kP = 30;
+
+        // PID member variables for the elbow.
         private double integral = 0;
         private double previousError = 0;
-        private double desiredPosition = 0.5;
+        private double desiredPosition = DESIRED_ELBOW_POSITIONS[0];
+
+        // This is used to provide smooth manual movement for the elbow and wrist.
         private Timer timer;
+
+        // Elbow manual movement parameters.
         final static double ELBOW_INCREMENT_INTERVAL_SECONDS = 0.05;
         final static double ELBOW_POWER_INCREMENT_PER_INTERVAL = 0.08;
         final static double ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL = 0.16;
@@ -45,7 +57,7 @@ public class Arm extends Subsystem {
         // not the correct value, but whatever; we can work around that in software.
         //
         // Update: The potentiometer had a resistance in the M
-        private final static double MIN_INPUT_POT_VALUE = 0.18;
+        private final static double MIN_INPUT_POT_VALUE = 0.26;
         private final static double MAX_INPUT_POT_VALUE = 0.72;
 
         // The test potentiometer I have here goes from about 4:00 (120 degrees) to
@@ -74,41 +86,6 @@ public class Arm extends Subsystem {
         @Override
         public void initDefaultCommand() {
                 // myRobot = new DifferentialDrive(left, right);
-        }
-
-        public void setElbowMotorSpeedBasedOnElbowPotentiometer() {
-                // Use linear interpolation for now.
-                //
-                // u is our parameter of interpolation -- how far along the range we are.
-                //
-                // u = (current - min) / (max - min)
-                /*double u = (pot.get() - MIN_OUTPUT_POT_VALUE) / (MAX_OUTPUT_POT_VALUE - MIN_OUTPUT_POT_VALUE);
-                if (u < RobotMap.MIN_MOTOR_POWER) {
-                        u = 0;
-                } else if (u > 1) {
-                        u = 1;
-                }*/
-
-                double angle = (pot.get()-MIN_INPUT_POT_VALUE)*SCALE_FACTOR+MIN_OUTPUT_POT_VALUE;
-                double u = (pot.get()-MIN_INPUT_POT_VALUE)/(MAX_INPUT_POT_VALUE-MIN_INPUT_POT_VALUE);
-
-                // At u = 0.5 we want no power, and at u = 0 or 1, we want max power (in
-                // opposite directions.)
-                double power = -2.0 * (u - 0.5);
-                // elbow.set(power);
-
-                System.out.printf("Raw Pot: %.3f, Angle: %.3f, U: %.2f, Power: %.2f\n",
-                                   pot.get(), angle, u, power);
-
-                // System.out.printf("u = (%.1f-%.1f)/(%.1f-%.1f) = %.2f | desired, actual power
-                // = %.2f, %.2f ",
-                // pot.get(),
-                // MIN_OUTPUT_POT_VALUE,
-                // MAX_OUTPUT_POT_VALUE,
-                // MIN_OUTPUT_POT_VALUE,
-                // u,
-                // power,
-                // elbow.get());
         }
 
         /**
@@ -182,7 +159,7 @@ public class Arm extends Subsystem {
                                 if (speed < min) {
                                         speed = min;
                                 }
-                                System.out.printf("Decreased power to %.2f\n", speed);
+                                //System.out.printf("Decreased power to %.2f\n", speed);
                         }
                 } else {
                         // Speed decays when there's no set power...but we don't instantly stop (that might
@@ -193,19 +170,68 @@ public class Arm extends Subsystem {
                                 if (Math.abs(speed) < EPSILON) {
                                         speed = 0;
                                 }
-                                System.out.printf("Power decaying to %.2f\n", speed);
+                              //  System.out.printf("Power decaying to %.2f\n", speed);
                         }
                 }
                 motor.set(speed);
         }
+        /**
+         * This function is meant to be using during manual control; PID control will smooth the motor
+         * response on its own.
+         */
+
+        public void resetPID(double desiredPosition) {
+                integral = desiredPosition;
+                previousError = desiredPosition;
+                this.desiredPosition = desiredPosition;
+        }
+        /**
+         * Sets out PID goal position to the given index in the DESIRED_ELOBW_POSITIONS array.
+         *          * 
+         * Note that this does not actually cause PID movement!  You must hold down a button to override
+         * the manual controls and effect PID movement to the desired position.
+         * 
+         * @param position The index of the desired position in the hard coded array of encoder values.
+         */
+        private void setDesiredPosition(int position) { 
+                if (position >= DESIRED_ELBOW_POSITIONS.length) {
+                        position = DESIRED_ELBOW_POSITIONS.length - 1;
+                } else if (position < 0) {
+                        position = 0;
+                } 
+                System.out.println("\nGoing to " + DESIRED_ELBOW_POSITIONS[position] + "\n");
+                resetPID(DESIRED_ELBOW_POSITIONS[position]);
+        }
+
+        /**
+         * Goes up to the previous position in the DESIRED_ELBOW_POSITIONS array, in effect causing the arm to move to its
+         * previous designated position.
+         */
+        private void goUpOnePosition() {
+                currentPosition ++;
+                if (currentPosition >= DESIRED_ELBOW_POSITIONS.length) {
+                        currentPosition = DESIRED_ELBOW_POSITIONS.length - 1;
+                }
+                setDesiredPosition(currentPosition);
+        }
+
+        /**
+         * Goes down to the next position in the DESIRED_ELBOW_POSITIONS array, in effect causing the arm
+         * to move to its next designated position.
+         */
+        private void goDownOnePosition() {
+                currentPosition --;
+                if (currentPosition < 0) {
+                        currentPosition = 0;
+                } 
+                setDesiredPosition(currentPosition);
+        }
 
         /**
          * Moves the elbow motor up (in the opposite direction of gravity.)
+         * 
+         * This is only used during manual control.
          */
-        public void resetPID(double desiredPosition2) {
-                integral = desiredPosition2;
-                previousError = desiredPosition2;
-        }
         private void moveElbowUp() {
                 adjustMotor(elbow, +1, ELBOW_INCREMENT_INTERVAL_SECONDS,
                             ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INITIAL_RAMP,
@@ -214,6 +240,8 @@ public class Arm extends Subsystem {
 
         /**
          * Moves the elbow down (in the same direction as gravity.)
+         * 
+         * This is only used during manual control.
          */
         private void moveElbowDown() {
                 adjustMotor(elbow, -1, ELBOW_INCREMENT_INTERVAL_SECONDS,
@@ -223,10 +251,12 @@ public class Arm extends Subsystem {
 
         /**
          * Whether the elbow is moving up or down, this function brings it to a gradual halt.
+         * 
+         * This is only used during manual control (specifically, when the throttle is released.)
          */
         private void stopElbowGradually() {
                 adjustMotor(elbow, 0, ELBOW_INCREMENT_INTERVAL_SECONDS,
-                ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_POWER_INITIAL_RAMP,
+                            ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
         }
 
@@ -263,6 +293,12 @@ public class Arm extends Subsystem {
                                 }
                                 elbow.set(desiredPower);
                                 this.previousError = error;
+                        }
+                        if (oi.rightJoystick.getRawButtonPressed(5)) {
+                                goUpOnePosition();
+                        }
+                        if (oi.leftJoystick.getRawButtonPressed(5)) {
+                                goDownOnePosition();    
                         }
                 } else {
                         /*
