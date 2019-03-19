@@ -19,6 +19,22 @@ public class Arm extends Subsystem {
         private SpeedController wrist;
         private SpeedController elbow;
         private AnalogPotentiometer pot;
+
+        // The official heights of (the centers of) our targets are:
+        //
+        //     19" (loadstation hatch)
+        //     19" (rocket hatch, level 1; habitat hatch)
+        //     28" (rocket ball,  level 1)
+        //     47" (rocket hatch, level 2)
+        //     56" (rocket ball,  level 2)
+        //     75" (rocket hatch, level 3)
+        //     84" (rocket ball,  level 3)
+        //
+        // Sources: Game manual, pg. 17/125, section 4.3
+        //          Game manual, pg. 21/125, section 4.4
+        //
+        // TODO: Measure elbow/wrist potentiometer positions that correspond
+        // to these heights.  (The numbers that you see right now are made-up.)
         static double[] DESIRED_ELBOW_POSITIONS = { 0.27, 0.35, 0.4, 0.44, 0.5, 0.6, 0.7 }; // These are potentiometer values.
         static int currentPosition = 0;
 
@@ -187,18 +203,18 @@ public class Arm extends Subsystem {
         }
         /**
          * Sets out PID goal position to the given index in the DESIRED_ELOBW_POSITIONS array.
-         *          * 
+         *          *
          * Note that this does not actually cause PID movement!  You must hold down a button to override
          * the manual controls and effect PID movement to the desired position.
-         * 
+         *
          * @param position The index of the desired position in the hard coded array of encoder values.
          */
-        private void setDesiredPosition(int position) { 
+        private void setDesiredPosition(int position) {
                 if (position >= DESIRED_ELBOW_POSITIONS.length) {
                         position = DESIRED_ELBOW_POSITIONS.length - 1;
                 } else if (position < 0) {
                         position = 0;
-                } 
+                }
                 System.out.println("\nGoing to " + DESIRED_ELBOW_POSITIONS[position] + "\n");
                 resetPID(DESIRED_ELBOW_POSITIONS[position]);
         }
@@ -223,13 +239,13 @@ public class Arm extends Subsystem {
                 currentPosition --;
                 if (currentPosition < 0) {
                         currentPosition = 0;
-                } 
+                }
                 setDesiredPosition(currentPosition);
         }
 
         /**
          * Moves the elbow motor up (in the opposite direction of gravity.)
-         * 
+         *
          * This is only used during manual control.
          */
         private void moveElbowUp() {
@@ -240,7 +256,7 @@ public class Arm extends Subsystem {
 
         /**
          * Moves the elbow down (in the same direction as gravity.)
-         * 
+         *
          * This is only used during manual control.
          */
         private void moveElbowDown() {
@@ -251,7 +267,7 @@ public class Arm extends Subsystem {
 
         /**
          * Whether the elbow is moving up or down, this function brings it to a gradual halt.
-         * 
+         *
          * This is only used during manual control (specifically, when the throttle is released.)
          */
         private void stopElbowGradually() {
@@ -298,7 +314,7 @@ public class Arm extends Subsystem {
                                 goUpOnePosition();
                         }
                         if (oi.leftJoystick.getRawButtonPressed(5)) {
-                                goDownOnePosition();    
+                                goDownOnePosition();
                         }
                 } else {
                         /*
