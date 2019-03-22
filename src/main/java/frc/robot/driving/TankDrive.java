@@ -10,12 +10,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
- * This subsystem is used to control the tank drive for 2019bot. 
+ * This subsystem is used to control the tank drive for 2019bot.
  * 
  * @author Spencer Moore
  */
 
-public class TankDrive extends Subsystem{
+public class TankDrive extends Subsystem {
 
 	DifferentialDrive myRobot;
 	SpeedController leftFront;
@@ -26,6 +26,9 @@ public class TankDrive extends Subsystem{
 	SpeedController rightMid;
 	SpeedControllerGroup left;
 	SpeedControllerGroup right;
+	boolean sneaking = false;
+	double speedMod = 0.8;
+
 	public TankDrive() {
 
 		rightFront = new Spark(RobotMap.RIGHT_FRONT_PORT);
@@ -36,6 +39,7 @@ public class TankDrive extends Subsystem{
 		right = new SpeedControllerGroup(rightFront, rightBack);
 		myRobot = new DifferentialDrive(left, right);
 	}
+
 	@Override
 	public void setName(String subsystem, String name) {
 
@@ -48,7 +52,21 @@ public class TankDrive extends Subsystem{
 
 	public void tankDrive(OI oi) {
 		if (oi.joysticksAttached) {
-			myRobot.tankDrive(oi.leftJoystick.getZ(), - oi.rightJoystick.getZ());
+			if (oi.rightJoystick.getRawButtonPressed(2) && !sneaking) {
+				speedMod = 0.35;
+				sneaking = true;
+			} else {
+				speedMod = 0.8;
+				sneaking = false;
+			}
+			if (oi.leftJoystick.getRawButton(11)) {
+				myRobot.tankDrive(0.7, -0.7);
+			}
+			if (oi.rightJoystick.getRawButton(11)) {
+				myRobot.tankDrive(-0.7, 0.7);
+			}
+			myRobot.tankDrive(oi.rightJoystick.getZ() * speedMod, -oi.leftJoystick.getZ() * speedMod);
+
 		} else {
 			double left = 0;
 			double right = 0;
@@ -76,11 +94,11 @@ public class TankDrive extends Subsystem{
 				}
 			}
 
-			myRobot.tankDrive(- left, - right);
+			myRobot.tankDrive(-left, -right);
 		}
 	}
-	
-	public void tankDrive (double leftSpeed, double rightSpeed) {
-		myRobot.tankDrive(- leftSpeed, - rightSpeed);
+
+	public void tankDrive(double leftSpeed, double rightSpeed) {
+		myRobot.tankDrive(-leftSpeed, -rightSpeed);
 	}
 }

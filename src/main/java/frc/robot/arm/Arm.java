@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
  */
 
 public class Arm extends Subsystem {
-        private SpeedController wrist;
+        private SpeedController wrist1;
+        private SpeedController wrist2;
         private SpeedController elbow;
         private AnalogPotentiometer pot;
         static double[] DESIRED_ELBOW_POSITIONS = { 0.27, 0.35, 0.4, 0.44, 0.5, 0.6, 0.7 }; // These are potentiometer values.
@@ -69,7 +70,8 @@ public class Arm extends Subsystem {
         private final double OFFSET = MIN_OUTPUT_POT_VALUE;
 
         public Arm() {
-                wrist = new Spark(RobotMap.WRIST_MOVE);
+                wrist1 = new Spark(RobotMap.WRIST_MOVE_ONE);
+                wrist2 = new Spark(RobotMap.WRIST_MOVE_TWO);
                 elbow = new Spark(RobotMap.ELBOW_MOVE);
                 pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, 1.0, 0.0);
                 //pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, SCALE_FACTOR, OFFSET);
@@ -234,7 +236,7 @@ public class Arm extends Subsystem {
          */
         private void moveElbowUp() {
                 adjustMotor(elbow, +1, ELBOW_INCREMENT_INTERVAL_SECONDS,
-                            ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INITIAL_RAMP,
+                            ELBOW_POWER_INCREMENT_PER_INTERVAL, 0.2, ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
         }
 
@@ -245,7 +247,7 @@ public class Arm extends Subsystem {
          */
         private void moveElbowDown() {
                 adjustMotor(elbow, -1, ELBOW_INCREMENT_INTERVAL_SECONDS,
-                            ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_POWER_INITIAL_RAMP,
+                            ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, 0.2, ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
         }
 
@@ -262,25 +264,35 @@ public class Arm extends Subsystem {
 
         public void arm(OI oi) {
                 if (oi.joysticksAttached) {
-                        double h = wrist.get();
-                        if (oi.leftJoystick.getRawButton(3)) {
-                                h = 0.3;
-                        } else if (oi.rightJoystick.getRawButton(3)) {
+                        double h = wrist1.get();
+                        if (oi.rightJoystick.getRawButton(6)) {
+                                h = 0.8;
+                        } else if (oi.rightJoystick.getRawButton(4)) {
                                 // Take full advantage of gravity.
-                                h = -1;
+                                h = -0.35;
                         } else {
                                 h = 0;
                         }
 
-                        if (oi.leftJoystick.getRawButton(4)) {
+                        if (oi.leftJoystick.getRawButton(5)) {
                                 moveElbowUp();
-                        } else if (oi.rightJoystick.getRawButton(4)) {
+                        } else if (oi.leftJoystick.getRawButton(3)) {
                                 moveElbowDown();
                         } else {
                                 stopElbowGradually();
                         }
-                        wrist.set(h);
-                        if (oi.rightJoystick.getRawButton(6)) {
+                        wrist1.set(h);
+                        wrist2.set(-h);
+
+                        
+                        
+                        /*if (oi.rightJoystick.getRawButtonPressed(3)) {
+                                goUpOnePosition();
+                        }
+                        if (oi.leftJoystick.getRawButtonPressed(4)) {
+                                goDownOnePosition();    
+                        }
+                        if (oi.rightJoystick.getRawButton(3) || oi.leftJoystick.getRawButton(4)) {
                                 double error = desiredPosition - this.pot.get();
                                 this.integral += error*secondsPerIteration;
                                 double derivative = (error-this.previousError)/secondsPerIteration;
@@ -294,12 +306,6 @@ public class Arm extends Subsystem {
                                 elbow.set(desiredPower);
                                 this.previousError = error;
                         }
-                        if (oi.rightJoystick.getRawButtonPressed(5)) {
-                                goUpOnePosition();
-                        }
-                        if (oi.leftJoystick.getRawButtonPressed(5)) {
-                                goDownOnePosition();    
-                        }
                 } else {
                         /*
                          * double left = 0; double right = 0;
@@ -311,7 +317,7 @@ public class Arm extends Subsystem {
                          * *= 0.5; right *= 0.5; } }
                          *
                          * myRobot.tankDrive(- left, - right);
-                         */}
+                         }*/ }
         }
 
         public void arm(/* double leftSpeed, double rightSpeed */) {
