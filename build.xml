@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="teams"
+         default="build"
+         xmlns:if="ant:if"
+         xmlns:unless="ant:unless">
+
+    <!-- We don't know how to download the wpilibj dependencies, but Gradle
+         does.  We defer to it. -->
+    <property environment="env"/>
+    <property name="gradle.base.dir" value="${env.HOME}/.gradle" />
+    <fileset dir="${gradle.base.dir}" id="_wpilibj">
+        <or>
+            <filename name="**/wpilibj*.jar"/>
+            <filename name="**/NetworkTables*.jar"/>
+        </or>
+    </fileset>
+
+    <!-- Library dependencies and the CLASSPATH. -->
+    <property name="lib.dir" value="lib" />
+    <path id="_classpath">
+        <fileset dir="${lib.dir}">
+            <filename name="**/*.jar"/>
+        </fileset>
+        <fileset refid="_wpilibj"/>
+    </path>
+    <pathconvert property="build.classpath" refid="_classpath"/>
+    <echo message="Building with the following classpath: ${build.classpath}"/>
+
+    <!-- Source path. -->
+    <property name="src.dir" value="src"/>
+    <path id="_source">
+        <fileset dir="${src.dir}" id="_source.fileset">
+            <filename name="**/*.java"/>
+        </fileset>
+    </path>
+
+    <!-- Build directory. -->
+    <property name="build.dir" value="build"/>
+    <mkdir dir="${build.dir}"/>
+
+    <target name="build">
+              <property name="src.dir" value="src" />
+
+              <javac srcdir="${src.dir}" id="_src.fileset"
+                     destdir="${build.dir}"
+                     classpath="${build.classpath}"
+                     source="1.8"
+                     target="1.8">
+                     <filename name="**/*.java"/>
+              </javac>
+    </target>
+</project>
