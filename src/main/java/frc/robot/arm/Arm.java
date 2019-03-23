@@ -174,8 +174,8 @@ public class Arm extends Subsystem {
                                 if (speed < min) {
                                         speed = min;
                                 }
-                                //System.out.printf("Decreased power to %.2f\n", speed);
-                        }
+                                System.out.printf("Decreased power to %.2f\n", speed);
+                        } 
                 } else {
                         // Speed decays when there's no set power...but we don't instantly stop (that might
                         // cause the motor to jerk badly.)
@@ -330,6 +330,10 @@ public class Arm extends Subsystem {
                         } else {
                                 stopElbowGradually();
                         }                        
+
+                        if (oi.leftJoystick.getRawButton(4)) {
+                                moveElbowDown();
+                        }
                 }
         }
 
