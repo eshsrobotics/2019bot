@@ -33,6 +33,10 @@ public class RobotMap {
 	// Sensor ports (analog)
 	public static int TEST_POTENTIOMETER = 0;
 
+	// Sneak values (force multipliers)
+	public static double DRIVE_SNEAK_VALUE = 0.6;
+	public static double WRIST_SNEAK_VALUE = 0.64;
+
 	public RobotMap() {
 	}
 }

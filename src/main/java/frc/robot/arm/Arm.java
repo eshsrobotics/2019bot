@@ -1,6 +1,7 @@
 package frc.robot.arm;
 
 import frc.robot.OI;
+import frc.robot.Sneak;
 import frc.robot.driving.RobotMap;
 
 import edu.wpi.first.wpilibj.Spark;
@@ -39,6 +40,9 @@ public class Arm extends Subsystem {
         // This is used to provide smooth manual movement for the elbow and wrist.
         private Timer timer;
 
+        // Used to slow down the wrist.
+        private Sneak sneak;
+
         // Elbow manual movement parameters.
         final static double ELBOW_INCREMENT_INTERVAL_SECONDS = 0.05;
         final static double ELBOW_POWER_INCREMENT_PER_INTERVAL = 0.08;
@@ -69,7 +73,8 @@ public class Arm extends Subsystem {
                 / (MAX_INPUT_POT_VALUE - MIN_INPUT_POT_VALUE);
         private final double OFFSET = MIN_OUTPUT_POT_VALUE;
 
-        public Arm() {
+        public Arm(Sneak sneak) {
+                this.sneak = sneak;
                 wrist1 = new Spark(RobotMap.WRIST_MOVE_ONE);
                 wrist2 = new Spark(RobotMap.WRIST_MOVE_TWO);
                 elbow = new Spark(RobotMap.ELBOW_MOVE);
@@ -281,8 +286,8 @@ public class Arm extends Subsystem {
                         } else {
                                 stopElbowGradually();
                         }
-                        wrist1.set(h);
-                        wrist2.set(-h);
+                        wrist1.set(h * sneak.get());
+                        wrist2.set(-h * sneak.get());
 
                         
                         

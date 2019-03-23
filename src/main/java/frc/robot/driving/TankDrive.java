@@ -1,6 +1,7 @@
 package frc.robot.driving;
 
 import frc.robot.OI;
+import frc.robot.Sneak;
 import frc.robot.driving.RobotMap;
 
 import edu.wpi.first.wpilibj.Spark;
@@ -28,8 +29,9 @@ public class TankDrive extends Subsystem {
 	SpeedControllerGroup right;
 	boolean sneaking = false;
 	double speedMod = 0.8;
+	Sneak sneak;
 
-	public TankDrive() {
+	public TankDrive(Sneak sneak) {
 
 		rightFront = new Spark(RobotMap.RIGHT_FRONT_PORT);
 		rightBack = new Spark(RobotMap.RIGHT_BACK_PORT);
@@ -38,6 +40,7 @@ public class TankDrive extends Subsystem {
 		left = new SpeedControllerGroup(leftFront, leftBack);
 		right = new SpeedControllerGroup(rightFront, rightBack);
 		myRobot = new DifferentialDrive(left, right);
+		this.sneak = sneak;
 	}
 
 	@Override
@@ -52,20 +55,8 @@ public class TankDrive extends Subsystem {
 
 	public void tankDrive(OI oi) {
 		if (oi.joysticksAttached) {
-			if (oi.rightJoystick.getRawButtonPressed(2) && !sneaking) {
-				speedMod = 0.35;
-				sneaking = true;
-			} else {
-				speedMod = 0.8;
-				sneaking = false;
-			}
-			if (oi.leftJoystick.getRawButton(11)) {
-				myRobot.tankDrive(0.7, -0.7);
-			}
-			if (oi.rightJoystick.getRawButton(11)) {
-				myRobot.tankDrive(-0.7, 0.7);
-			}
-			myRobot.tankDrive(oi.rightJoystick.getZ() * speedMod, -oi.leftJoystick.getZ() * speedMod);
+
+			myRobot.tankDrive(oi.rightJoystick.getZ() * sneak.get(), -oi.leftJoystick.getZ() * sneak.get());
 
 		} else {
 			double left = 0;
