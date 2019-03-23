@@ -43,6 +43,13 @@ public class Arm extends Subsystem {
         // Used to slow down the wrist.
         private Sneak sneak;
 
+        // Wrist manual movement parameters.
+        final static double WRIST_INCREMENT_INTERVAL_SECONDS = 0.05;
+        final static double WRIST_POWER_INCREMENT_PER_INTERVAL = 0.08;
+        final static double WRIST_SLOW_DOWN_INCREMENT_PER_LEVEL = 0.16;
+        final static double WRIST_INITIAL_POWER_RAMP = 0.3;
+        final static double WRIST_MAX_DOWNWARD_POWER = 0.8;
+
         // Elbow manual movement parameters.
         final static double ELBOW_INCREMENT_INTERVAL_SECONDS = 0.05;
         final static double ELBOW_POWER_INCREMENT_PER_INTERVAL = 0.08;
@@ -243,6 +250,17 @@ public class Arm extends Subsystem {
                 adjustMotor(elbow, +1, ELBOW_INCREMENT_INTERVAL_SECONDS,
                             ELBOW_POWER_INCREMENT_PER_INTERVAL, 0.2, ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
+        }
+
+        private void moveWristUp() {
+                adjustMotor(wrist1, 
+                        1, 
+                        WRIST_INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP, 
+                        -WRIST_MAX_DOWNWARD_POWER, 
+                        1.0);
         }
 
         /**
