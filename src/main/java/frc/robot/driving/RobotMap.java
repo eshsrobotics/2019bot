@@ -25,7 +25,7 @@ public class RobotMap {
 	public static int WRIST_MOVE_ONE = 1;
 	public static int WRIST_MOVE_TWO = 7;
 	public static int CLAW_MOVE = 4;
-	public static int ELBOW_MOVE = 6; 
+	public static int ELBOW_MOVE = 8; 
 
 	// Sensor ports (digital I/O)
 	public static int CLAW_CLOSE_LIMIT_SWITCH_1 = 1;
