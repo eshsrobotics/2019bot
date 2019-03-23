@@ -45,9 +45,10 @@ public class Arm extends Subsystem {
 
         // Wrist manual movement parameters.
         final static double INCREMENT_INTERVAL_SECONDS = 0.05;
-        final static double WRIST_POWER_INCREMENT_PER_INTERVAL = 0.08;
-        final static double WRIST_SLOW_DOWN_INCREMENT_PER_LEVEL = 0.16;
-        final static double WRIST_INITIAL_POWER_RAMP = 0.3;
+        final static double WRIST_POWER_INCREMENT_PER_INTERVAL = 0.16;
+        final static double WRIST_SLOW_DOWN_INCREMENT_PER_LEVEL = 0.40;
+        final static double WRIST_INITIAL_POWER_RAMP_DOWN = 0.3;
+        final static double WRIST_INITIAL_POWER_RAMP_UP = 0.6;
         final static double WRIST_MAX_DOWNWARD_POWER = 0.8;
 
         // Elbow manual movement parameters.
@@ -147,7 +148,7 @@ public class Arm extends Subsystem {
                 }
 
                 double speed = motor.get();
-                if (direction > 0) {
+                if (direction > 0) {                                          
                         // Slow increment every few intervals.
                         if (timer.get() - lastIncrementTimeSeconds > minUpdateIntervalSeconds) {
                                 lastIncrementTimeSeconds = timer.get();
@@ -184,7 +185,7 @@ public class Arm extends Subsystem {
                                 if (Math.abs(speed) < EPSILON) {
                                         speed = 0;
                                 }
-                              //  System.out.printf("Power decaying to %.2f\n", speed);
+                                // System.out.printf("Power decaying to %.2f\n", speed);
                         }
                 }
                 motor.set(speed);
@@ -256,12 +257,9 @@ public class Arm extends Subsystem {
         private void moveWristUp() {
                 adjustMotor(wrist1, 1, INCREMENT_INTERVAL_SECONDS, 
                         WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
-                        WRIST_INITIAL_POWER_RAMP, 
+                        WRIST_INITIAL_POWER_RAMP_UP, 
                         -WRIST_MAX_DOWNWARD_POWER, 1.0);
-                adjustMotor(wrist2, -1, INCREMENT_INTERVAL_SECONDS, 
-                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
-                        WRIST_INITIAL_POWER_RAMP, 
-                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
+                wrist2.set(-wrist1.get());
         }
 
         /**
@@ -278,12 +276,9 @@ public class Arm extends Subsystem {
         private void moveWristDown() {
                 adjustMotor(wrist1, -1, INCREMENT_INTERVAL_SECONDS, 
                         WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
-                        WRIST_INITIAL_POWER_RAMP, 
+                        WRIST_INITIAL_POWER_RAMP_DOWN, 
                         -WRIST_MAX_DOWNWARD_POWER, 1.0);
-                adjustMotor(wrist2, 1, INCREMENT_INTERVAL_SECONDS, 
-                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
-                        WRIST_INITIAL_POWER_RAMP, 
-                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
+                wrist2.set(-wrist1.get());
         }
 
         /**
@@ -300,12 +295,9 @@ public class Arm extends Subsystem {
         private void stopWristGradually() {        
                 adjustMotor(wrist1, 0, INCREMENT_INTERVAL_SECONDS, 
                         WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
-                        WRIST_INITIAL_POWER_RAMP, 
+                        WRIST_INITIAL_POWER_RAMP_DOWN, 
                         -WRIST_MAX_DOWNWARD_POWER, 1.0);
-                adjustMotor(wrist2, 0, INCREMENT_INTERVAL_SECONDS, 
-                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
-                        WRIST_INITIAL_POWER_RAMP, 
-                        -WRIST_MAX_DOWNWARD_POWER, 1.0);        
+                wrist2.set(-wrist1.get());       
         }
 
         public void arm(OI oi) {
