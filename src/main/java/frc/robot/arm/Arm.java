@@ -324,12 +324,12 @@ public class Arm extends Subsystem {
                         }
 
                         if (oi.leftJoystick.getRawButton(5)) {
-                                moveElbowUp();
+                                elbow.set(0.8);
                         } else if (oi.leftJoystick.getRawButton(3)) {
-                                moveElbowDown();
+                                elbow.set(-0.8);
                         } else {
-                                stopElbowGradually();
-                        }                        
+                                elbow.set(0);
+                        }
 
                         if (oi.leftJoystick.getRawButton(4)) {
                                 moveElbowDown();
