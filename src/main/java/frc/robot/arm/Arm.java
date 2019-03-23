@@ -43,6 +43,13 @@ public class Arm extends Subsystem {
         // Used to slow down the wrist.
         private Sneak sneak;
 
+        // Wrist manual movement parameters.
+        final static double INCREMENT_INTERVAL_SECONDS = 0.05;
+        final static double WRIST_POWER_INCREMENT_PER_INTERVAL = 0.08;
+        final static double WRIST_SLOW_DOWN_INCREMENT_PER_LEVEL = 0.16;
+        final static double WRIST_INITIAL_POWER_RAMP = 0.3;
+        final static double WRIST_MAX_DOWNWARD_POWER = 0.8;
+
         // Elbow manual movement parameters.
         final static double ELBOW_INCREMENT_INTERVAL_SECONDS = 0.05;
         final static double ELBOW_POWER_INCREMENT_PER_INTERVAL = 0.08;
@@ -240,9 +247,21 @@ public class Arm extends Subsystem {
          * This is only used during manual control.
          */
         private void moveElbowUp() {
-                adjustMotor(elbow, +1, ELBOW_INCREMENT_INTERVAL_SECONDS,
-                            ELBOW_POWER_INCREMENT_PER_INTERVAL, 0.2, ELBOW_POWER_INITIAL_RAMP,
+                adjustMotor(elbow, +1, INCREMENT_INTERVAL_SECONDS,
+                            ELBOW_POWER_INCREMENT_PER_INTERVAL, 0.2, 
+                            ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
+        }
+
+        private void moveWristUp() {
+                adjustMotor(wrist1, 1, INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP, 
+                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
+                adjustMotor(wrist2, -1, INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP, 
+                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
         }
 
         /**
@@ -256,6 +275,17 @@ public class Arm extends Subsystem {
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
         }
 
+        private void moveWristDown() {
+                adjustMotor(wrist1, -1, INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP, 
+                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
+                adjustMotor(wrist2, 1, INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP, 
+                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
+        }
+
         /**
          * Whether the elbow is moving up or down, this function brings it to a gradual halt.
          * 
@@ -265,6 +295,17 @@ public class Arm extends Subsystem {
                 adjustMotor(elbow, 0, ELBOW_INCREMENT_INTERVAL_SECONDS,
                             ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
+        }
+
+        private void stopWristGradually() {        
+                adjustMotor(wrist1, 0, INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP, 
+                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
+                adjustMotor(wrist2, 0, INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP, 
+                        -WRIST_MAX_DOWNWARD_POWER, 1.0);        
         }
 
         public void arm(OI oi) {
@@ -278,6 +319,17 @@ public class Arm extends Subsystem {
                         } else {
                                 h = 0;
                         }
+                        wrist1.set(h * sneak.get());
+                        wrist2.set(-h * sneak.get());
+
+                        if (oi.rightJoystick.getRawButton(5)) {
+                                moveWristUp();
+                        } else if (oi.rightJoystick.getRawButton(3)) {
+                                // Take full advantage of gravity.
+                                moveWristDown();
+                        } else {
+                                stopWristGradually();
+                        }
 
                         if (oi.leftJoystick.getRawButton(5)) {
                                 moveElbowUp();
@@ -285,44 +337,8 @@ public class Arm extends Subsystem {
                                 moveElbowDown();
                         } else {
                                 stopElbowGradually();
-                        }
-                        wrist1.set(h * sneak.get());
-                        wrist2.set(-h * sneak.get());
-
-                        
-                        
-                        /*if (oi.rightJoystick.getRawButtonPressed(3)) {
-                                goUpOnePosition();
-                        }
-                        if (oi.leftJoystick.getRawButtonPressed(4)) {
-                                goDownOnePosition();    
-                        }
-                        if (oi.rightJoystick.getRawButton(3) || oi.leftJoystick.getRawButton(4)) {
-                                double error = desiredPosition - this.pot.get();
-                                this.integral += error*secondsPerIteration;
-                                double derivative = (error-this.previousError)/secondsPerIteration;
-                                double desiredPower = (kP*error) + (kI*this.integral) + (kD * derivative);
-                                if (desiredPower > 1) {
-                                        desiredPower = 1;
-                                }
-                                if (desiredPower < -1) {
-                                        desiredPower = -1;
-                                }
-                                elbow.set(desiredPower);
-                                this.previousError = error;
-                        }
-                } else {
-                        /*
-                         * double left = 0; double right = 0;
-                         *
-                         * if (oi.forward.get()) { left = 1; right = 1; } else if (oi.back.get()) { left
-                         * = -1; right = -1; } else if (oi.left.get()) { left = -1; right = 1; } else if
-                         * (oi.right.get()) { left = 1; right = -1; } if (oi.sneak.get()) { if
-                         * (oi.left.get() || oi.right.get()) { left *= 0.8; right *= 0.8; } else { left
-                         * *= 0.5; right *= 0.5; } }
-                         *
-                         * myRobot.tankDrive(- left, - right);
-                         }*/ }
+                        }                        
+                }
         }
 
         public void arm(/* double leftSpeed, double rightSpeed */) {

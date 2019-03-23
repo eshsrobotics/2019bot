@@ -35,7 +35,7 @@ public class RobotMap {
 
 	// Sneak values (force multipliers)
 	public static double DRIVE_SNEAK_VALUE = 0.6;
-	public static double WRIST_SNEAK_VALUE = 0.64;
+	public static double WRIST_SNEAK_VALUE = 0.8;
 
 	public RobotMap() {
 	}
