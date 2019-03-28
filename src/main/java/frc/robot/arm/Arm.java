@@ -60,6 +60,9 @@ public class Arm extends Subsystem {
         final static double EPSILON = 0.05;
         double lastIncrementTimeSeconds = 0;
 
+        static final double ELBOW_GRADUAL_DECAY = 0.9275;
+        static final double ELBOW_GRADUAL_ACCELERATION = 0.4;
+
         // The scale factor here should be the range of degrees that the elbow
         // potentiometer is capable of.
         //
@@ -218,29 +221,6 @@ public class Arm extends Subsystem {
                 resetPID(DESIRED_ELBOW_POSITIONS[position]);
         }
 
-        /**
-         * Goes up to the previous position in the DESIRED_ELBOW_POSITIONS array, in effect causing the arm to move to its
-         * previous designated position.
-         */
-        private void goUpOnePosition() {
-                currentPosition ++;
-                if (currentPosition >= DESIRED_ELBOW_POSITIONS.length) {
-                        currentPosition = DESIRED_ELBOW_POSITIONS.length - 1;
-                }
-                setDesiredPosition(currentPosition);
-        }
-
-        /**
-         * Goes down to the next position in the DESIRED_ELBOW_POSITIONS array, in effect causing the arm
-         * to move to its next designated position.
-         */
-        private void goDownOnePosition() {
-                currentPosition --;
-                if (currentPosition < 0) {
-                        currentPosition = 0;
-                } 
-                setDesiredPosition(currentPosition);
-        }
 
         /**
          * Moves the elbow motor up (in the opposite direction of gravity.)
@@ -300,6 +280,23 @@ public class Arm extends Subsystem {
                 wrist2.set(-wrist1.get());       
         }
 
+        /***
+         * Instead of just incrementing a motor by a desired value directly, take the average
+         * of the incremented value and the delta and set the motor speed to that.
+         * 
+         * By calling this with a fixed frequency, we can achieve both gradual acceleration
+         * and gradual deceleration.
+         * 
+         * @param speedController The motor to change.
+         * @param delta The amount to change the speedController's current speed by.
+         * @param decay By what percetage should we dimish per call?  This should be between 0 (instant) and 1 (never slows at all.)
+         */
+        void gradualChange(SpeedController speedController, double delta, double decay) {
+                speedController.set((speedController.get() + delta) * decay * sneak.get());
+                System.out.printf("Speed Controller's current value is: %.2f\n", speedController.get());
+        }
+
+
         public void arm(OI oi) {
                 if (oi.joysticksAttached) {
                         double h = wrist1.get();
@@ -324,11 +321,14 @@ public class Arm extends Subsystem {
                         }
 
                         if (oi.leftJoystick.getRawButton(5)) {
-                                elbow.set(0.8);
+                                //elbow.set(0.8);
+                                gradualChange(elbow, ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
                         } else if (oi.leftJoystick.getRawButton(3)) {
-                                elbow.set(-0.8);
+                                //elbow.set(-0.8);
+                                gradualChange(elbow, -ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
                         } else {
-                                elbow.set(0);
+                                //elbow.set(0);
+                                gradualChange(elbow, 0, ELBOW_GRADUAL_DECAY);
                         }
 
                         if (oi.leftJoystick.getRawButton(4)) {
@@ -337,7 +337,6 @@ public class Arm extends Subsystem {
                 }
         }
 
-        public void arm(/* double leftSpeed, double rightSpeed */) {
-                // myRobot.tankDrive(- leftSpeed, - rightSpeed);
+        public void arm() {
         }
 }
