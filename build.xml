@@ -12,6 +12,7 @@
         <or>
             <filename name="**/wpilibj*.jar"/>
             <filename name="**/NetworkTables*.jar"/>
+            <filename name="**/ntcore-java*.jar"/>
         </or>
     </fileset>
 
@@ -24,6 +25,14 @@
         <fileset refid="_wpilibj"/>
     </path>
     <pathconvert property="build.classpath" refid="_classpath"/>
+
+    <!-- You should see the following JAR files in the classpath, or else the
+         build won't succeed:
+
+         networktables-input.jar (This is ours)
+         ntcore-java-x.y.z.jar   (The main networkTables classes)
+         wpilibj-java-x.y.z.jar  (The WPILibJ library)
+    -->
     <echo message="Building with the following classpath: ${build.classpath}"/>
 
     <!-- Source path. -->
