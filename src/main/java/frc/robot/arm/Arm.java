@@ -359,10 +359,10 @@ public class Arm extends Subsystem {
                                 stopWristGradually();
                         }
 
-                        if (oi.leftJoystick.getRawButton(5)) {
+                        if (oi.leftJoystick.getRawButton(5) || oi.elbowUpButton.get()) {
                                 //elbow.set(0.8);
                                 gradualChange(elbow, ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
-                        } else if (oi.leftJoystick.getRawButton(3)) {
+                        } else if (oi.leftJoystick.getRawButton(3) || oi.elbowDownButton.get()) {
                                 //elbow.set(-0.8);
                                 gradualChange(elbow, -ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
                         } else {

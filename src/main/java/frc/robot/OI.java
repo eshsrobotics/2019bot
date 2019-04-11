@@ -34,6 +34,9 @@ public class OI {
 	public Button climbUp;
 	public Button climbDown;
 
+	public Button elbowUpButton;
+	public Button elbowDownButton;
+
 	public Joystick leftJoystick;
 	public Joystick rightJoystick;
 	
@@ -59,6 +62,12 @@ public class OI {
 		leftJoystick = new Joystick(0);
 		rightJoystick = new Joystick(1);
 		
+		// NetworkTables should always function, whether joysticks are attached or not.
+		inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
+		NetworkTableInstance.getDefault().setUpdateRate(0.0166);
+		elbowUpButton = new NetworkButton(inputTable, "Up");
+		elbowDownButton = new NetworkButton(inputTable, "Down");
+
 		// Can set to false to force keyboard controls
 		joysticksAttached = leftJoystick != null && rightJoystick != null;
 		
@@ -94,8 +103,6 @@ public class OI {
 			 * For the mouse right and left buttons, use "Right Mouse" and "Left Mouse"
 			 */
 		  	System.out.println("Creating OI with network buttons");
-			inputTable = NetworkTableInstance.getDefault().getTable("inputTable");
-			NetworkTableInstance.getDefault().setUpdateRate(0.0166);
 			launchOut = new NetworkButton(inputTable, "J");
 			launchIn = new NetworkButton(inputTable, "K");
 			armIn = new NetworkButton(inputTable, "Up");

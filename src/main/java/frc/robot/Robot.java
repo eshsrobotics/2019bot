@@ -62,6 +62,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    try {
     CameraServer.getInstance().startAutomaticCapture();
     driveSneak = new Sneak(RobotMap.DRIVE_SNEAK_VALUE);
     wristSneak = new Sneak(RobotMap.WRIST_SNEAK_VALUE);
@@ -72,6 +73,11 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    } catch (Exception e) {
+      System.out.printf("Caught an exception during robotInit(): %s\n", e.getMessage());
+      e.printStackTrace();
+      System.exit(1);
+    }
   }
 
   @Override
