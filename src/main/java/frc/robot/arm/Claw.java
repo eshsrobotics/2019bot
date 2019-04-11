@@ -44,8 +44,10 @@ public class Claw extends Subsystem {
 			if (oi.joysticksAttached) {
 				double h = 0;
 				if (oi.leftJoystick.getTrigger()) {
+					System.out.println("REEEEEEEEEEEEEEEE\n\n");
 					h = 0.3;
 				} else if (oi.rightJoystick.getTrigger()) {
+					System.out.println("REEEEEEEEEEEEEEEE\n\n");
 					h = -0.3;
 				} else {
 					h = 0;

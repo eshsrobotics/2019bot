@@ -1,6 +1,7 @@
 package frc.robot.driving;
 
 import frc.robot.OI;
+import frc.robot.Sneak;
 import frc.robot.driving.RobotMap;
 
 import edu.wpi.first.wpilibj.Spark;
@@ -10,12 +11,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
- * This subsystem is used to control the tank drive for 2019bot. 
+ * This subsystem is used to control the tank drive for 2019bot.
  * 
  * @author Spencer Moore
  */
 
-public class TankDrive extends Subsystem{
+public class TankDrive extends Subsystem {
 
 	DifferentialDrive myRobot;
 	SpeedController leftFront;
@@ -26,7 +27,11 @@ public class TankDrive extends Subsystem{
 	SpeedController rightMid;
 	SpeedControllerGroup left;
 	SpeedControllerGroup right;
-	public TankDrive() {
+	boolean sneaking = false;
+	double speedMod = 0.8;
+	Sneak sneak;
+
+	public TankDrive(Sneak sneak) {
 
 		rightFront = new Spark(RobotMap.RIGHT_FRONT_PORT);
 		rightBack = new Spark(RobotMap.RIGHT_BACK_PORT);
@@ -35,7 +40,9 @@ public class TankDrive extends Subsystem{
 		left = new SpeedControllerGroup(leftFront, leftBack);
 		right = new SpeedControllerGroup(rightFront, rightBack);
 		myRobot = new DifferentialDrive(left, right);
+		this.sneak = sneak;
 	}
+
 	@Override
 	public void setName(String subsystem, String name) {
 
@@ -48,7 +55,9 @@ public class TankDrive extends Subsystem{
 
 	public void tankDrive(OI oi) {
 		if (oi.joysticksAttached) {
-			myRobot.tankDrive(oi.leftJoystick.getZ(), - oi.rightJoystick.getZ());
+
+			myRobot.tankDrive(oi.rightJoystick.getZ() * sneak.get(), -oi.leftJoystick.getZ() * sneak.get());
+
 		} else {
 			double left = 0;
 			double right = 0;
@@ -76,11 +85,11 @@ public class TankDrive extends Subsystem{
 				}
 			}
 
-			myRobot.tankDrive(- left, - right);
+			myRobot.tankDrive(-left, -right);
 		}
 	}
-	
-	public void tankDrive (double leftSpeed, double rightSpeed) {
-		myRobot.tankDrive(- leftSpeed, - rightSpeed);
+
+	public void tankDrive(double leftSpeed, double rightSpeed) {
+		myRobot.tankDrive(-leftSpeed, -rightSpeed);
 	}
 }

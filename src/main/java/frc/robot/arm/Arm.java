@@ -1,6 +1,7 @@
 package frc.robot.arm;
 
 import frc.robot.OI;
+import frc.robot.Sneak;
 import frc.robot.driving.RobotMap;
 
 import edu.wpi.first.wpilibj.Spark;
@@ -16,7 +17,8 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
  */
 
 public class Arm extends Subsystem {
-        private SpeedController wrist;
+        private SpeedController wrist1;
+        private SpeedController wrist2;
         private SpeedController elbow;
         private AnalogPotentiometer pot;
 
@@ -54,6 +56,17 @@ public class Arm extends Subsystem {
         // This is used to provide smooth manual movement for the elbow and wrist.
         private Timer timer;
 
+        // Used to slow down the wrist.
+        private Sneak sneak;
+
+        // Wrist manual movement parameters.
+        final static double INCREMENT_INTERVAL_SECONDS = 0.05;
+        final static double WRIST_POWER_INCREMENT_PER_INTERVAL = 0.16;
+        final static double WRIST_SLOW_DOWN_INCREMENT_PER_LEVEL = 0.40;
+        final static double WRIST_INITIAL_POWER_RAMP_DOWN = 0.3;
+        final static double WRIST_INITIAL_POWER_RAMP_UP = 0.6;
+        final static double WRIST_MAX_DOWNWARD_POWER = 0.8;
+
         // Elbow manual movement parameters.
         final static double ELBOW_INCREMENT_INTERVAL_SECONDS = 0.05;
         final static double ELBOW_POWER_INCREMENT_PER_INTERVAL = 0.08;
@@ -62,6 +75,9 @@ public class Arm extends Subsystem {
         final static double ELBOW_MAX_DOWNWARD_POWER = 0.8;
         final static double EPSILON = 0.05;
         double lastIncrementTimeSeconds = 0;
+
+        static final double ELBOW_GRADUAL_DECAY = 0.9275;
+        static final double ELBOW_GRADUAL_ACCELERATION = 0.4;
 
         // The scale factor here should be the range of degrees that the elbow
         // potentiometer is capable of.
@@ -84,8 +100,10 @@ public class Arm extends Subsystem {
                 / (MAX_INPUT_POT_VALUE - MIN_INPUT_POT_VALUE);
         private final double OFFSET = MIN_OUTPUT_POT_VALUE;
 
-        public Arm() {
-                wrist = new Spark(RobotMap.WRIST_MOVE);
+        public Arm(Sneak sneak) {
+                this.sneak = sneak;
+                wrist1 = new Spark(RobotMap.WRIST_MOVE_ONE);
+                wrist2 = new Spark(RobotMap.WRIST_MOVE_TWO);
                 elbow = new Spark(RobotMap.ELBOW_MOVE);
                 pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, 1.0, 0.0);
                 //pot = new AnalogPotentiometer(RobotMap.TEST_POTENTIOMETER, SCALE_FACTOR, OFFSET);
@@ -149,7 +167,7 @@ public class Arm extends Subsystem {
                 }
 
                 double speed = motor.get();
-                if (direction > 0) {
+                if (direction > 0) {                                          
                         // Slow increment every few intervals.
                         if (timer.get() - lastIncrementTimeSeconds > minUpdateIntervalSeconds) {
                                 lastIncrementTimeSeconds = timer.get();
@@ -175,8 +193,8 @@ public class Arm extends Subsystem {
                                 if (speed < min) {
                                         speed = min;
                                 }
-                                //System.out.printf("Decreased power to %.2f\n", speed);
-                        }
+                                System.out.printf("Decreased power to %.2f\n", speed);
+                        } 
                 } else {
                         // Speed decays when there's no set power...but we don't instantly stop (that might
                         // cause the motor to jerk badly.)
@@ -186,7 +204,7 @@ public class Arm extends Subsystem {
                                 if (Math.abs(speed) < EPSILON) {
                                         speed = 0;
                                 }
-                              //  System.out.printf("Power decaying to %.2f\n", speed);
+                                // System.out.printf("Power decaying to %.2f\n", speed);
                         }
                 }
                 motor.set(speed);
@@ -249,9 +267,18 @@ public class Arm extends Subsystem {
          * This is only used during manual control.
          */
         private void moveElbowUp() {
-                adjustMotor(elbow, +1, ELBOW_INCREMENT_INTERVAL_SECONDS,
-                            ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INCREMENT_PER_INTERVAL, ELBOW_POWER_INITIAL_RAMP,
+                adjustMotor(elbow, +1, INCREMENT_INTERVAL_SECONDS,
+                            ELBOW_POWER_INCREMENT_PER_INTERVAL, 0.2, 
+                            ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
+        }
+
+        private void moveWristUp() {
+                adjustMotor(wrist1, 1, INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP_UP, 
+                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
+                wrist2.set(-wrist1.get());
         }
 
         /**
@@ -261,8 +288,16 @@ public class Arm extends Subsystem {
          */
         private void moveElbowDown() {
                 adjustMotor(elbow, -1, ELBOW_INCREMENT_INTERVAL_SECONDS,
-                            ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, ELBOW_POWER_INITIAL_RAMP,
+                            ELBOW_SLOW_DOWN_INCREMENT_PER_LEVEL, 0.2, ELBOW_POWER_INITIAL_RAMP,
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
+        }
+
+        private void moveWristDown() {
+                adjustMotor(wrist1, -1, INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP_DOWN, 
+                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
+                wrist2.set(-wrist1.get());
         }
 
         /**
@@ -276,61 +311,71 @@ public class Arm extends Subsystem {
                             -ELBOW_MAX_DOWNWARD_POWER, 1.0);
         }
 
+        private void stopWristGradually() {        
+                adjustMotor(wrist1, 0, INCREMENT_INTERVAL_SECONDS, 
+                        WRIST_POWER_INCREMENT_PER_INTERVAL, WRIST_POWER_INCREMENT_PER_INTERVAL, 
+                        WRIST_INITIAL_POWER_RAMP_DOWN, 
+                        -WRIST_MAX_DOWNWARD_POWER, 1.0);
+                wrist2.set(-wrist1.get());       
+        }
+
+        /***
+         * Instead of just incrementing a motor by a desired value directly, take the average
+         * of the incremented value and the delta and set the motor speed to that.
+         * 
+         * By calling this with a fixed frequency, we can achieve both gradual acceleration
+         * and gradual deceleration.
+         * 
+         * @param speedController The motor to change.
+         * @param delta The amount to change the speedController's current speed by.
+         * @param decay By what percetage should we dimish per call?  This should be between 0 (instant) and 1 (never slows at all.)
+         */
+        void gradualChange(SpeedController speedController, double delta, double decay) {
+                speedController.set((speedController.get() + delta) * decay * sneak.get());
+                System.out.printf("Speed Controller's current value is: %.2f\n", speedController.get());
+        }
+
+
         public void arm(OI oi) {
                 if (oi.joysticksAttached) {
-                        double h = wrist.get();
-                        if (oi.leftJoystick.getRawButton(3)) {
-                                h = 0.3;
-                        } else if (oi.rightJoystick.getRawButton(3)) {
+                        double h = wrist1.get();
+                        if (oi.rightJoystick.getRawButton(6)) {
+                                h = 0.8;
+                        } else if (oi.rightJoystick.getRawButton(4)) {
                                 // Take full advantage of gravity.
-                                h = -1;
+                                h = -0.35;
                         } else {
                                 h = 0;
                         }
+                        wrist1.set(h * sneak.get());
+                        wrist2.set(-h * sneak.get());
+
+                        if (oi.rightJoystick.getRawButton(5)) {
+                                moveWristUp();
+                        } else if (oi.rightJoystick.getRawButton(3)) {
+                                // Take full advantage of gravity.
+                                moveWristDown();
+                        } else {
+                                stopWristGradually();
+                        }
+
+                        if (oi.leftJoystick.getRawButton(5)) {
+                                //elbow.set(0.8);
+                                gradualChange(elbow, ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
+                        } else if (oi.leftJoystick.getRawButton(3)) {
+                                //elbow.set(-0.8);
+                                gradualChange(elbow, -ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
+                        } else {
+                                //elbow.set(0);
+                                gradualChange(elbow, 0, ELBOW_GRADUAL_DECAY);
+                        }
 
                         if (oi.leftJoystick.getRawButton(4)) {
-                                moveElbowUp();
-                        } else if (oi.rightJoystick.getRawButton(4)) {
                                 moveElbowDown();
-                        } else {
-                                stopElbowGradually();
                         }
-                        wrist.set(h);
-                        if (oi.rightJoystick.getRawButton(6)) {
-                                double error = desiredPosition - this.pot.get();
-                                this.integral += error*secondsPerIteration;
-                                double derivative = (error-this.previousError)/secondsPerIteration;
-                                double desiredPower = (kP*error) + (kI*this.integral) + (kD * derivative);
-                                if (desiredPower > 1) {
-                                        desiredPower = 1;
-                                }
-                                if (desiredPower < -1) {
-                                        desiredPower = -1;
-                                }
-                                elbow.set(desiredPower);
-                                this.previousError = error;
-                        }
-                        if (oi.rightJoystick.getRawButtonPressed(5)) {
-                                goUpOnePosition();
-                        }
-                        if (oi.leftJoystick.getRawButtonPressed(5)) {
-                                goDownOnePosition();
-                        }
-                } else {
-                        /*
-                         * double left = 0; double right = 0;
-                         *
-                         * if (oi.forward.get()) { left = 1; right = 1; } else if (oi.back.get()) { left
-                         * = -1; right = -1; } else if (oi.left.get()) { left = -1; right = 1; } else if
-                         * (oi.right.get()) { left = 1; right = -1; } if (oi.sneak.get()) { if
-                         * (oi.left.get() || oi.right.get()) { left *= 0.8; right *= 0.8; } else { left
-                         * *= 0.5; right *= 0.5; } }
-                         *
-                         * myRobot.tankDrive(- left, - right);
-                         */}
+                }
         }
 
-        public void arm(/* double leftSpeed, double rightSpeed */) {
-                // myRobot.tankDrive(- leftSpeed, - rightSpeed);
+        public void arm() {
         }
 }

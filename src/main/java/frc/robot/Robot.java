@@ -8,11 +8,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.cameraserver.*;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.OI;
+import frc.robot.Sneak;
 import frc.robot.driving.TankDrive;
 import frc.robot.driving.RobotMap;
 import frc.robot.arm.Arm;
@@ -35,6 +37,24 @@ public class Robot extends TimedRobot {
   private Claw claw;
   private Arm arm;
   private OI oi;
+  private Sneak driveSneak;
+  private Sneak wristSneak;
+
+  // Toggles sneaking for both the wrist and the drive.
+  private void handleSneak() {
+    if (!oi.joysticksAttached) {
+      return;
+    }
+    if (oi.rightJoystick.getRawButtonPressed(2)) {
+      if (wristSneak.enabled()) {
+        wristSneak.disable();
+        driveSneak.disable();
+      } else {
+        wristSneak.enable();
+        driveSneak.enable();
+      }
+    }
+  }
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -42,10 +62,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    tank = new TankDrive();
+    CameraServer.getInstance().startAutomaticCapture();
+    driveSneak = new Sneak(RobotMap.DRIVE_SNEAK_VALUE);
+    wristSneak = new Sneak(RobotMap.WRIST_SNEAK_VALUE);
+    tank = new TankDrive(driveSneak);
     oi = new OI();
     claw = new Claw();
-    arm = new Arm();
+    arm = new Arm(wristSneak);
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -98,15 +121,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-    case kCustomAuto:
-      // Put custom auto code here
-      break;
-    case kDefaultAuto:
-    default:
-      // Put default auto code here
-      break;
+    arm.arm(oi);
+    claw.claw(oi);
+    if (!claw.canClawClose()) {
+      claw.stopClosing();
     }
+    tank.tankDrive(oi);
+    handleSneak();    
   }
 
   /**
@@ -120,6 +141,7 @@ public class Robot extends TimedRobot {
       claw.stopClosing();
     }
     tank.tankDrive(oi);
+    handleSneak();
     // motor.set(1);
     // System.out.println(motor.get());
   }
