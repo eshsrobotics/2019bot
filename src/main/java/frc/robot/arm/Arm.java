@@ -77,8 +77,12 @@ public class Arm extends Subsystem {
         final static double EPSILON = 0.05;
         double lastIncrementTimeSeconds = 0;
 
+        // Constants for gradualChange().
         static final double ELBOW_GRADUAL_DECAY = 0.9275;
         static final double ELBOW_GRADUAL_ACCELERATION = 0.4;
+        static final double WRIST_GRADUAL_DECAY = 0.85; // 0.9275;
+        static final double WRIST_GRADUAL_DOWNWARD_ACCELERATION = 0.20; // 0.3;
+        static final double WRIST_GRADUAL_UPWARD_ACCELERATION = 0.35; // 0.7;
 
         // The scale factor here should be the range of degrees that the elbow
         // potentiometer is capable of.
@@ -328,6 +332,8 @@ public class Arm extends Subsystem {
          * By calling this with a fixed frequency, we can achieve both gradual acceleration
          * and gradual deceleration.
          * 
+         * This is meant to be a replacement for {@link adjustMotor} and friends.
+         * 
          * @param speedController The motor to change.
          * @param delta The amount to change the speedController's current speed by.
          * @param decay By what percetage should we dimish per call?  This should be between 0 (instant) and 1 (never slows at all.)
@@ -339,61 +345,45 @@ public class Arm extends Subsystem {
 
 
         public void arm(OI oi) {
-                if (oi.joysticksAttached) {
-                        double h = wrist1.get();
-                        if (oi.rightJoystick.getRawButton(6)) {
-                                h = 0.8;
-                        } else if (oi.rightJoystick.getRawButton(4)) {
-                                // Take full advantage of gravity.
-                                h = -0.35;
-                        } else {
-                                h = 0;
-                        }
-                        wrist1.set(h * sneak.get());
-                        wrist2.set(-h * sneak.get());
+        
+                // Move the wrist smoothly.
+                if ((oi.joysticksAttached && oi.rightJoystick.getRawButton(5)) || oi.climbUp.get()) {
+                        // The wrist should always sneak; it's too hard to control otherwise.
+                        boolean sneakOriginallyEnabled = sneak.enabled();
+                        sneak.enable();
 
-                        if (oi.rightJoystick.getRawButton(5) || oi.climbUp.get()){
-                                moveWristUp();
-                        } else if (oi.rightJoystick.getRawButton(3) || oi.climbDown.get()) {
-                                // Take full advantage of gravity.
-                                moveWristDown();
-                        } else {
-                                stopWristGradually();
+                        // Move the wrist up, against gravity.                        
+                        gradualChange(wrist1, WRIST_GRADUAL_UPWARD_ACCELERATION, WRIST_GRADUAL_DECAY);
+                        gradualChange(wrist2, -WRIST_GRADUAL_UPWARD_ACCELERATION, WRIST_GRADUAL_DECAY);
+                        
+                        if (!sneakOriginallyEnabled) {
+                                sneak.disable();
                         }
+                } else if ((oi.joysticksAttached && oi.rightJoystick.getRawButton(3)) || oi.climbDown.get()) {
+                        // The wrist should always sneak; it's too hard to control otherwise.
+                        boolean sneakOriginallyEnabled = sneak.enabled();
+                        sneak.enable();
 
-                        if (oi.leftJoystick.getRawButton(5) || oi.elbowUpButton.get()) {
-                                //elbow.set(0.8);
-                                gradualChange(elbow, ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
-                        } else if (oi.leftJoystick.getRawButton(3) || oi.elbowDownButton.get()) {
-                                //elbow.set(-0.8);
-                                gradualChange(elbow, -ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
-                        } else {
-                                //elbow.set(0);
-                                gradualChange(elbow, 0, ELBOW_GRADUAL_DECAY);
-                        }
+                        // Move the wrist down, taking full advantage of gravity.                        
+                        gradualChange(wrist1, -WRIST_GRADUAL_DOWNWARD_ACCELERATION, WRIST_GRADUAL_DECAY);
+                        gradualChange(wrist2, WRIST_GRADUAL_DOWNWARD_ACCELERATION, WRIST_GRADUAL_DECAY);
 
-                        if (oi.leftJoystick.getRawButton(4)) {
-                                moveElbowDown();
+                        if (!sneakOriginallyEnabled) {
+                                sneak.disable();
                         }
                 } else {
-                        
-                        if (oi.climbUp.get()) {
-                                wristMotion = 0.5;
-                        } else if (oi.climbDown.get()) {
-                                wristMotion = -0.5;
-                        } else {
-                                wristMotion = 0;
-                        }
-                        wrist1.set(wristMotion);
-                        wrist2.set(-wristMotion);
+                        // Slow the wrist to a halt.
+                        gradualChange(wrist1, 0, WRIST_GRADUAL_DECAY);
+                        gradualChange(wrist2, 0, WRIST_GRADUAL_DECAY);
+                }
 
-                        if(oi.elbowUpButton.get()) {
-                                gradualChange(elbow, ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
-                        } else if (oi.elbowDownButton.get()) {
-                                gradualChange(elbow, -ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
-                        } else {
-                                gradualChange(elbow, 0, ELBOW_GRADUAL_DECAY);
-                        }
+                // Move the elbow smoothly.
+                if ((oi.joysticksAttached && oi.leftJoystick.getRawButton(5)) || oi.elbowUpButton.get()) {
+                        gradualChange(elbow, ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
+                } else if ((oi.joysticksAttached && oi.leftJoystick.getRawButton(3)) || oi.elbowDownButton.get()) {
+                        gradualChange(elbow, -ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
+                } else {
+                        gradualChange(elbow, 0, ELBOW_GRADUAL_DECAY);
                 }
         }
 
