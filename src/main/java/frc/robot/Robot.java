@@ -129,9 +129,9 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     arm.arm(oi);
     claw.claw(oi);
-    if (!claw.canClawClose()) {
+   /* if (!claw.canClawClose()) {
       claw.stopClosing();
-    }
+    }*/
     tank.tankDrive(oi);
     handleSneak();    
   }
@@ -143,9 +143,9 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     arm.arm(oi);
     claw.claw(oi);
-    if (!claw.canClawClose()) {
+    /*if (!claw.canClawClose()) {
       claw.stopClosing();
-    }
+    }*/
     tank.tankDrive(oi);
     handleSneak();
     // motor.set(1);

@@ -67,11 +67,15 @@ public class OI {
 		NetworkTableInstance.getDefault().setUpdateRate(0.0166);
 		elbowUpButton = new NetworkButton(inputTable, "Up");
 		elbowDownButton = new NetworkButton(inputTable, "Down");
+		climbUp = new NetworkButton(inputTable, "Left");
+		climbDown = new NetworkButton(inputTable, "Right");
+		launchOut = new NetworkButton(inputTable, "C");
+		launchIn = new NetworkButton(inputTable, "F");
 
 		// Can set to false to force keyboard controls
-		joysticksAttached = leftJoystick != null && rightJoystick != null;
+		joysticksAttached = false;//leftJoystick != null && rightJoystick != null;
 		
-		if (joysticksAttached) {
+		/*if (joysticksAttached) {
 			System.out.println("Creating OI with joystick buttons");
 			launchOut = new JoystickButton(rightJoystick, LAUNCHING_BUTTON_OUT);
 			launchIn = new JoystickButton(leftJoystick, LAUNCHING_BUTTON_IN);
@@ -79,7 +83,7 @@ public class OI {
 			armIn = new JoystickButton(rightJoystick, ARM_IN_BUTTON);
 			climbUp = new JoystickButton(rightJoystick, CLIMBER_UP_BUTTON);
 			climbDown = new JoystickButton(leftJoystick, CLIMBER_DOWN_BUTTON);
-		} else {
+		} else {*/
 			/*
 			 * Network Button key strings (for NetworkButton constructor):
 			 * - Alphanumeric: Uppercase of the key (i.e. A, B, C, ... or 0, 1, 2, ...)
@@ -103,18 +107,16 @@ public class OI {
 			 * For the mouse right and left buttons, use "Right Mouse" and "Left Mouse"
 			 */
 		  	System.out.println("Creating OI with network buttons");
-			launchOut = new NetworkButton(inputTable, "J");
-			launchIn = new NetworkButton(inputTable, "K");
+			launchOut = new NetworkButton(inputTable, "C");
+			launchIn = new NetworkButton(inputTable, "F");
 			armIn = new NetworkButton(inputTable, "Up");
 			armOut = new NetworkButton(inputTable, "Down");
-			climbUp = new NetworkButton(inputTable, "N");
-			climbDown = new NetworkButton(inputTable, "M");
 			forward = new NetworkButton(inputTable, "W");
 			back = new NetworkButton(inputTable, "S");
 			left = new NetworkButton(inputTable, "A");
 			right = new NetworkButton(inputTable, "D");
 			sneak = new NetworkButton(inputTable, "Shift");
-		}
+		//}
 	}
 
 }

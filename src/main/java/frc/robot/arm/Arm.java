@@ -66,6 +66,7 @@ public class Arm extends Subsystem {
         final static double WRIST_INITIAL_POWER_RAMP_DOWN = 0.3;
         final static double WRIST_INITIAL_POWER_RAMP_UP = 0.6;
         final static double WRIST_MAX_DOWNWARD_POWER = 0.8;
+         static double wristMotion = 0.0;
 
         // Elbow manual movement parameters.
         final static double ELBOW_INCREMENT_INTERVAL_SECONDS = 0.05;
@@ -101,6 +102,7 @@ public class Arm extends Subsystem {
         private final double OFFSET = MIN_OUTPUT_POT_VALUE;
 
         public Arm(Sneak sneak) {
+                
                 this.sneak = sneak;
                 wrist1 = new Spark(RobotMap.WRIST_MOVE_ONE);
                 wrist2 = new Spark(RobotMap.WRIST_MOVE_TWO);
@@ -350,9 +352,9 @@ public class Arm extends Subsystem {
                         wrist1.set(h * sneak.get());
                         wrist2.set(-h * sneak.get());
 
-                        if (oi.rightJoystick.getRawButton(5)) {
+                        if (oi.rightJoystick.getRawButton(5) || oi.climbUp.get()){
                                 moveWristUp();
-                        } else if (oi.rightJoystick.getRawButton(3)) {
+                        } else if (oi.rightJoystick.getRawButton(3) || oi.climbDown.get()) {
                                 // Take full advantage of gravity.
                                 moveWristDown();
                         } else {
@@ -372,6 +374,25 @@ public class Arm extends Subsystem {
 
                         if (oi.leftJoystick.getRawButton(4)) {
                                 moveElbowDown();
+                        }
+                } else {
+                        
+                        if (oi.climbUp.get()) {
+                                wristMotion = 0.5;
+                        } else if (oi.climbDown.get()) {
+                                wristMotion = -0.5;
+                        } else {
+                                wristMotion = 0;
+                        }
+                        wrist1.set(wristMotion);
+                        wrist2.set(-wristMotion);
+
+                        if(oi.elbowUpButton.get()) {
+                                gradualChange(elbow, ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
+                        } else if (oi.elbowDownButton.get()) {
+                                gradualChange(elbow, -ELBOW_GRADUAL_ACCELERATION, ELBOW_GRADUAL_DECAY);
+                        } else {
+                                gradualChange(elbow, 0, ELBOW_GRADUAL_DECAY);
                         }
                 }
         }

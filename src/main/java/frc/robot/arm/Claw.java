@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
  */
 
 public class Claw extends Subsystem {
+	private static double clawMotion = 0.0;
     private Spark claw;
 	private DigitalInput clawCloseLimitSwitch;
 
@@ -41,7 +42,17 @@ public class Claw extends Subsystem {
 			while (oi.leftJoystick.getTrigger()) {
 				claw.set(-1);
 			}*/
-			if (oi.joysticksAttached) {
+			if (oi.launchIn.get()) {
+				System.out.println("REEEEEEEEEEEEEEEE\n\n");
+				clawMotion = 0.8;
+		} else if (oi.launchOut.get()) {
+			System.out.println("REEEEEEEEEEEEEEEE\n\n");
+				clawMotion = -0.8;
+		} else {
+				clawMotion = 0;
+		}
+		claw.set(clawMotion);
+			/*if (oi.joysticksAttached) {
 				double h = 0;
 				if (oi.leftJoystick.getTrigger()) {
 					System.out.println("REEEEEEEEEEEEEEEE\n\n");
@@ -64,38 +75,9 @@ public class Claw extends Subsystem {
 				} else {
 					// We don't have canClawOpen() right now.
 					claw.set(joystickValue);
-				}*/
-			}
-			//myRobot.tankDrive(- oi.leftJoystick.getY(), - oi.rightJoystick.getY());
-		//} else {
-			/*double left = 0;
-			double right = 0;
-
-			if (oi.forward.get()) {
-				left = 1;
-				right = 1;
-			} else if (oi.back.get()) {
-				left = -1;
-				right = -1;
-			} else if (oi.left.get()) {
-				left = -1;
-				right = 1;
-			} else if (oi.right.get()) {
-				left = 1;
-				right = -1;
-			}
-			if (oi.sneak.get()) {
-				if (oi.left.get() || oi.right.get()) {
-					left *= 0.8;
-					right *= 0.8;
-				} else {
-					left *= 0.5;
-					right *= 0.5;
 				}
-			}
-
-			myRobot.tankDrive(- left, - right);
-        *///}
+	}*/
+			
 	}
 	
 	public void claw (/*double leftSpeed, double rightSpeed*/) {
