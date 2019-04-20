@@ -54,43 +54,40 @@ public class TankDrive extends Subsystem {
 	}
 
 	public void tankDrive(OI oi) {
-		/*if (oi.joysticksAttached) {
+		double left = 0, right = 0;
 
-			myRobot.tankDrive(oi.rightJoystick.getZ() * sneak.get(), -oi.leftJoystick.getZ() * sneak.get());
+		// Joystick controls; optional.
+		if (oi.joysticksAttached) {
+			left = -oi.rightJoystick.getZ();
+			right = oi.leftJoystick.getZ();
+			// myRobot.tankDrive(oi.rightJoystick.getZ() * sneak.get(), -oi.leftJoystick.getZ() * sneak.get());
+		} 
+		
+		// Keyboard controls; also optional.
+		if (oi.forward.get()) {			
+			left = 1;
+			right = 1;
+		} else if (oi.back.get()) {			
+			left = -1;
+			right = -1;
+		} else if (oi.left.get()) {			
+			left = -1;
+			right = 1;
+		} else if (oi.right.get()) {			
+			left = 1;
+			right = -1;
+		}
 
-		} else {*/
-			double left = 0;
-			double right = 0;
-
-			if (oi.forward.get()) {
-				System.out.println("H");
-				left = 1;
-				right = 1;
-			} else if (oi.back.get()) {
-				System.out.println("H");
-				left = -1;
-				right = -1;
-			} else if (oi.left.get()) {
-				System.out.println("H");
-				left = -1;
-				right = 1;
-			} else if (oi.right.get()) {
-				System.out.println("H");
-				left = 1;
-				right = -1;
+		double sneakMultiplier = sneak.get();
+		if (sneak.enabled()) {
+			if (oi.left.get() || oi.right.get()) {
+				sneakMultiplier = RobotMap.DRIVE_TURNING_SNEAK_VALUE;
+			} else {
+				sneakMultiplier = RobotMap.DRIVE_FORWARD_SNEAK_VALUE;
 			}
-			if (oi.sneak.get()) {
-				if (oi.left.get() || oi.right.get()) {
-					left *= 0.8;
-					right *= 0.8;
-				} else {
-					left *= 0.5;
-					right *= 0.5;
-				}
-			}
+		}
 
-			myRobot.tankDrive(-left, -right);
-		//}
+		myRobot.tankDrive(-left * sneakMultiplier, -right * sneakMultiplier);
 	}
 
 	public void tankDrive(double leftSpeed, double rightSpeed) {

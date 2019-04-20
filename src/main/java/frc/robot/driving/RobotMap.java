@@ -34,7 +34,8 @@ public class RobotMap {
 	public static int TEST_POTENTIOMETER = 0;
 
 	// Sneak values (force multipliers)
-	public static double DRIVE_SNEAK_VALUE = 0.6;
+	public static double DRIVE_FORWARD_SNEAK_VALUE = 0.5;
+	public static double DRIVE_TURNING_SNEAK_VALUE = 0.8;
 	public static double WRIST_SNEAK_VALUE = 0.8;
 
 	public RobotMap() {

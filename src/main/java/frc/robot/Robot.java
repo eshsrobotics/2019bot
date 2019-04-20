@@ -42,10 +42,18 @@ public class Robot extends TimedRobot {
 
   // Toggles sneaking for both the wrist and the drive.
   private void handleSneak() {
-    if (!oi.joysticksAttached) {
-      return;
+
+    // Ordinarily, you sneak with the NetworkTables sneak button.
+    boolean sneakButtonActivated = oi.sneak.get();
+
+    // But you can also sneak with the joystick.
+    //
+    // TODO: Make a JoystickButton in OI for right joystick #2.
+    if (oi.joysticksAttached && oi.rightJoystick.getRawButtonPressed(2)) {
+      sneakButtonActivated = true;
     }
-    if (oi.rightJoystick.getRawButtonPressed(2)) {
+
+    if (sneakButtonActivated) {
       if (wristSneak.enabled()) {
         wristSneak.disable();
         driveSneak.disable();
@@ -64,7 +72,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     try {
     CameraServer.getInstance().startAutomaticCapture();
-    driveSneak = new Sneak(RobotMap.DRIVE_SNEAK_VALUE);
+    driveSneak = new Sneak(RobotMap.DRIVE_FORWARD_SNEAK_VALUE);
     wristSneak = new Sneak(RobotMap.WRIST_SNEAK_VALUE);
     tank = new TankDrive(driveSneak);
     oi = new OI();

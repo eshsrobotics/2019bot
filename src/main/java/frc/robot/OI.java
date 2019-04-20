@@ -72,8 +72,10 @@ public class OI {
 		launchOut = new NetworkButton(inputTable, "C");
 		launchIn = new NetworkButton(inputTable, "F");
 
-		// Can set to false to force keyboard controls
-		joysticksAttached = false;//leftJoystick != null && rightJoystick != null;
+		// As long as either joystick is attahed, you can use the joystick controls.
+		//
+		// The keyboard controls are always available either way.
+		joysticksAttached = leftJoystick != null && rightJoystick != null;
 		
 		/*if (joysticksAttached) {
 			System.out.println("Creating OI with joystick buttons");
